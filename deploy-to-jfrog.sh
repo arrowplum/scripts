@@ -53,28 +53,14 @@ while true; do
   esac
 done
 
-# Retrieve the site ID for the given site name
-response=$(jf rt curl -X GET /distribution/api/v1/sites)
-echo "Response from /distribution/api/v1/sites: $response"
-
-#FIXME it seems that we are getting 404 from the site api
-# SITE_ID=$(echo "$response" | jq -r --arg name "$SITE_NAME" '.[] | select(.name == $name) | .id')
-
-# # Check if SITE_ID is empty
-# if [ -z "$SITE_ID" ]; then
-#   echo "No sites configured or site ID for '$SITE_NAME' not found. Skipping distribution."
-#   DISTRIBUTE=false
-# else
-#   echo "Site ID for '$SITE_NAME' is $SITE_ID"
-#   DISTRIBUTE=true
-# fi
-
+# Temporarily disable site ID retrieval due to 404 error
+DISTRIBUTE=false
 # Define artifact names
 DOCKER_IMAGE_NAME="aerospike/aerospike-proximus:${ARTIFACT_VERSION}"
 DOCKER_TAR_NAME="aerospike-vector-search-${ARTIFACT_VERSION}.tar"
 HELM_CHART_NAME="aerospike-vector-search-${HELM_CHART_VERSION}.tgz"
 RPM_PACKAGE_NAME="aerospike-proximus-${ARTIFACT_VERSION}-1.noarch.rpm"
-DEB_PACKAGE_NAME="aerospike-proximus-${ARTIFACT_VERSION}.deb"
+DEB_PACKAGE_NAME="aerospike-proximus-${ARTIFACT_VERSION}.all.deb"
 SBOM_FILE_NAME="${RELEASE_NAME}-${ARTIFACT_VERSION}-sbom.json"
 SNYK_REPORT_NAME="snyk-report-${RELEASE_NAME}-${ARTIFACT_VERSION}.sarif"
 SPEC_FILE_NAME="spec-${RELEASE_NAME}-${RELEASE_NUMBER}.json"
@@ -189,32 +175,32 @@ cat <<EOF > ${RELEASE_BUNDLE_SPEC}
 EOF
 
 # Create the release bundle
-jf rt rbc ${RELEASE_BUNDLE_NAME} ${RELEASE_NUMBER} --spec=${RELEASE_BUNDLE_SPEC}
-
+echo WE DONT HAVE SIGNING KEY BUT jf release-bundle-create ${RELEASE_BUNDLE_NAME} ${RELEASE_NUMBER} --spec=${RELEASE_BUNDLE_SPEC}
+return 0
 # If sites are configured, create distribution rules and distribute the release bundle to stage
 if [ "$DISTRIBUTE" = true ]; then
   # Create distribution rules dynamically
   cat <<EOF > ${DISTRIBUTION_RULES}
-  {
-    "version": "${RELEASE_NUMBER}",
-    "rules": [
-      {
-        "name": "Promote to Stage",
-        "repositories": [
-          "ecosystem-container-stage-local",
-          "ecosystem-helm-stage-local",
-          "ecosystem-rpm-stage-local",
-          "ecosystem-deb-stage-local",
-          "ecosystem-pkg-dev-local"
-        ],
-        "site": "${SITE_ID}"
-      }
-    ]
-  }
+{
+  "version": "${RELEASE_NUMBER}",
+  "rules": [
+    {
+      "name": "Promote to Stage",
+      "repositories": [
+        "ecosystem-container-stage-local",
+        "ecosystem-helm-stage-local",
+        "ecosystem-rpm-stage-local",
+        "ecosystem-deb-stage-local",
+        "ecosystem-pkg-dev-local"
+      ],
+      "site": "${SITE_ID}"
+    }
+  ]
+}
 EOF
 
   # Distribute the release bundle to stage
-  jf rt rbd ${RELEASE_BUNDLE_NAME} ${RELEASE_NUMBER} --site=${SITE_ID} --dist-rules=${DISTRIBUTION_RULES}
+  jf release-bundle-promote ${RELEASE_BUNDLE_NAME} ${RELEASE_NUMBER} --site=${SITE_ID} --dist-rules=${DISTRIBUTION_RULES}
 
   # Optionally, distribute to prod
   # Uncomment and modify as needed
@@ -236,7 +222,7 @@ EOF
   #   ]
   # }
   # EOF
-  # jf rt rbd ${RELEASE_BUNDLE_NAME} ${RELEASE_NUMBER} --site=${SITE_ID} --dist-rules=${DISTRIBUTION_RULES}
+  # jf rt rb-distribute ${RELEASE_BUNDLE_NAME} ${RELEASE_NUMBER} --site=${SITE_ID} --dist-rules=${DISTRIBUTION_RULES}
 else
   echo "Skipping distribution as no sites are configured."
 fi
