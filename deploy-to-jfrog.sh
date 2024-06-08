@@ -1,7 +1,6 @@
 #!/bin/bash
 
 set -eo pipefail
-set -x
 if [ -n "$DEBUG" ]; then set -x; fi
 trap 'echo "Error: $? at line $LINENO" >&2' ERR
 
@@ -55,16 +54,20 @@ while true; do
 done
 
 # Retrieve the site ID for the given site name
-#SITE_ID=$(jf curl -X GET /distribution/api/v1/sites | jq -r --arg name "$SITE_NAME" '.[] | select(.name == $name) | .id')
+response=$(jf rt curl -X GET /distribution/api/v1/sites)
+echo "Response from /distribution/api/v1/sites: $response"
 
-# Check if SITE_ID is empty
-if [ -z "$SITE_ID" ]; then
-  echo "No sites configured or site ID for '$SITE_NAME' not found. Skipping distribution."
-  DISTRIBUTE=false
-else
-  echo "Site ID for '$SITE_NAME' is $SITE_ID"
-  DISTRIBUTE=true
-fi
+#FIXME it seems that we are getting 404 from the site api
+# SITE_ID=$(echo "$response" | jq -r --arg name "$SITE_NAME" '.[] | select(.name == $name) | .id')
+
+# # Check if SITE_ID is empty
+# if [ -z "$SITE_ID" ]; then
+#   echo "No sites configured or site ID for '$SITE_NAME' not found. Skipping distribution."
+#   DISTRIBUTE=false
+# else
+#   echo "Site ID for '$SITE_NAME' is $SITE_ID"
+#   DISTRIBUTE=true
+# fi
 
 # Define artifact names
 DOCKER_IMAGE_NAME="aerospike/aerospike-proximus:${ARTIFACT_VERSION}"
@@ -96,14 +99,14 @@ docker pull ${DOCKER_IMAGE_NAME}
 # Save Docker image to tar file
 docker save -o ${DOCKER_TAR} ${DOCKER_IMAGE_NAME}
 
-# touch ${SNYK_REPORT}
+# FIXME we are having permissions issues with snyk
 # # Run Snyk test and generate SARIF report
 # snyk container test ${DOCKER_TAR} --file=${SNYK_REPORT} --sarif
 
 # Generate SBOM using Syft
 syft ${DOCKER_TAR} -o json > ${SBOM_FILE}
 
-# Create spec file dynamically
+# Create spec file dynamically after all files are created
 cat <<EOF > ${SPEC_FILE}
 {
   "files": [
@@ -125,28 +128,30 @@ cat <<EOF > ${SPEC_FILE}
     },
     {
       "pattern": "${SBOM_FILE}",
-      "target": "example-repo-local/${RELEASE_NAME}/${ARTIFACT_VERSION}/"
+      "target": "ecosystem-pkg-dev-local/${RELEASE_NAME}/${ARTIFACT_VERSION}/"
     },
     {
       "pattern": "${SNYK_REPORT}",
-      "target": "example-repo-local/${RELEASE_NAME}/${ARTIFACT_VERSION}/"
+      "target": "ecosystem-pkg-dev-local/${RELEASE_NAME}/${ARTIFACT_VERSION}/"
     },
     {
       "pattern": "${SPEC_FILE}",
-      "target": "example-repo-local/${RELEASE_NAME}/${ARTIFACT_VERSION}/"
+      "target": "ecosystem-pkg-dev-local/${RELEASE_NAME}/${ARTIFACT_VERSION}/"
     },
     {
       "pattern": "${RELEASE_BUNDLE_SPEC}",
-      "target": "example-repo-local/${RELEASE_NAME}/${ARTIFACT_VERSION}/"
+      "target": "ecosystem-pkg-dev-local/${RELEASE_NAME}/${ARTIFACT_VERSION}/"
     },
     {
       "pattern": "${DISTRIBUTION_RULES}",
-      "target": "example-repo-local/${RELEASE_NAME}/${ARTIFACT_VERSION}/"
+      "target": "ecosystem-pkg-dev-local/${RELEASE_NAME}/${ARTIFACT_VERSION}/"
     }
   ]
 }
 EOF
 
+# Upload all artifacts using JF CLI
+jf rt upload --spec=${SPEC_FILE}
 
 # Create release bundle specification dynamically
 cat <<EOF > ${RELEASE_BUNDLE_SPEC}
@@ -176,15 +181,12 @@ cat <<EOF > ${RELEASE_BUNDLE_SPEC}
       "target": "ecosystem-deb-dev-local/${RELEASE_NAME}/${ARTIFACT_VERSION}/"
     },
     {
-      "pattern": "example-repo-local/${RELEASE_NAME}/${ARTIFACT_VERSION}/*",
-      "target": "example-repo-local/${RELEASE_NAME}/${ARTIFACT_VERSION}/"
+      "pattern": "ecosystem-pkg-dev-local/${RELEASE_NAME}/${ARTIFACT_VERSION}/*",
+      "target": "ecosystem-pkg-dev-local/${RELEASE_NAME}/${ARTIFACT_VERSION}/"
     }
   ]
 }
 EOF
-touch ${DISTRIBUTION_RULES} # have to touch because the file is optional
-# Upload all artifacts using JF CLI
-jf rt upload --spec=${SPEC_FILE}
 
 # Create the release bundle
 jf rt rbc ${RELEASE_BUNDLE_NAME} ${RELEASE_NUMBER} --spec=${RELEASE_BUNDLE_SPEC}
@@ -192,7 +194,7 @@ jf rt rbc ${RELEASE_BUNDLE_NAME} ${RELEASE_NUMBER} --spec=${RELEASE_BUNDLE_SPEC}
 # If sites are configured, create distribution rules and distribute the release bundle to stage
 if [ "$DISTRIBUTE" = true ]; then
   # Create distribution rules dynamically
-  cat << EOF > ${DISTRIBUTION_RULES}
+  cat <<EOF > ${DISTRIBUTION_RULES}
   {
     "version": "${RELEASE_NUMBER}",
     "rules": [
@@ -203,7 +205,7 @@ if [ "$DISTRIBUTE" = true ]; then
           "ecosystem-helm-stage-local",
           "ecosystem-rpm-stage-local",
           "ecosystem-deb-stage-local",
-          "example-repo-local"
+          "ecosystem-pkg-dev-local"
         ],
         "site": "${SITE_ID}"
       }
@@ -227,7 +229,7 @@ EOF
   #         "ecosystem-helm-prod-local",
   #         "ecosystem-rpm-prod-local",
   #         "ecosystem-deb-prod-local",
-  #         "example-repo-local"
+  #         "ecosystem-pkg-dev-local"
   #       ],
   #       "site": "${SITE_ID}"
   #     }
