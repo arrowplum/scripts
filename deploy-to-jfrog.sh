@@ -10,18 +10,17 @@ DEFAULT_RELEASE_NUMBER=1
 DEFAULT_ARTIFACT_VERSION="0.4.0"
 DEFAULT_HELM_CHART_VERSION="0.2.0"
 DEFAULT_BASE_DIR="/build"
-SITE_NAME="your-site-name"
 SIGNING_KEY="aerospike"
 SNYK_FILE=""
 
 # Usage function
 usage() {
-echo "Usage: $0 [-r release_number] [-a artifact_version] [-c helm_chart_version] [-b base_directory] [--release-number release_number] [--artifact-version artifact_version] [--helm-chart-version helm_chart_version] [--base-directory base_directory] [--site-name site_name] [--signing-key signing_key] [--snyk-file snyk_file] [-h|--help]"
+echo "Usage: $0 [-r release_number] [-a artifact_version] [-c helm_chart_version] [-b base_directory] [--release-number release_number] [--artifact-version artifact_version] [--helm-chart-version helm_chart_version] [--base-directory base_directory] [--signing-key signing_key] [--snyk-file snyk_file] [-h|--help]"
 exit 1
 }
 
 # Parse command-line options using getopt
-OPTIONS=$(getopt -o r:a:c:b:s:k:f:h --long release-number:,artifact-version:,helm-chart-version:,base-directory:,site-name:,signing-key:,snyk-file:,help -- "$@")
+OPTIONS=$(getopt -o r:a:c:b:k:f:h --long release-number:,artifact-version:,helm-chart-version:,base-directory:,signing-key:,snyk-file:,help -- "$@")
 if [ $? -ne 0 ]; then
 usage
 fi
@@ -44,8 +43,6 @@ case "$1" in
     HELM_CHART_VERSION="$2"; shift 2;;
     -b|--base-directory)
     BASE_DIR="$2"; shift 2;;
-    -s|--site-name)
-    SITE_NAME="$2"; shift 2;;
     -k|--signing-key)
     SIGNING_KEY="$2"; shift 2;;
     -f|--snyk-file)
@@ -106,34 +103,6 @@ done
 docker pull ${DOCKER_IMAGE_NAME}
 docker save -o ${DOCKER_TAR} ${DOCKER_IMAGE_NAME}
 
-# Function to get site ID with error handling
-get_site_id() {
-    local site_name="$1"
-    local response
-    local http_status
-
-    # Make the curl call and capture the HTTP status code
-    response=$(jf rt curl -X GET /distribution/api/v1/sites -o - -w "%{http_code}")
-    http_status=$(echo "${response: -3}")
-    response=$(echo "${response%???}")
-
-    # Check if the HTTP status code is 200 (OK)
-    if [ "$http_status" -eq 200 ]; then
-        echo "$response" | jq -r --arg name "$site_name" '.[] | select(.name == $name) | .id'
-fi
-}
-
-# Retrieve the site ID for the given site name
-SITE_ID=$(get_site_id "$SITE_NAME")
-
-# Check if SITE_ID is empty
-if [ -z "$SITE_ID" ]; then
-    echo "No sites configured or site ID for '$SITE_NAME' not found. Skipping distribution."
-    DISTRIBUTE=false
-else
-    echo "Site ID for '$SITE_NAME' is $SITE_ID"
-    DISTRIBUTE=true
-fi
 
 # Copy the Snyk file to the metadata directory and Docker tar directory
 if [ -n "$SNYK_FILE" ]; then
