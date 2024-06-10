@@ -11,15 +11,16 @@ DEFAULT_ARTIFACT_VERSION="0.4.0"
 DEFAULT_HELM_CHART_VERSION="0.2.0"
 DEFAULT_BASE_DIR="/build"
 SITE_NAME="your-site-name"
+SIGNING_KEY="~/.gnupg/private-keys-v1.d/E1C8F4013F91B73E9DD455762BF009A57D65148D.key"
 
 # Usage function
 usage() {
-  echo "Usage: $0 [-r release_number] [-a artifact_version] [-c helm_chart_version] [-b base_directory] [--release-number release_number] [--artifact-version artifact_version] [--helm-chart-version helm_chart_version] [--base-directory base_directory] [--site-name site_name] [-h|--help]"
+  echo "Usage: $0 [-r release_number] [-a artifact_version] [-c helm_chart_version] [-b base_directory] [--release-number release_number] [--artifact-version artifact_version] [--helm-chart-version helm_chart_version] [--base-directory base_directory] [--site-name site_name] [--signing-key signing_key] [-h|--help]"
   exit 1
 }
 
 # Parse command-line options using getopt
-OPTIONS=$(getopt -o r:a:c:b:s:h --long release-number:,artifact-version:,helm-chart-version:,base-directory:,site-name:,help -- "$@")
+OPTIONS=$(getopt -o r:a:c:b:s:k:h --long release-number:,artifact-version:,helm-chart-version:,base-directory:,site-name:,signing-key:,help -- "$@")
 if [ $? -ne 0 ]; then
   usage
 fi
@@ -44,6 +45,8 @@ while true; do
       BASE_DIR="$2"; shift 2;;
     -s|--site-name)
       SITE_NAME="$2"; shift 2;;
+    -k|--signing-key)
+      SIGNING_KEY="$2"; shift 2;;
     -h|--help)
       usage; shift;;
     --)
@@ -53,8 +56,6 @@ while true; do
   esac
 done
 
-# Temporarily disable site ID retrieval due to 404 error
-DISTRIBUTE=false
 # Define artifact names
 DOCKER_IMAGE_NAME="aerospike/aerospike-proximus:${ARTIFACT_VERSION}"
 DOCKER_TAR_NAME="aerospike-vector-search-${ARTIFACT_VERSION}.tar"
@@ -79,15 +80,57 @@ RELEASE_BUNDLE_SPEC="${BASE_DIR}/${RELEASE_NAME}/${RELEASE_NUMBER}/metadata/${RE
 DISTRIBUTION_RULES="${BASE_DIR}/${RELEASE_NAME}/${RELEASE_NUMBER}/metadata/${DISTRIBUTION_RULES_NAME}"
 RELEASE_BUNDLE_NAME="${RELEASE_NAME}-${ARTIFACT_VERSION}"
 
-# Pull Docker image from Docker Hub
-docker pull ${DOCKER_IMAGE_NAME}
+# Ensure required tools are installed
+for cmd in docker jf syft jq; do
+  if ! command -v $cmd &> /dev/null; then
+    echo "Error: $cmd is not installed." >&2
+    exit 1
+  fi
+done
 
-# Save Docker image to tar file
+# Pull Docker image and save to tar file
+docker pull ${DOCKER_IMAGE_NAME}
 docker save -o ${DOCKER_TAR} ${DOCKER_IMAGE_NAME}
 
-# FIXME we are having permissions issues with snyk
+# Function to get site ID with error handling
+get_site_id() {
+  local site_name="$1"
+  local response
+  local http_status
+  local site_id
+
+  # Make the curl call and capture the HTTP status code
+  response=$(jf rt curl -X GET /distribution/api/v1/sites -o - -w "%{http_code}")
+  http_status=$(echo "${response: -3}")
+  response=$(echo "${response%???}")
+
+  # Check if the HTTP status code is 200 (OK)
+  if [ "$http_status" -eq 200 ]; then
+    site_id=$(echo "$response" | jq -r --arg name "$site_name" '.[] | select(.name == $name) | .id')
+    if [ -z "$site_id" ]; then
+      echo "Site ID for '$site_name' not found in response."
+    else
+      echo "$site_id"
+    fi
+  else
+    echo "Error: Received HTTP status $http_status. Response: $response"
+  fi
+}
+
+# Retrieve the site ID for the given site name
+SITE_ID=$(get_site_id "$SITE_NAME")
+
+# Check if SITE_ID is empty
+if [ -z "$SITE_ID" ]; then
+  echo "No sites configured or site ID for '$SITE_NAME' not found. Skipping distribution."
+  DISTRIBUTE=false
+else
+  echo "Site ID for '$SITE_NAME' is $SITE_ID"
+  DISTRIBUTE=true
+fi
+
 # # Run Snyk test and generate SARIF report
-# snyk container test ${DOCKER_TAR} --file=${SNYK_REPORT} --sarif
+snyk container test docker-archive:${DOCKER_TAR} --file=${DOCKER_TAR} --sarif-file-output=${SNYK_REPORT} ----sarif
 
 # Generate SBOM using Syft
 syft ${DOCKER_TAR} -o json > ${SBOM_FILE}
@@ -139,7 +182,7 @@ EOF
 # Upload all artifacts using JF CLI
 jf rt upload --spec=${SPEC_FILE}
 
-# Create release bundle specification dynamically
+# Create release bundle specification dynamically with supported fields
 cat <<EOF > ${RELEASE_BUNDLE_SPEC}
 {
   "version": "${RELEASE_NUMBER}",
@@ -148,36 +191,32 @@ cat <<EOF > ${RELEASE_BUNDLE_SPEC}
     "content": "Release notes for ${RELEASE_BUNDLE_NAME} version ${ARTIFACT_VERSION}"
   },
   "dry_run": false,
-  "sign_immediately": true,
+  "sign_immediately": false,
   "files": [
     {
-      "pattern": "ecosystem-container-dev-local/${RELEASE_NAME}/${ARTIFACT_VERSION}/*",
-      "target": "ecosystem-container-dev-local/${RELEASE_NAME}/${ARTIFACT_VERSION}/"
+      "pattern": "ecosystem-container-dev-local/${RELEASE_NAME}/${ARTIFACT_VERSION}/*"
     },
     {
-      "pattern": "ecosystem-helm-dev-local/${RELEASE_NAME}/${HELM_CHART_VERSION}/*",
-      "target": "ecosystem-helm-dev-local/${RELEASE_NAME}/${HELM_CHART_VERSION}/"
+      "pattern": "ecosystem-helm-dev-local/${RELEASE_NAME}/${HELM_CHART_VERSION}/*"
     },
     {
-      "pattern": "ecosystem-rpm-dev-local/${RELEASE_NAME}/${ARTIFACT_VERSION}/*",
-      "target": "ecosystem-rpm-dev-local/${RELEASE_NAME}/${ARTIFACT_VERSION}/"
+      "pattern": "ecosystem-rpm-dev-local/${RELEASE_NAME}/${ARTIFACT_VERSION}/*"
     },
     {
-      "pattern": "ecosystem-deb-dev-local/${RELEASE_NAME}/${ARTIFACT_VERSION}/*",
-      "target": "ecosystem-deb-dev-local/${RELEASE_NAME}/${ARTIFACT_VERSION}/"
+      "pattern": "ecosystem-deb-dev-local/${RELEASE_NAME}/${ARTIFACT_VERSION}/*"
     },
     {
-      "pattern": "ecosystem-pkg-dev-local/${RELEASE_NAME}/${ARTIFACT_VERSION}/*",
-      "target": "ecosystem-pkg-dev-local/${RELEASE_NAME}/${ARTIFACT_VERSION}/"
+      "pattern": "ecosystem-pkg-dev-local/${RELEASE_NAME}/${ARTIFACT_VERSION}/*"
     }
   ]
 }
 EOF
 
 # Create the release bundle
-echo WE DONT HAVE SIGNING KEY BUT jf release-bundle-create ${RELEASE_BUNDLE_NAME} ${RELEASE_NUMBER} --spec=${RELEASE_BUNDLE_SPEC}
-return 0
-# If sites are configured, create distribution rules and distribute the release bundle to stage
+jf release-bundle-create ${RELEASE_BUNDLE_NAME} ${RELEASE_NUMBER} \
+  --spec=${RELEASE_BUNDLE_SPEC} --signing-key=${SIGNING_KEY}
+
+# If sites are configured, create distribution rules and promote the release bundle to stage
 if [ "$DISTRIBUTE" = true ]; then
   # Create distribution rules dynamically
   cat <<EOF > ${DISTRIBUTION_RULES}
@@ -193,36 +232,14 @@ if [ "$DISTRIBUTE" = true ]; then
         "ecosystem-deb-stage-local",
         "ecosystem-pkg-dev-local"
       ],
-      "site": "${SITE_ID}"
+      "site": "${SITE_NAME}"
     }
   ]
 }
 EOF
 
-  # Distribute the release bundle to stage
-  jf release-bundle-promote ${RELEASE_BUNDLE_NAME} ${RELEASE_NUMBER} --site=${SITE_ID} --dist-rules=${DISTRIBUTION_RULES}
-
-  # Optionally, distribute to prod
-  # Uncomment and modify as needed
-  # cat <<EOF > ${DISTRIBUTION_RULES}
-  # {
-  #   "version": "${RELEASE_NUMBER}",
-  #   "rules": [
-  #     {
-  #       "name": "Promote to Prod",
-  #       "repositories": [
-  #         "ecosystem-container-prod-local",
-  #         "ecosystem-helm-prod-local",
-  #         "ecosystem-rpm-prod-local",
-  #         "ecosystem-deb-prod-local",
-  #         "ecosystem-pkg-dev-local"
-  #       ],
-  #       "site": "${SITE_ID}"
-  #     }
-  #   ]
-  # }
-  # EOF
-  # jf rt rb-distribute ${RELEASE_BUNDLE_NAME} ${RELEASE_NUMBER} --site=${SITE_ID} --dist-rules=${DISTRIBUTION_RULES}
+  # Promote the release bundle to stage
+  jf  release-bundle-promote ${RELEASE_BUNDLE_NAME} ${RELEASE_NUMBER} --site=${SITE_NAME} --dist-rules=${DISTRIBUTION_RULES}
 else
   echo "Skipping distribution as no sites are configured."
 fi
