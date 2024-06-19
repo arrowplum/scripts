@@ -55,16 +55,17 @@ while true; do
       usage;;
   esac
 done
+
 if [ -d "${BASE_DIR}/${RELEASE_NAME}/${RELEASE_NUMBER}" ]; then
   echo "Error: Release ${RELEASE_NUMBER} already exists for ${RELEASE_NAME}. Cannot create a new release with the same version."
   exit 1
 fi
 
 mkdir -p "${BASE_DIR}/${RELEASE_NAME}/${RELEASE_NUMBER}"
-cp -r ${BASE_DIR}/${RELEASE_NAME}/current/* ${BASE_DIR}/${RELEASE_NAME}/${RELEASE_NUMBER}
+cp -r "${BASE_DIR}/${RELEASE_NAME}/current/"* "${BASE_DIR}/${RELEASE_NAME}/${RELEASE_NUMBER}"
 
 # Define artifact names
-DOCKER_IMAGE_NAME="$RELEASE_NAME:${ARTIFACT_VERSION}"
+DOCKER_IMAGE_NAME="${RELEASE_NAME}:${ARTIFACT_VERSION}"
 DOCKER_REPO="ecosystem-container-dev-local"
 HELM_CHART_NAME="aerospike-vector-search-${HELM_CHART_VERSION}.tgz"
 RPM_PACKAGE_NAME="aerospike-proximus-${ARTIFACT_VERSION}-1.noarch.rpm"
@@ -97,28 +98,28 @@ done
 
 # Copy the Snyk file to the metadata directory and Docker tar directory
 if [ -n "$SNYK_FILE" ]; then
-  cp ${SNYK_FILE} ${SNYK_FILE_DEST}
-  cp ${SNYK_FILE} ${SNYK_FILE_DOCKER_DIR}
+  cp "${SNYK_FILE}" "${SNYK_FILE_DEST}"
+  cp "${SNYK_FILE}" "${SNYK_FILE_DOCKER_DIR}"
 fi
 
 set +e
 ( 
 cd "${BASE_DIR}/${RELEASE_NAME}/${RELEASE_NUMBER}"
 # Run Snyk test and generate SARIF report
-snyk container test ${DOCKER_IMAGE_NAME} --file=${SNYK_FILE_DEST} --sarif-file-output=${SNYK_REPORT} --policy-path=${SNYK_FILE_DOCKER_DIR}
+snyk container test "${DOCKER_IMAGE_NAME}" --file="${SNYK_FILE_DEST}" --sarif-file-output="${SNYK_REPORT}" --policy-path="${SNYK_FILE_DOCKER_DIR}"
 set -e
 )
 # Generate SBOM using Syft
-syft ${DOCKER_IMAGE_NAME} -o json > ${SBOM_FILE}
-touch ${HELM_CHART} ${RPM_PACKAGE} ${DEB_PACKAGE} ${SBOM_FILE} ${SNYK_REPORT} ${SNYK_FILE_DEST} ${SPEC_FILE} ${RELEASE_BUNDLE_SPEC}
+syft "${DOCKER_IMAGE_NAME}" -o json > "${SBOM_FILE}"
+touch "${HELM_CHART}" "${RPM_PACKAGE}" "${DEB_PACKAGE}" "${SBOM_FILE}" "${SNYK_REPORT}" "${SNYK_FILE_DEST}" "${SPEC_FILE}" "${RELEASE_BUNDLE_SPEC}"
 
 # Push Docker image to Artifactory
-docker tag $DOCKER_IMAGE_NAME aerospike.jfrog.io/$DOCKER_REPO/$DOCKER_IMAGE_NAME88jlklk';;'
-jf docker push aerospike.jfrog.io/$DOCKER_REPO/$DOCKER_IMAGE_NAME --build-name=$RELEASE_NAME --build-number=$ARTIFACT_VERSION
+docker tag "${DOCKER_IMAGE_NAME}" "aerospike.jfrog.io/${DOCKER_REPO}/${DOCKER_IMAGE_NAME}"
+jf docker push "aerospike.jfrog.io/${DOCKER_REPO}/${DOCKER_IMAGE_NAME}" --build-name="${RELEASE_NAME}" --build-number="${ARTIFACT_VERSION}"
 # Create spec file dynamically after all files are created
 # and add any needed properties and coordinates (both in props)
 # FIXME: These specs should all be templated and generated
-cat <<EOF > ${SPEC_FILE}
+cat <<EOF > "${SPEC_FILE}"
 {
   "files": [
     {
@@ -138,33 +139,33 @@ cat <<EOF > ${SPEC_FILE}
     },
     {
       "pattern": "${SBOM_FILE}",
-      "target": "ecosystem-meta-dev-local/${RELEASE_NAME}/$RELEASE_NUMBER/${ARTIFACT_VERSION}/"
+      "target": "ecosystem-meta-dev-local/${RELEASE_NAME}/${RELEASE_NUMBER}/${ARTIFACT_VERSION}/"
     },
     {
       "pattern": "${SNYK_REPORT}",
-      "target": "ecosystem-meta-dev-local/${RELEASE_NAME}/$RELEASE_NUMBER/${ARTIFACT_VERSION}/"
+      "target": "ecosystem-meta-dev-local/${RELEASE_NAME}/${RELEASE_NUMBER}/${ARTIFACT_VERSION}/"
     },
     {
       "pattern": "${SNYK_FILE_DEST}",
-      "target": "ecosystem-meta-dev-local/${RELEASE_NAME}/$RELEASE_NUMBER/${ARTIFACT_VERSION}/"
+      "target": "ecosystem-meta-dev-local/${RELEASE_NAME}/${RELEASE_NUMBER}/${ARTIFACT_VERSION}/"
     },
     {
       "pattern": "${SPEC_FILE}",
-      "target": "ecosystem-meta-dev-local/${RELEASE_NAME}/$RELEASE_NUMBER/${ARTIFACT_VERSION}/"
+      "target": "ecosystem-meta-dev-local/${RELEASE_NAME}/${RELEASE_NUMBER}/${ARTIFACT_VERSION}/"
     },
     {
       "pattern": "${RELEASE_BUNDLE_SPEC}",
-      "target": "ecosystem-meta-dev-local/${RELEASE_NAME}/$RELEASE_NUMBER/${ARTIFACT_VERSION}/"
+      "target": "ecosystem-meta-dev-local/${RELEASE_NAME}/${RELEASE_NUMBER}/${ARTIFACT_VERSION}/"
     }
   ]
 }
 EOF
 
 # Upload all artifacts using JF CLI
-jf rt upload --spec=${SPEC_FILE} --project=ecosystem
+jf rt upload --spec="${SPEC_FILE}" --project=ecosystem
 
 # Create release bundle specification dynamically with supported fields
-cat <<EOF > ${RELEASE_BUNDLE_SPEC}
+cat <<EOF > "${RELEASE_BUNDLE_SPEC}"
 {
   "version": "${RELEASE_NUMBER}",
   "release_notes": {
@@ -175,7 +176,7 @@ cat <<EOF > ${RELEASE_BUNDLE_SPEC}
   "sign_immediately": false,
   "files": [
     {
-      "pattern": "ecosystem-container-dev-local/${RELEASE_NAME}/$ARTIFACT_VERSION/*"
+      "pattern": "ecosystem-container-dev-local/${RELEASE_NAME}/${ARTIFACT_VERSION}/*"
     },
     {
       "pattern": "ecosystem-helm-dev-local/${RELEASE_NAME}/${HELM_CHART_VERSION}/*"
@@ -187,17 +188,15 @@ cat <<EOF > ${RELEASE_BUNDLE_SPEC}
       "pattern": "ecosystem-deb-dev-local/${RELEASE_NAME}/${ARTIFACT_VERSION}/*"
     },
     {
-      "pattern": "ecosystem-meta-dev-local/${RELEASE_NAME}/$RELEASE_NUMBER/${ARTIFACT_VERSION}/*"
+      "pattern": "ecosystem-meta-dev-local/${RELEASE_NAME}/${RELEASE_NUMBER}/${ARTIFACT_VERSION}/*"
     }
   ]
 }
 EOF
 
 echo "Create the release bundle"
-jf release-bundle-create ${RELEASE_BUNDLE_NAME} ${RELEASE_NUMBER} \
-  --spec=${RELEASE_BUNDLE_SPEC} --signing-key=${SIGNING_KEY} --project=ecosystem
-
-
+jf release-bundle-create "${RELEASE_BUNDLE_NAME}" "${RELEASE_NUMBER}" \
+  --spec="${RELEASE_BUNDLE_SPEC}" --signing-key="${SIGNING_KEY}" --project=ecosystem
 
 # Wait for the release bundle to be ready
 echo "Waiting for the release bundle to be ready"
@@ -206,7 +205,7 @@ ii=0
 
 while [ $ii -lt 6 ]; do
   STATUS=$(jf rt curl -X GET "/api/v2/release_bundle/statuses/${RELEASE_BUNDLE_NAME}/${RELEASE_NUMBER}?project=ecosystem" | jq -r '.status')
-  if [ "$STATUS" != "COMPLETED" ]; then
+  if [ "$STATUS" == "COMPLETED" ]; then
     echo "Release bundle is ready for promotion"
     break
   fi

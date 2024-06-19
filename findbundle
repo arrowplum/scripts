@@ -7,10 +7,7 @@ trap 'echo "Error: $? at line $LINENO" >&2' ERR
 # Set environment variables
 RELEASE_NAME="aerospike-vector-search"
 ARTIFACT_VERSION="0.4.0"
-HELM_CHART_VERSION="0.2.0"
-BASE_DIR="/build"
 SERVER_ID="aerospike"
-REPO="ecosystem"
 LOCAL_PATH="./downloads"
 
 
