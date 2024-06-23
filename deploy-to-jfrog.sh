@@ -4,10 +4,9 @@ set -eo pipefail
 if [ -n "$DEBUG" ]; then set -x; fi
 trap 'echo "Error: $? at line $LINENO" >&2' ERR
 
-EPOCH_MILLIS=$(date +%s%3N)
-RELEASE_NUMBER=$EPOCH_MILLIS
 # Default values
-DEFAULT_RELEASE_NAME=aerospike-vector-search
+RELEASE_NAME=aerospike-vector-search
+DEFAULT_RELEASE_NUMBER=1
 DEFAULT_ARTIFACT_VERSION="0.4.0"
 DEFAULT_HELM_CHART_VERSION="0.2.0"
 DEFAULT_BASE_DIR="/build"
@@ -16,76 +15,70 @@ SNYK_FILE=""
 
 # Usage function
 usage() {
-  echo "Usage: $0 [-r release_name] [-a artifact_version] [-c helm_chart_version] [-b base_directory] [--release-number release_number] [--artifact-version artifact_version] [--helm-chart-version helm_chart_version] [--base-directory base_directory] [--signing-key signing_key] [--snyk-file snyk_file] [-h|--help]"
-  exit 1
+echo "Usage: $0 [-r release_number] [-a artifact_version] [-c helm_chart_version] [-b base_directory] [--release-number release_number] [--artifact-version artifact_version] [--helm-chart-version helm_chart_version] [--base-directory base_directory] [--signing-key signing_key] [--snyk-file snyk_file] [-h|--help]"
+exit 1
 }
 
 # Parse command-line options using getopt
-OPTIONS=$(getopt -o r:a:c:b:k:f:h --long release-name:,artifact-version:,helm-chart-version:,base-directory:,signing-key:,snyk-file:,help -- "$@")
+OPTIONS=$(getopt -o r:a:c:b:k:f:h --long release-number:,artifact-version:,helm-chart-version:,base-directory:,signing-key:,snyk-file:,help -- "$@")
 if [ $? -ne 0 ]; then
-  usage
+usage
 fi
 
 eval set -- "$OPTIONS"
+
 # Initialize variables with default values
-RELEASE_NAME=$DEFAULT_RELEASE_NAME
+RELEASE_NUMBER=$DEFAULT_RELEASE_NUMBER
 ARTIFACT_VERSION=$DEFAULT_ARTIFACT_VERSION
 HELM_CHART_VERSION=$DEFAULT_HELM_CHART_VERSION
 BASE_DIR=$DEFAULT_BASE_DIR
 
 while true; do
-  case "$1" in
-    -r|--release-name)
-      RELEASE_NAME="$2"; shift 2;;
+case "$1" in
+    -r|--release-number)
+    RELEASE_NUMBER="$2"; shift 2;;
     -a|--artifact-version)
-      ARTIFACT_VERSION="$2"; shift 2;;
+    ARTIFACT_VERSION="$2"; shift 2;;
     -c|--helm-chart-version)
-      HELM_CHART_VERSION="$2"; shift 2;;
+    HELM_CHART_VERSION="$2"; shift 2;;
     -b|--base-directory)
-      BASE_DIR="$2"; shift 2;;
+    BASE_DIR="$2"; shift 2;;
     -k|--signing-key)
-      SIGNING_KEY="$2"; shift 2;;
+    SIGNING_KEY="$2"; shift 2;;
     -f|--snyk-file)
-      SNYK_FILE="$2"; shift 2;;
+    SNYK_FILE="$2"; shift 2;;
     -h|--help)
-      usage; shift;;
+    usage; shift;;
     --)
-      shift; break;;
+    shift; break;;
     *)
-      usage;;
-  esac
+    usage;;
+esac
 done
+BUILD_DIR="${BASE_DIR}/${RELEASE_NAME}/${ARTIFACT_VERSION}/${RELEASE_NUMBER}"
 
-if [ -d "${BASE_DIR}/${RELEASE_NAME}/${RELEASE_NUMBER}" ]; then
+if [ -d "${BUILD_DIR}" ]; then
   echo "Error: Release ${RELEASE_NUMBER} already exists for ${RELEASE_NAME}. Cannot create a new release with the same version."
   exit 1
 fi
 
-mkdir -p "${BASE_DIR}/${RELEASE_NAME}/${RELEASE_NUMBER}"
-cp -r "${BASE_DIR}/${RELEASE_NAME}/current/"* "${BASE_DIR}/${RELEASE_NAME}/${RELEASE_NUMBER}"
+mkdir -p "${BUILD_DIR}"
+cp -r "${BUILD_DIR}/../current/"* "${BUILD_DIR}"
 
 # Define artifact names
-DOCKER_IMAGE_NAME="${RELEASE_NAME}:${ARTIFACT_VERSION}"
+DOCKER_IMAGE_NAME="aerospike/aerospike-proximus:${ARTIFACT_VERSION}"
 DOCKER_REPO="ecosystem-container-dev-local"
-HELM_CHART_NAME="aerospike-vector-search-${HELM_CHART_VERSION}.tgz"
-RPM_PACKAGE_NAME="aerospike-proximus-${ARTIFACT_VERSION}-1.noarch.rpm"
-DEB_PACKAGE_NAME="aerospike-proximus-${ARTIFACT_VERSION}.all.deb"
-SBOM_FILE_NAME="${RELEASE_NAME}-${ARTIFACT_VERSION}-sbom.json"
-SNYK_REPORT_NAME="snyk-report-${RELEASE_NAME}-${ARTIFACT_VERSION}.sarif"
-SPEC_FILE_NAME="spec-${RELEASE_NAME}.json"
-RELEASE_BUNDLE_SPEC_NAME="release-bundle-${RELEASE_NAME}.json"
-SNYK_FILE_NAME="$(basename ${SNYK_FILE})"
+HELM_CHART="${BUILD_DIR}/helm/aerospike-vector-search-${HELM_CHART_VERSION}.tgz"
+RPM_PACKAGE="${BUILD_DIR}/rpm/aerospike-proximus-${ARTIFACT_VERSION}-1.noarch.rpm"
+DEB_PACKAGE="${BUILD_DIR}/deb/aerospike-proximus-${ARTIFACT_VERSION}.all.deb"
+SBOM_FILE="${BUILD_DIR}/metadata/${RELEASE_NAME}-${ARTIFACT_VERSION}-sbom.json"
+SNYK_REPORT="${BUILD_DIR}/metadata/snyk-report-${RELEASE_NAME}-${ARTIFACT_VERSION}.sarif"
+SPEC_FILE="${BUILD_DIR}/metadata/spec-${RELEASE_NAME}.json"
+RELEASE_BUNDLE_SPEC="${BUILD_DIR}/metadata/release-bundle-${RELEASE_NAME}.json"
 
 # Compute paths based on release name, release number, and artifact names
-HELM_CHART="${BASE_DIR}/${RELEASE_NAME}/${RELEASE_NUMBER}/helm/${HELM_CHART_NAME}"
-RPM_PACKAGE="${BASE_DIR}/${RELEASE_NAME}/${RELEASE_NUMBER}/rpm/${RPM_PACKAGE_NAME}"
-DEB_PACKAGE="${BASE_DIR}/${RELEASE_NAME}/${RELEASE_NUMBER}/deb/${DEB_PACKAGE_NAME}"
-SBOM_FILE="${BASE_DIR}/${RELEASE_NAME}/${RELEASE_NUMBER}/metadata/${SBOM_FILE_NAME}"
-SNYK_REPORT="${BASE_DIR}/${RELEASE_NAME}/${RELEASE_NUMBER}/metadata/${SNYK_REPORT_NAME}"
-SPEC_FILE="${BASE_DIR}/${RELEASE_NAME}/${RELEASE_NUMBER}/metadata/${SPEC_FILE_NAME}"
-RELEASE_BUNDLE_SPEC="${BASE_DIR}/${RELEASE_NAME}/${RELEASE_NUMBER}/metadata/${RELEASE_BUNDLE_SPEC_NAME}"
-SNYK_FILE_DEST="${BASE_DIR}/${RELEASE_NAME}/${RELEASE_NUMBER}/metadata/snyk-config"
-SNYK_FILE_DOCKER_DIR="${BASE_DIR}/${RELEASE_NAME}/${RELEASE_NUMBER}/.snyk"
+SNYK_FILE_DEST="$BUILD_DIR/metadata/snyk-config"
+SNYK_FILE_DOCKER_DIR="${BUILD_DIR}/.snyk"
 RELEASE_BUNDLE_NAME="${RELEASE_NAME}-${ARTIFACT_VERSION}"
 
 # Ensure required tools are installed
@@ -104,18 +97,18 @@ fi
 
 set +e
 ( 
-cd "${BASE_DIR}/${RELEASE_NAME}/${RELEASE_NUMBER}"
+cd "${BUILD_DIR}"
 # Run Snyk test and generate SARIF report
 snyk container test "${DOCKER_IMAGE_NAME}" --file="${SNYK_FILE_DEST}" --sarif-file-output="${SNYK_REPORT}" --policy-path="${SNYK_FILE_DOCKER_DIR}"
-set -e
 )
+set -e
 # Generate SBOM using Syft
 syft "${DOCKER_IMAGE_NAME}" -o json > "${SBOM_FILE}"
 touch "${HELM_CHART}" "${RPM_PACKAGE}" "${DEB_PACKAGE}" "${SBOM_FILE}" "${SNYK_REPORT}" "${SNYK_FILE_DEST}" "${SPEC_FILE}" "${RELEASE_BUNDLE_SPEC}"
 
 # Push Docker image to Artifactory
-docker tag "${DOCKER_IMAGE_NAME}" "aerospike.jfrog.io/${DOCKER_REPO}/${DOCKER_IMAGE_NAME}"
-jf docker push "aerospike.jfrog.io/${DOCKER_REPO}/${DOCKER_IMAGE_NAME}" --build-name="${RELEASE_NAME}" --build-number="${ARTIFACT_VERSION}"
+docker tag "${DOCKER_IMAGE_NAME}" "aerospike.jfrog.io/${DOCKER_REPO}/${DOCKER_IMAGE_NAME#aerospike/}"
+jf docker push "aerospike.jfrog.io/${DOCKER_REPO}/${DOCKER_IMAGE_NAME#aerospike/}" --build-name="${RELEASE_NAME}" --build-number="${ARTIFACT_VERSION}"
 # Create spec file dynamically after all files are created
 # and add any needed properties and coordinates (both in props)
 # FIXME: These specs should all be templated and generated
@@ -176,7 +169,7 @@ cat <<EOF > "${RELEASE_BUNDLE_SPEC}"
   "sign_immediately": false,
   "files": [
     {
-      "pattern": "ecosystem-container-dev-local/${RELEASE_NAME}/${ARTIFACT_VERSION}/*"
+      "pattern": "ecosystem-container-dev-local/aerospike-proximus/${ARTIFACT_VERSION}/*"
     },
     {
       "pattern": "ecosystem-helm-dev-local/${RELEASE_NAME}/${HELM_CHART_VERSION}/*"
