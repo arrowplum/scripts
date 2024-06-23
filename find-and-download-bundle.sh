@@ -6,10 +6,15 @@ trap 'echo "Error: $? at line $LINENO" >&2' ERR
 
 # Usage function to display help
 usage() {
-    echo "Usage: $0 [-n <release-name>] [--release-name <release-name>] [-v <artifact-version>] [--artifact-version <artifact-version>] [-l <local-path>] [--local-path <local-path>] [-b <bundle-version>] [--bundle-version <bundle-version>]"
+    echo "Usage: $0 [OPTIONS]"
+    echo "Options:"
+    echo "  -b, --bundle-version <bundle-version>   Specify the bundle version"
+    echo "  -l, --local-path <local-path>           Specify the local path to download files"
+    echo "  -n, --release-name <release-name>       Specify the release name"
+    echo "  -v, --artifact-version <artifact-version>    Specify the artifact version"
+    echo "  -h, --help                              Display this help message"
     exit 1
 }
-
 
 # Parse command-line arguments
 while [[ "$#" -gt 0 ]]; do
