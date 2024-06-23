@@ -5,7 +5,7 @@ if [ -n "$DEBUG" ]; then set -x; fi
 trap 'echo "Error: $? at line $LINENO" >&2' ERR
 
 # Default values
-RELEASE_NAME=aerospike-vector-search
+DEFAULT_RELEASE_NAME="aerospike-vector-search"
 DEFAULT_BUNDLE_VERSION=1
 DEFAULT_ARTIFACT_VERSION="0.4.0"
 DEFAULT_HELM_CHART_VERSION="0.2.0"
@@ -23,12 +23,13 @@ usage() {
     echo "  -c, --helm-chart-version <helm-chart-version>   Specify the Helm chart version"
     echo "  -k, --signing-key <signing-key>                 Specify the signing key"
     echo "  -f, --snyk-file <snyk-file>                     Specify the Snyk file"
+    echo "  -n, --release-name <release-name>               Specify the release name"
     echo "  -h, --help                                      Display this help message"
     exit 1
 }
 
 # Parse command-line options using getopt
-OPTIONS=$(getopt -o b:a:c:d:k:f:h --long bundle-version:,artifact-version:,helm-chart-version:,base-directory:,signing-key:,snyk-file:,help -- "$@")
+OPTIONS=$(getopt -o b:a:c:d:k:f:n:h --long bundle-version:,artifact-version:,helm-chart-version:,base-directory:,signing-key:,snyk-file:,release-name:,help -- "$@")
 if [ $? -ne 0 ]; then
 usage
 fi
@@ -36,6 +37,7 @@ fi
 eval set -- "$OPTIONS"
 
 # Initialize variables with default values
+RELEASE_NAME=$DEFAULT_RELEASE_NAME
 BUNDLE_VERSION=$DEFAULT_BUNDLE_VERSION
 ARTIFACT_VERSION=$DEFAULT_ARTIFACT_VERSION
 HELM_CHART_VERSION=$DEFAULT_HELM_CHART_VERSION
@@ -55,6 +57,8 @@ case "$1" in
     SIGNING_KEY="$2"; shift 2;;
     -f|--snyk-file)
     SNYK_FILE="$2"; shift 2;;
+    -n|--release-name)
+    RELEASE_NAME="$2"; shift 2;;
     -h|--help)
     usage; shift;;
     --)
@@ -63,6 +67,7 @@ case "$1" in
     usage;;
 esac
 done
+
 BUILD_DIR="${BASE_DIR}/${RELEASE_NAME}/${ARTIFACT_VERSION}/${BUNDLE_VERSION}"
 
 if [ -d "${BUILD_DIR}" ]; then
