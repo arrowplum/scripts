@@ -21,7 +21,6 @@ usage() {
     echo "  -d, --base-directory <base-directory>           Specify the base directory"
     echo "  -b, --bundle-version <bundle-version>           Specify the bundle version"
     echo "  -c, --helm-chart-version <helm-chart-version>   Specify the Helm chart version"
-    echo "  -k, --signing-key <signing-key>                 Specify the signing key"
     echo "  -f, --snyk-file <snyk-file>                     Specify the Snyk file"
     echo "  -n, --release-name <release-name>               Specify the release name"
     echo "  -h, --help                                      Display this help message"
@@ -29,7 +28,7 @@ usage() {
 }
 
 # Parse command-line options using getopt
-OPTIONS=$(getopt -o b:a:c:d:k:f:n:h --long bundle-version:,artifact-version:,helm-chart-version:,base-directory:,signing-key:,snyk-file:,release-name:,help -- "$@")
+OPTIONS=$(getopt -o b:a:c:d:f:n:h --long bundle-version:,artifact-version:,helm-chart-version:,base-directory:,snyk-file:,release-name:,help -- "$@")
 if [ $? -ne 0 ]; then
 usage
 fi
@@ -53,8 +52,6 @@ case "$1" in
     HELM_CHART_VERSION="$2"; shift 2;;
     -d|--base-directory)
     BASE_DIR="$2"; shift 2;;
-    -k|--signing-key)
-    SIGNING_KEY="$2"; shift 2;;
     -f|--snyk-file)
     SNYK_FILE="$2"; shift 2;;
     -n|--release-name)
@@ -68,6 +65,7 @@ case "$1" in
 esac
 done
 
+
 BUILD_DIR="${BASE_DIR}/${RELEASE_NAME}/${ARTIFACT_VERSION}/${BUNDLE_VERSION}"
 
 if [ -d "${BUILD_DIR}" ]; then
@@ -75,7 +73,7 @@ if [ -d "${BUILD_DIR}" ]; then
   exit 1
 fi
 
-mkdir -p "${BUILD_DIR}"
+mkdir -p "${BUILD_DIR}" "${BUILD_DIR}/metadata" "${BUILD_DIR}/rpm" "${BUILD_DIR}/deb" "${BUILD_DIR}/helm"
 cp -r "${BUILD_DIR}/../current/"* "${BUILD_DIR}"
 
 # Define artifact names
@@ -110,14 +108,14 @@ fi
 
 set +e
 ( 
-cd "${BUILD_DIR}"
-# Run Snyk test and generate SARIF report
-snyk container test "${DOCKER_IMAGE_NAME}" --file="${SNYK_FILE_DEST}" --sarif-file-output="${SNYK_REPORT}" --policy-path="${SNYK_FILE_DOCKER_DIR}"
+  cd "${BUILD_DIR}"
+  # Run Snyk test and generate SARIF report
+  snyk container test "${DOCKER_IMAGE_NAME}" --file="${SNYK_FILE_DEST}" --sarif-file-output="${SNYK_REPORT}" --policy-path="${SNYK_FILE_DOCKER_DIR}"
 )
 set -e
 # Generate SBOM using Syft
 syft "${DOCKER_IMAGE_NAME}" -o json > "${SBOM_FILE}"
-touch "${HELM_CHART}" "${RPM_PACKAGE}" "${DEB_PACKAGE}" "${SBOM_FILE}" "${SNYK_REPORT}" "${SNYK_FILE_DEST}" "${SPEC_FILE}" "${BUNDLE_SPEC}"
+#touch "${HELM_CHART}" "${RPM_PACKAGE}" "${DEB_PACKAGE}" "${SBOM_FILE}" "${SNYK_REPORT}" "${SNYK_FILE_DEST}" "${SPEC_FILE}" "${BUNDLE_SPEC}"
 
 # Push Docker image to Artifactory
 docker tag "${DOCKER_IMAGE_NAME}" "aerospike.jfrog.io/${DOCKER_REPO}/${DOCKER_IMAGE_NAME#aerospike/}"
@@ -167,9 +165,6 @@ cat <<EOF > "${SPEC_FILE}"
 }
 EOF
 
-# Upload all artifacts using JF CLI
-jf rt upload --spec="${SPEC_FILE}" --project=ecosystem
-
 # Create bundle specification dynamically with supported fields
 cat <<EOF > "${BUNDLE_SPEC}"
 {
@@ -192,15 +187,22 @@ cat <<EOF > "${BUNDLE_SPEC}"
     },
     {
       "pattern": "ecosystem-deb-dev-local/${RELEASE_NAME}/${ARTIFACT_VERSION}/*"
-    },
-    {
-      "pattern": "ecosystem-meta-dev-local/${RELEASE_NAME}/${BUNDLE_VERSION}/${ARTIFACT_VERSION}/*"
     }
   ]
 }
 EOF
+    # have to remove until we can find a way to hide from public download
+    # ,
+    # {
+    #   "pattern": "ecosystem-meta-dev-local/${RELEASE_NAME}/${BUNDLE_VERSION}/${ARTIFACT_VERSION}/*"
+    # }
 
-echo "Create the bundle"
+# Upload all artifacts using JF CLI
+echo Uploading artifacts.
+jf rt upload --spec="${SPEC_FILE}" --project=ecosystem
+
+
+echo "Creating bundle ${RELEASE_BUNDLE_NAME} / ${BUNDLE_VERSION} "
 jf release-bundle-create "${RELEASE_BUNDLE_NAME}" "${BUNDLE_VERSION}" \
   --spec="${BUNDLE_SPEC}" --signing-key="${SIGNING_KEY}" --project=ecosystem
 
@@ -221,6 +223,6 @@ while [ $ii -lt 6 ]; do
 done
 
 # Promote the bundle
-echo "Promoting bundle to DEV"
+echo "Promoting bundle ${RELEASE_BUNDLE_NAME} / ${BUNDLE_VERSION} to DEV"
 jf release-bundle-promote "${RELEASE_BUNDLE_NAME}" "${BUNDLE_VERSION}" DEV --signing-key="${SIGNING_KEY}" --project=ecosystem \
-  --include-repos='ecosystem-container-dev-local;ecosystem-helm-dev-local;ecosystem-rpm-dev-local;ecosystem-deb-dev-local;ecosystem-meta-dev-local'
+  --include-repos='ecosystem-container-dev-local;ecosystem-helm-dev-local;ecosystem-rpm-dev-local;ecosystem-deb-dev-local' #ecosystem-meta-dev-local
