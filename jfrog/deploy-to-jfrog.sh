@@ -5,10 +5,10 @@ if [ -n "$DEBUG" ]; then set -x; fi
 trap 'echo "Error: $? at line $LINENO" >&2' ERR
 
 # Default values
-DEFAULT_RELEASE_NAME="aerospike-vector-search"
-DEFAULT_BUNDLE_VERSION=1
-DEFAULT_ARTIFACT_VERSION="0.4.0"
-DEFAULT_HELM_CHART_VERSION="0.2.0"
+DEFAULT_RELEASE_NAME=""
+DEFAULT_BUNDLE_VERSION=
+DEFAULT_ARTIFACT_VERSION=""
+DEFAULT_HELM_CHART_VERSION=""
 DEFAULT_BASE_DIR="/build"
 SIGNING_KEY="aerospike"
 SNYK_FILE=""
@@ -73,15 +73,15 @@ if [ -d "${BUILD_DIR}" ]; then
   exit 1
 fi
 
-mkdir -p "${BUILD_DIR}" "${BUILD_DIR}/metadata" "${BUILD_DIR}/rpm" "${BUILD_DIR}/deb" "${BUILD_DIR}/helm"
+mkdir -p "${BUILD_DIR}" "${BUILD_DIR}/metadata"
 cp -r "${BUILD_DIR}/../current/"* "${BUILD_DIR}"
 
 # Define artifact names
 DOCKER_IMAGE_NAME="aerospike/aerospike-proximus:${ARTIFACT_VERSION}"
 DOCKER_REPO="ecosystem-container-dev-local"
-HELM_CHART="${BUILD_DIR}/helm/aerospike-vector-search-${HELM_CHART_VERSION}.tgz"
-RPM_PACKAGE="${BUILD_DIR}/rpm/aerospike-proximus-${ARTIFACT_VERSION}-1.noarch.rpm"
-DEB_PACKAGE="${BUILD_DIR}/deb/aerospike-proximus-${ARTIFACT_VERSION}.all.deb"
+HELM_CHART="${BUILD_DIR}/aerospike-vector-search-${HELM_CHART_VERSION}.tgz"
+RPM_PACKAGE="${BUILD_DIR}/aerospike-proximus-${ARTIFACT_VERSION}-1.noarch.rpm"
+DEB_PACKAGE="${BUILD_DIR}/aerospike-proximus-${ARTIFACT_VERSION}.all.deb"
 SBOM_FILE="${BUILD_DIR}/metadata/${RELEASE_NAME}-${ARTIFACT_VERSION}-sbom.json"
 SNYK_REPORT="${BUILD_DIR}/metadata/snyk-report-${RELEASE_NAME}-${ARTIFACT_VERSION}.sarif"
 SPEC_FILE="${BUILD_DIR}/metadata/spec-${RELEASE_NAME}.json"
@@ -115,7 +115,6 @@ set +e
 set -e
 # Generate SBOM using Syft
 syft "${DOCKER_IMAGE_NAME}" -o json > "${SBOM_FILE}"
-#touch "${HELM_CHART}" "${RPM_PACKAGE}" "${DEB_PACKAGE}" "${SBOM_FILE}" "${SNYK_REPORT}" "${SNYK_FILE_DEST}" "${SPEC_FILE}" "${BUNDLE_SPEC}"
 
 # Push Docker image to Artifactory
 docker tag "${DOCKER_IMAGE_NAME}" "aerospike.jfrog.io/${DOCKER_REPO}/${DOCKER_IMAGE_NAME#aerospike/}"
@@ -226,3 +225,5 @@ done
 echo "Promoting bundle ${RELEASE_BUNDLE_NAME} / ${BUNDLE_VERSION} to DEV"
 jf release-bundle-promote "${RELEASE_BUNDLE_NAME}" "${BUNDLE_VERSION}" DEV --signing-key="${SIGNING_KEY}" --project=ecosystem \
   --include-repos='ecosystem-container-dev-local;ecosystem-helm-dev-local;ecosystem-rpm-dev-local;ecosystem-deb-dev-local' #ecosystem-meta-dev-local
+
+echo successfuly uploaded and promoted bundle ${RELEASE_BUNDLE_NAME} / ${BUNDLE_VERSION} to DEV
