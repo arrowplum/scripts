@@ -10,7 +10,7 @@ handle_error() {
 
 set -euo pipefail
 if [ "${DEBUG:-false}" = true ]; then
-    set -x
+  set -x
 fi
 
 
@@ -61,222 +61,487 @@ process_gc_histogram() {
             }'
     } > "$output_file"
 }
-  # collect_pod_info: Collects diagnostic information for a Kubernetes pod
-  # Arguments:
-  #   $1 - pod name: The name of the pod to collect information from
-collect_pod_info() {
-    local pod="$1"
-    echo "🔍 Inspecting pod: $pod"
-    POD_DIR="$OUTPUT_DIR/$pod"
-    echo "POD_DIR: $POD_DIR"
-    mkdir -p "$POD_DIR"
 
-    # Get the node name for this pod
-    NODE_NAME=$(kubectl get pod -n "$NAMESPACE" "$pod" -o jsonpath='{.spec.nodeName}')
-    NODE_DIR="$OUTPUT_DIR/nodes/$NODE_NAME"
+# Function to collect node information
+collect_node_info() {
+    local node="$1"
+    local NODE_DIR="$OUTPUT_DIR/nodes/$node"
     mkdir -p "$NODE_DIR"
 
-    # Collect node information if not already collected
-    if [ ! -f "$NODE_DIR/node-info.txt" ]; then
-      echo "📊 Collecting node information for: $NODE_NAME"
-      {
+    echo "📊 Collecting node information for: $node"
+    
+    # Check if node is reachable
+    if ! kubectl get node "$node" &>/dev/null; then
+        echo "⚠️ Node $node is not reachable. Collecting limited information."
+        {
+            echo "=== Node Status ==="
+            echo "Node is not reachable"
+            echo "Last known status: $(kubectl get node "$node" -o jsonpath='{.status.conditions[?(@.type=="Ready")].status}' 2>/dev/null || echo "Unknown")"
+            echo "Last known reason: $(kubectl get node "$node" -o jsonpath='{.status.conditions[?(@.type=="Ready")].reason}' 2>/dev/null || echo "Unknown")"
+            echo "Last known message: $(kubectl get node "$node" -o jsonpath='{.status.conditions[?(@.type=="Ready")].message}' 2>/dev/null || echo "Unknown")"
+            
+            echo -e "\n=== Recent Events ==="
+            kubectl get events --field-selector involvedObject.name="$node" --sort-by='.lastTimestamp' 2>/dev/null || echo "No events found"
+        } > "$NODE_DIR/node-info.txt"
+        return
+    fi
+
+    {
         echo "=== Node Description ==="
-        kubectl describe node "$NODE_NAME"
+        kubectl describe node "$node" || echo "Failed to describe node"
+        
         echo -e "\n=== Node Resources ==="
-        kubectl get node "$NODE_NAME" -o json | jq '.status.capacity'
+        # Get actual memory values in GiB
+        local total_memory=$(kubectl get node "$node" -o jsonpath='{.status.capacity.memory}' | sed 's/Ki//' | awk '{printf "%.2f", $1/1024/1024}')
+        local allocatable_memory=$(kubectl get node "$node" -o jsonpath='{.status.allocatable.memory}' | sed 's/Ki//' | awk '{printf "%.2f", $1/1024/1024}')
+        echo "Total Memory: ${total_memory}GiB"
+        echo "Allocatable Memory: ${allocatable_memory}GiB"
+        
         echo -e "\n=== Node Allocatable Resources ==="
-        kubectl get node "$NODE_NAME" -o json | jq '.status.allocatable'
+        kubectl get node "$node" -o json | jq '.status.allocatable' || echo "Failed to get allocatable resources"
+        
         echo -e "\n=== Node Conditions ==="
-        kubectl get node "$NODE_NAME" -o json | jq '.status.conditions'
+        kubectl get node "$node" -o json | jq '.status.conditions' || echo "Failed to get node conditions"
         
         echo -e "\n=== Cloud Instance Information ==="
-        # AWS
-        INSTANCE_TYPE=$(kubectl get node "$NODE_NAME" -o jsonpath='{.metadata.labels.node\.kubernetes\.io/instance-type}')
-        if [ -n "$INSTANCE_TYPE" ]; then
-          echo "Cloud Provider: AWS"
-          echo "Instance Type: $INSTANCE_TYPE"
-          echo "Region: $(kubectl get node "$NODE_NAME" -o jsonpath='{.metadata.labels.topology\.kubernetes\.io/region}')"
-          echo "Zone: $(kubectl get node "$NODE_NAME" -o jsonpath='{.metadata.labels.topology\.kubernetes\.io/zone}')"
-        fi
+        # Get common labels
+        local labels=$(kubectl get node "$node" -o json | jq -r '.metadata.labels' || echo "{}")
         
-        # GCP
-        INSTANCE_TYPE=$(kubectl get node "$NODE_NAME" -o jsonpath='{.metadata.labels.cloud\.google\.com/gke-nodepool}')
-        if [ -n "$INSTANCE_TYPE" ]; then
-          echo "Cloud Provider: GCP"
-          echo "Node Pool: $INSTANCE_TYPE"
-          echo "Machine Type: $(kubectl get node "$NODE_NAME" -o jsonpath='{.metadata.labels.cloud\.google\.com/machine-type}')"
-          echo "Zone: $(kubectl get node "$NODE_NAME" -o jsonpath='{.metadata.labels.topology\.kubernetes\.io/zone}')"
-        fi
+        # Determine cloud provider and get instance type
+        local cloud_provider="On-premises"
+        local instance_type="Unknown"
         
-        # Azure
-        INSTANCE_TYPE=$(kubectl get node "$NODE_NAME" -o jsonpath='{.metadata.labels.node\.kubernetes\.io/instance-type}')
-        if [ -n "$INSTANCE_TYPE" ] && [ -z "$(kubectl get node "$NODE_NAME" -o jsonpath='{.metadata.labels.node\.kubernetes\.io/instance-type}' | grep -i aws)" ]; then
-          echo "Cloud Provider: Azure"
-          echo "Instance Type: $INSTANCE_TYPE"
-          echo "Region: $(kubectl get node "$NODE_NAME" -o jsonpath='{.metadata.labels.topology\.kubernetes\.io/region}')"
-          echo "Zone: $(kubectl get node "$NODE_NAME" -o jsonpath='{.metadata.labels.topology\.kubernetes\.io/zone}')"
+        # Check for Azure
+        if echo "$labels" | jq -e '."kubernetes.azure.com"' >/dev/null; then
+            cloud_provider="Azure"
+            # Try multiple possible labels for Azure instance type
+            instance_type=$(echo "$labels" | jq -r '."node.kubernetes.io/instance-type" // "N/A"')
+            if [ "$instance_type" = "N/A" ]; then
+                instance_type=$(echo "$labels" | jq -r '."beta.kubernetes.io/instance-type" // "N/A"')
+            fi
+        # Check for AWS
+        elif echo "$labels" | jq -e '."eks.amazonaws.com"' >/dev/null; then
+            cloud_provider="AWS"
+            instance_type=$(echo "$labels" | jq -r '."node.kubernetes.io/instance-type" // "N/A"')
+        # Check for GCP
+        elif echo "$labels" | jq -e '."cloud.google.com"' >/dev/null; then
+            cloud_provider="GCP"
+            instance_type=$(echo "$labels" | jq -r '."cloud.google.com/machine-type" // "N/A"')
         fi
+
+        # Get region and zone
+        local region=$(echo "$labels" | jq -r '."topology.kubernetes.io/region" // "N/A"')
+        local zone=$(echo "$labels" | jq -r '."topology.kubernetes.io/zone" // "N/A"')
+
+        echo "Cloud Provider: $cloud_provider"
+        echo "Instance Type: $instance_type"
+        echo "Region: $region"
+        echo "Zone: $zone"
+        echo "CPU Cores: $(kubectl get node "$node" -o jsonpath='{.status.capacity.cpu}')"
+        echo "Memory: ${total_memory}GiB total, ${allocatable_memory}GiB allocatable"
+
+        echo -e "\n=== OOMKill Events ==="
+        # Get system OOM events from kernel logs with full messages
+        echo "System OOM Events:"
+        kubectl debug node/"$node" -it --image=ubuntu -- dmesg | grep -i "oom-killer" || echo "No system OOM events found"
         
-        # If no cloud provider detected
-        if [ -z "$(grep 'Cloud Provider:' "$NODE_DIR/node-info.txt")" ]; then
-          echo "Cloud Provider: Unknown or On-Premises"
-          echo "Instance Type: $(kubectl get node "$NODE_NAME" -o jsonpath='{.metadata.labels.node\.kubernetes\.io/instance-type}')"
-        fi
-      } > "$NODE_DIR/node-info.txt"
-    fi
-  }
-  fi
+        # Get Kubernetes OOM events with full messages
+        echo -e "\nKubernetes OOMKill Events:"
+        kubectl get events -n "$NAMESPACE" --field-selector type=Warning | grep -i "OOMKilled" || echo "No Kubernetes OOM events found"
 
-  # 1. Config file
-  kubectl exec -n "$NAMESPACE" "$pod" -- cat "$CONFIG_PATH" > "$POD_DIR/config.yml" 2>/dev/null || \
-    echo "❌ Failed to fetch config" | tee "$POD_DIR/config.yml"
+        echo -e "\n=== Node OOMKill Events ==="
+        # 1. Get system OOM events with full messages
+        echo "System OOM Events (last 24h):"
+        # Using debug node to access system logs
+        kubectl debug node/"$node" -it --image=ubuntu -- journalctl --since "24 hours ago" | grep -i "oom-killer" || \
+            echo "No system OOM events found"
 
-  # 2. Init container logs
-  kubectl logs -n "$NAMESPACE" "$pod" -c "$INIT_CONTAINER" > "$POD_DIR/init-container.log" 2>/dev/null || \
-    echo "❌ Failed to fetch init container logs" | tee "$POD_DIR/init-container.log"
+        # 2. Get all pod OOMKills on this node with full messages
+        echo -e "\nPod OOMKills on this node:"
+        kubectl get pods -A -o json --field-selector spec.nodeName="$node" | \
+            jq '.items[] | select(.status.containerStatuses != null) | 
+                .status.containerStatuses[] | select(.lastState.terminated.reason=="OOMKilled") |
+                "Pod \(.name) OOMKilled at \(.lastState.terminated.finishedAt)\nMessage: \(.lastState.terminated.message)\nExit Code: \(.lastState.terminated.exitCode)"' || \
+            echo "No pod OOMKills found"
+    } > "$NODE_DIR/node-info.txt"
+}
 
-  # 3. JVM info
-  kubectl exec -n "$NAMESPACE" "$pod" -- sh -c '
-    pid=$(jcmd | grep -m1 aerospike-vector | awk "{print \$1}")
-    if [ -z "$pid" ]; then
-      echo "❌ No Java process found via jcmd" | tee "$POD_DIR/jvm-info.txt"
-    else
-      echo "➡️ jcmd $pid VM.flags:"
-      jcmd "$pid" VM.flags
-      echo ""
-      echo "➡️ jcmd $pid GC.heap_info:"
-      jcmd "$pid" GC.heap_info
-    fi
-  ' > "$POD_DIR/jvm-info.txt" 2>/dev/null || \
-    echo "❌ jcmd not available in $pod" | tee "$POD_DIR/jvm-info.txt"
+# Function to collect pod information
+collect_pod_info() {
+    local pod="$1"
+    local node="$2"
+    local POD_DIR="$OUTPUT_DIR/nodes/$node/pods/$pod"
+    mkdir -p "$POD_DIR"
 
-  # 4. GC class histogram
-  kubectl exec -n "$NAMESPACE" "$pod" -- sh -c '
-    pid=$(jcmd | grep -m1 aerospike-vector | awk "{print \$1}")
-    if [ ! -z "$pid" ]; then
-      jcmd "$pid" GC.class_histogram
-    fi
-  ' > "$POD_DIR/gc-class-histogram.txt" 2>/dev/null || \
-    echo "❌ GC.class_histogram unavailable" | tee "$POD_DIR/gc-class-histogram.txt"
-
-  # Append to full context
-  {
-    echo "=============================="
-    echo "🧵 POD: $pod"
-    echo "=============================="
-    echo "Running on node: $NODE_NAME"
-    echo "------------------------------"
-    cat "$NODE_DIR/node-info.txt"
-    echo -e "\n"
-
-    # Only include these files in the GPT context
-    for file in config.yml init-container.log jvm-info.txt; do
-      if [ -f "$POD_DIR/$file" ]; then
-        echo -e "\n📄 FILE: $file"
-        echo "------------------------------"
-        cat "$POD_DIR/$file"
-      fi
-    done
-
-    echo -e "\n\n"
-  } >> "$TMP_FILE"
-
-  echo "✅ Finished pod: $pod"
-# Loop through pods
-for pod in $(kubectl get pods -n "$NAMESPACE" -o jsonpath='{.items[*].metadata.name}'); do
-    collect_pod_info $pod
+    echo "📊 Collecting pod information for: $pod on node: $node"
     
+    # Check if pod is reachable
+    if ! kubectl get pod -n "$NAMESPACE" "$pod" &>/dev/null; then
+        echo "⚠️ Pod $pod is not reachable. Collecting limited information."
+        {
+            echo "=== Pod Status ==="
+            echo "Pod is not reachable"
+            echo "Last known status: $(kubectl get pod -n "$NAMESPACE" "$pod" -o jsonpath='{.status.phase}' 2>/dev/null || echo "Unknown")"
+            echo "Last known reason: $(kubectl get pod -n "$NAMESPACE" "$pod" -o jsonpath='{.status.reason}' 2>/dev/null || echo "Unknown")"
+            echo "Last known message: $(kubectl get pod -n "$NAMESPACE" "$pod" -o jsonpath='{.status.message}' 2>/dev/null || echo "Unknown")"
+            
+            echo -e "\n=== Recent Events ==="
+            kubectl get events -n "$NAMESPACE" --field-selector involvedObject.name="$pod" --sort-by='.lastTimestamp' 2>/dev/null || echo "No events found"
+            
+            echo -e "\n=== Previous Container Terminations ==="
+            kubectl get pod -n "$NAMESPACE" "$pod" -o jsonpath='{.status.containerStatuses[*].lastState}' 2>/dev/null || echo "No previous container terminations found"
+        } > "$POD_DIR/pod-info.txt"
+        return
+    fi
+
+    {
+        echo "=== Pod Description ==="
+        kubectl describe pod -n "$NAMESPACE" "$pod" || echo "Failed to describe pod"
+        
+        echo -e "\n=== Pod Resources ==="
+        # Get actual memory values in GiB
+        local memory_request=$(kubectl get pod -n "$NAMESPACE" "$pod" -o jsonpath='{.spec.containers[0].resources.requests.memory}' | sed 's/Ki//' | awk '{printf "%.2f", $1/1024/1024}')
+        local memory_limit=$(kubectl get pod -n "$NAMESPACE" "$pod" -o jsonpath='{.spec.containers[0].resources.limits.memory}' | sed 's/Ki//' | awk '{printf "%.2f", $1/1024/1024}')
+        echo "Memory Request: ${memory_request}GiB"
+        echo "Memory Limit: ${memory_limit}GiB"
+        
+        echo -e "\n=== Pod Conditions ==="
+        kubectl get pod -n "$NAMESPACE" "$pod" -o json | jq '.status.conditions' || echo "Failed to get pod conditions"
+        
+        echo -e "\n=== OOMKill Events ==="
+        # Get pod OOMKill events with full messages
+        echo "Pod OOMKill Events:"
+        kubectl get events -n "$NAMESPACE" --field-selector involvedObject.name="$pod",type=Warning | grep -i "OOMKilled" || echo "No OOMKill events found"
+        
+        # Get container OOMKill history with full messages
+        echo -e "\nContainer OOMKill History:"
+        kubectl get pod -n "$NAMESPACE" "$pod" -o json | \
+            jq '.status.containerStatuses[] | select(.lastState.terminated.reason=="OOMKilled") |
+                "Container \(.name) OOMKilled at \(.lastState.terminated.finishedAt)\nMessage: \(.lastState.terminated.message)\nExit Code: \(.lastState.terminated.exitCode)"' || \
+            echo "No container OOMKills found"
+        
+        echo -e "\n=== JVM Memory Settings ==="
+        # Get JVM memory settings from pod logs
+        kubectl logs -n "$NAMESPACE" "$pod" | grep -i "Xmx\|Xms" || echo "No JVM memory settings found in logs"
+        
+        echo -e "\n=== Current Memory Usage ==="
+        kubectl top pod -n "$NAMESPACE" "$pod" || echo "Failed to get current memory usage"
+    } > "$POD_DIR/pod-info.txt"
+}
+
+# First, collect all node information
+echo "🌐 Collecting node information..."
+for node in $(kubectl get nodes -o jsonpath='{.items[*].metadata.name}'); do
+    collect_node_info "$node"
 done
 
-# GPT prompt
-PROMPT=$(cat <<EOF
-The user is a senior engineer with expertise in Aerospike database, Aerospike Kubernetes Operator, Aerospike Vector Search internals, Java/JVM performance tuning, garbage collection diagnostics, and Kubernetes.
+# Then, process AVS pods on each node
+echo "📦 Processing AVS pods..."
+for pod in $(kubectl get pods -n "$NAMESPACE" -o jsonpath='{.items[*].metadata.name}'); do
+    node=$(kubectl get pod -n "$NAMESPACE" "$pod" -o jsonpath='{.spec.nodeName}')
+    collect_pod_info "$pod" "$node"
+done
 
-You will analyze diagnostics for a single pod in a vector search cluster.
+# NEW CODE STARTS HERE
+# GPT prompt for node analysis
+NODE_PROMPT=$(cat <<EOF
+You are analyzing a Kubernetes node and its Aerospike Vector Search pods.
 
-For this pod:
-- 🔍 Review 'aerospike-vector-search.yml': validate node roles, heartbeat seeds, listener addresses, and interconnect settings.
-- 📦 Summarize JVM flags, especially memory/Garbage Collector settings.
-- 📈 Analyze GC.heap_info and GC.class_histogram for pressure or leaks.
-- 🛠️ Highlight any failed config-injection logs.
+For this node:
+- 🖥️ Analyze node capacity, allocatable resources, and conditions
+- 🏷️ Review cloud provider details and instance type
+- 📊 Evaluate resource allocation and utilization
+- 🔍 Check for any node-level issues or warnings
 
-Provide specific recommendations for this node's configuration and performance.
-Add identifiers for all pods and nodes so they can be referenced in the analysis.
+For each AVS pod on this node:
+- 🔍 Review 'aerospike-vector-search.yml': validate node roles, heartbeat seeds, listener addresses, and interconnect settings
+- 📦 Summarize JVM flags, especially memory/Garbage Collector settings
+- 📈 Analyze GC.heap_info and GC.class_histogram for pressure or leaks
+- 🛠️ Highlight any failed config-injection logs
+
+Provide specific recommendations for:
+1. Node-level optimizations
+2. Pod-level configurations
+3. Resource allocation adjustments
+4. Performance improvements
+
+Include specific identifiers for the node and pods in your analysis.
 EOF
 )
 
-# Loop through pods for individual analysis
-for pod in $(kubectl get pods -n "$NAMESPACE" -o jsonpath='{.items[*].metadata.name}'); do
-  echo "🤖 Analyzing pod $pod with OpenAI (GPT-4)..."
-  POD_TMP_FILE="$OUTPUT_DIR/$pod/pod-context.txt"
-  POD_MARKDOWN_REPORT="$OUTPUT_DIR/$pod/analysis.md"
-  POD_TEXT_SUMMARY="$OUTPUT_DIR/$pod/summary-report.txt"
-  POD_RESPONSE_FILE="$OUTPUT_DIR/$pod/response.json"
-  POD_REQUEST_FILE="$OUTPUT_DIR/$pod/request.json"  
-  # Create pod-specific context
+# Analyze each node and its pods
+echo "🤖 Analyzing nodes and their pods..."
+for node in $(kubectl get nodes -o jsonpath='{.items[*].metadata.name}'); do
+    echo "Analyzing node: $node"
+    NODE_DIR="$OUTPUT_DIR/nodes/$node"
+    NODE_ANALYSIS_FILE="$NODE_DIR/analysis.md"
+    NODE_TMP_FILE="$NODE_DIR/node-context.txt"
+    NODE_REQUEST_FILE="$NODE_DIR/request.json"
+    NODE_RESPONSE_FILE="$NODE_DIR/response.json"
+
+    # Create node context including its pods
   {
     echo "=============================="
-    echo "🧵 POD: $pod"
+        echo "🖥️ NODE: $node"
     echo "=============================="
-
+        echo -e "\n=== Node Information ==="
+        cat "$NODE_DIR/node-info.txt"
+        
+        # Find and include information for all AVS pods on this node
+        if [ -d "$NODE_DIR/pods" ]; then
+            echo -e "\n=== AVS Pods on Node ==="
+            for pod_dir in "$NODE_DIR/pods"/*; do
+                if [ -d "$pod_dir" ]; then
+                    pod=$(basename "$pod_dir")
+                    echo -e "\n🧵 POD: $pod"
+                    echo "------------------------------"
     for file in config.yml init-container.log jvm-info.txt; do
-      if [ -f "$OUTPUT_DIR/$pod/$file" ]; then
+                        if [ -f "$pod_dir/$file" ]; then
         echo -e "\n📄 FILE: $file"
         echo "------------------------------"
-        cat "$OUTPUT_DIR/$pod/$file"
+                            cat "$pod_dir/$file"
+                        fi
+                    done
       fi
     done
-  } > "$POD_TMP_FILE"
+        else
+            echo -e "\n❌ No AVS pods found on this node"
+        fi
+    } > "$NODE_TMP_FILE"
 
-  # Create the request JSON
+    # Create the request JSON
+    {
+        echo '{
+            "model": "'"$MODEL"'",
+            "temperature": 0.3,
+            "messages": [
+                {
+                    "role": "system",
+                    "content": "'"$NODE_PROMPT"'"
+                },
+                {
+                    "role": "user",
+                    "content": "'"$(cat "$NODE_TMP_FILE" | sed 's/"/\\"/g')"'"
+                }
+            ]
+        }'
+    } > "$NODE_REQUEST_FILE"
+
+    # Make the API call
+    curl https://api.openai.com/v1/chat/completions \
+        -sS \
+        -H "Authorization: Bearer $OPENAI_API_KEY" \
+        -H "Content-Type: application/json" \
+        -d @"$NODE_REQUEST_FILE" > "$NODE_RESPONSE_FILE"
+
+    echo "GPT Analysis for node $node"
+    cat "$NODE_RESPONSE_FILE" | jq -r '.choices[0].message.content' | tee "$NODE_ANALYSIS_FILE"
+
+    echo "✅ Analysis for node $node complete"
+    echo "  - Analysis report: $NODE_ANALYSIS_FILE"
+done
+
+# Cluster analysis prompt
+CLUSTER_PROMPT=$(cat <<EOF
+You are analyzing an Aerospike Vector Search cluster deployment.
+
+Generate a comprehensive cluster analysis report with the following sections:
+
+1. Resource Overview Table
+   - Create a table showing each node's:
+     * Instance Type (exact type from node info)
+     * Total Memory (in GiB)
+     * Allocatable Memory (in GiB)
+     * AVS Pod Memory (Requested vs Used, in GiB)
+     * Status/Health
+
+2. Cluster Health Assessment
+   - Memory distribution across nodes
+   - Resource allocation patterns
+   - GC pressure indicators
+   - Node conditions
+
+3. Key Metrics
+   - Total cluster memory
+   - Average memory per AVS pod
+   - Memory utilization percentages
+   - Resource efficiency
+
+4. Potential Issues
+   - Memory pressure points
+   - Resource imbalances
+   - GC concerns
+   - Configuration inconsistencies
+
+5. OOMKill Analysis
+   - Detailed timeline of all OOMKill events found:
+     * Container restart history
+     * Previous termination states
+     * System OOM events
+     * Pod events
+   
+   - For each OOMKill event analyze:
+     * JVM heap settings at the time
+     * Node memory capacity
+     * Whether it was an isolated incident or part of a pattern
+     * Correlation with memory pressure or other events
+
+6. Memory Configuration Assessment
+   - Compare nodes/pods with and without OOMKills
+   - Analyze if OOMKills correlate with:
+     * Higher heap/node memory ratios
+     * Specific workload patterns
+     * Time of day or specific events
+   
+7. Recommendations
+   - Specific memory configuration changes
+   - System-level improvements
+   - Monitoring enhancements
+   - Prevention strategies
+
+Provide a clear timeline of OOMKill events and their context.
+Highlight patterns and potential root causes.
+
+Pay special attention to:
+- Pod restart counts and timing
+- Last termination states and reasons
+- Exit codes (137 indicates OOMKill)
+- Time correlation between restarts and node pressure
+- Pattern of restarts across the cluster
+
+When analyzing OOMKills:
+1. Look at both container termination states AND system events
+2. Check if restarts happened close to memory pressure events
+3. Compare memory settings of pods that restarted vs stable pods
+4. Consider the timing of restarts relative to pod age
+
+Use the exact instance types and memory values from the node information.
+EOF
+)
+
+# Function to generate cluster summary
+generate_cluster_summary() {
+    echo "🤖 Generating cluster-wide analysis..."
+
+    # Create cluster summary context
+    CLUSTER_TMP_FILE="$OUTPUT_DIR/cluster-context.txt"
+    CLUSTER_REQUEST_FILE="$OUTPUT_DIR/cluster-request.json"
+    CLUSTER_RESPONSE_FILE="$OUTPUT_DIR/cluster-response.json"
+
+    # Collect cluster-wide metrics
   {
-    echo '{
-      "model": "'"$MODEL"'",
-      "temperature": 0.3,
-      "messages": [
-        {
-          "role": "system",
-          "content": "'"$PROMPT"'"
-        },
-        {
-          "role": "user",
-          "content": "'"$(cat "$POD_TMP_FILE" | sed 's/"/\\"/g')"'"
-        }
-      ]
-    }'
-  } > "$POD_REQUEST_FILE"
+    echo "=============================="
+        echo "🌐 CLUSTER OVERVIEW"
+    echo "=============================="
 
-  # Make the API call using the request file
+        echo -e "\n=== Cluster Nodes ==="
+        for node in $(kubectl get nodes -o jsonpath='{.items[*].metadata.name}'); do
+            echo -e "\n--- Node: $node ---"
+            # Get instance type and memory from node-info.txt
+            local node_info="$OUTPUT_DIR/nodes/$node/node-info.txt"
+            if [ -f "$node_info" ]; then
+                echo "Instance Type: $(grep "Instance Type:" "$node_info" | cut -d':' -f2- | sed 's/^[[:space:]]*//')"
+                echo "Total Memory: $(grep "Total Memory:" "$node_info" | cut -d':' -f2- | sed 's/^[[:space:]]*//')"
+                echo "Allocatable Memory: $(grep "Allocatable Memory:" "$node_info" | cut -d':' -f2- | sed 's/^[[:space:]]*//')"
+                echo "CPU Cores: $(grep "CPU Cores:" "$node_info" | cut -d':' -f2- | sed 's/^[[:space:]]*//')"
+            fi
+            
+            echo -e "\n  AVS Pods on node:"
+            if [ -d "$OUTPUT_DIR/nodes/$node/pods" ]; then
+                for pod_dir in "$OUTPUT_DIR/nodes/$node/pods"/*; do
+                    if [ -d "$pod_dir" ]; then
+                        pod=$(basename "$pod_dir")
+                        echo -e "\n    Pod: $pod"
+                        if [ -f "$pod_dir/pod-info.txt" ]; then
+                            echo "    Memory Request: $(grep "Memory Request:" "$pod_dir/pod-info.txt" | cut -d':' -f2- | sed 's/^[[:space:]]*//')"
+                            echo "    Memory Limit: $(grep "Memory Limit:" "$pod_dir/pod-info.txt" | cut -d':' -f2- | sed 's/^[[:space:]]*//')"
+                            echo "    Current Memory Usage: $(grep -A 1 "Current Memory Usage:" "$pod_dir/pod-info.txt" | tail -n1)"
+                        fi
+                    fi
+                done
+            else
+                echo "    No AVS pods"
+      fi
+    done
+
+        echo -e "\n=== Cluster-wide OOMKill Analysis ==="
+        {
+            echo "Summary of Pod Restarts and OOMKills across cluster:"
+            
+            # Get all pods with their restart counts and OOMKill events
+            for node in $(kubectl get nodes -o jsonpath='{.items[*].metadata.name}'); do
+                echo -e "\nNode: $node"
+                if [ -f "$OUTPUT_DIR/nodes/$node/node-info.txt" ]; then
+                    echo "Instance Type: $(grep "Instance Type:" "$OUTPUT_DIR/nodes/$node/node-info.txt" | cut -d':' -f2- | sed 's/^[[:space:]]*//')"
+                    echo "Memory: $(grep "Memory:" "$OUTPUT_DIR/nodes/$node/node-info.txt" | cut -d':' -f2- | sed 's/^[[:space:]]*//')"
+                fi
+                
+                # Get OOMKill events for this node
+                echo -e "\nOOMKill Events:"
+                if [ -f "$OUTPUT_DIR/nodes/$node/node-info.txt" ]; then
+                    grep -A 3 "OOMKill Events:" "$OUTPUT_DIR/nodes/$node/node-info.txt" | tail -n +2
+                fi
+                
+                # Get pod OOMKills
+                if [ -d "$OUTPUT_DIR/nodes/$node/pods" ]; then
+                    for pod_dir in "$OUTPUT_DIR/nodes/$node/pods"/*; do
+                        if [ -d "$pod_dir" ] && [ -f "$pod_dir/pod-info.txt" ]; then
+                            pod=$(basename "$pod_dir")
+                            echo -e "\nPod: $pod"
+                            grep -A 3 "OOMKill Events:" "$pod_dir/pod-info.txt" | tail -n +2
+                        fi
+                    done
+                fi
+            done
+        } >> "$CLUSTER_TMP_FILE"
+    }
+
+    # Create the cluster analysis request
+    {
+        echo '{
+            "model": "'"$MODEL"'",
+            "temperature": 0.3,
+            "messages": [
+                {
+                    "role": "system",
+                    "content": "'"$CLUSTER_PROMPT"'"
+                },
+                {
+                    "role": "user",
+                    "content": "'"$(cat "$CLUSTER_TMP_FILE" | sed 's/"/\\"/g')"'"
+                }
+            ]
+        }'
+    } > "$CLUSTER_REQUEST_FILE"
+
+    # Make the API call for cluster analysis
   curl https://api.openai.com/v1/chat/completions \
     -sS \
     -H "Authorization: Bearer $OPENAI_API_KEY" \
     -H "Content-Type: application/json" \
-    -d @"$POD_REQUEST_FILE" > "$POD_RESPONSE_FILE"
- 
-    echo "openai response: $(cat $POD_RESPONSE_FILE)"
-    cat "$POD_RESPONSE_FILE" | jq -r '.choices[0].message.content' \
-    | tee "$POD_MARKDOWN_REPORT" | tee "$POD_TEXT_SUMMARY"
+        -d @"$CLUSTER_REQUEST_FILE" > "$CLUSTER_RESPONSE_FILE"
 
-  # Clean up temporary files
-#   rm "$POD_TMP_FILE" "$POD_REQUEST_FILE"
-
-  echo "✅ Analysis for pod $pod complete"
-  echo "  - Markdown report: $POD_MARKDOWN_REPORT"
-  echo "  - Text summary: $POD_TEXT_SUMMARY"
-done
-
-# Create a cluster summary
-echo "# Aerospike Vector Search Cluster Analysis" > "$MARKDOWN_REPORT"
-echo -e "\n## Individual Pod Reports\n" >> "$MARKDOWN_REPORT"
-
-for pod in $(kubectl get pods -n "$NAMESPACE" -o jsonpath='{.items[*].metadata.name}'); do
-  echo -e "\n### Pod: $pod\n" >> "$MARKDOWN_REPORT"
-  cat "$OUTPUT_DIR/$pod/analysis.md" >> "$MARKDOWN_REPORT"
-done
+    # Create the final report
+    {
+        echo "# Aerospike Vector Search Cluster Analysis"
+        echo -e "\n## Cluster Overview\n"
+        cat "$CLUSTER_RESPONSE_FILE" | jq -r '.choices[0].message.content'
+        
+        echo -e "\n## Individual Node Reports\n"
+        for node in $(kubectl get nodes -o jsonpath='{.items[*].metadata.name}'); do
+            echo -e "\n### Node: $node\n"
+            cat "$OUTPUT_DIR/nodes/$node/analysis.md"
+        done
+    } > "$MARKDOWN_REPORT"
 
 cp "$MARKDOWN_REPORT" "$TEXT_SUMMARY"
 
-echo "✅ Individual pod analysis complete"
-echo "✅ Cluster summary written to: $MARKDOWN_REPORT"
+    echo "✅ Cluster analysis complete"
+    echo "✅ Final report written to: $MARKDOWN_REPORT"
 echo "✅ Text summary written to: $TEXT_SUMMARY"
+}
+
+# After individual node analysis, create cluster-wide summary
+generate_cluster_summary
+
 echo "🎉 Full bundle inspection and analysis complete!"
