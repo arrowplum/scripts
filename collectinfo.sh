@@ -2,13 +2,41 @@
 # Add line numbers to debug output by modifying PS4
 export PS4='+($LINENO): ${FUNCNAME[0]:+${FUNCNAME[0]}(): }'
 trap 'handle_error ${LINENO}' ERR
+
+# Error handling functions
 handle_error() {
   local lineno=$1
-  echo "❌ Script exited with error at line $lineno"
+  echo "❌ Script exited with error at line $lineno" >&2
   exit 1
 }
 
-set -euo pipefail
+# Function to safely cat a file or warn if missing
+
+# Function to safely make API calls and log errors
+safe_api_call() {
+    local request_file="$1"
+    local response_file="$2"
+    local context="$3"
+    local error_log="$OUTPUT_DIR/curl-errors.log"
+    
+    curl https://api.openai.com/v1/chat/completions \
+        -sS \
+        -H "Authorization: Bearer $OPENAI_API_KEY" \
+        -H "Content-Type: application/json" \
+        -d @"$request_file" > "$response_file"
+    
+    local curl_exit_code=$?
+    if [ $curl_exit_code -ne 0 ] || ! jq -e '.choices[0].message.content' "$response_file" >/dev/null 2>&1; then
+        echo "❌ [ERROR] curl request failed for $context (exit code $curl_exit_code)" >&2
+        echo "---- curl error for $context ----" >> "$error_log"
+        cat "$response_file" >> "$error_log"
+        echo "-----------------------------------" >> "$error_log"
+        return 1
+    fi
+    return 0
+}
+
+# set -euo pipefail
 if [ "${DEBUG:-false}" = true ]; then
   set -x
 fi
@@ -72,7 +100,7 @@ collect_node_info() {
     
     # Check if node is reachable
     if ! kubectl get node "$node" &>/dev/null; then
-        echo "⚠️ Node $node is not reachable. Collecting limited information."
+        echo "⚠️ Node $node is not reachable. Collecting limited information." >&2
         {
             echo "=== Node Status ==="
             echo "Node is not reachable"
@@ -88,7 +116,7 @@ collect_node_info() {
 
     {
         echo "=== Node Description ==="
-        kubectl describe node "$node" || echo "Failed to describe node"
+        kubectl describe node "$node" || echo "Failed to describe node" >&2
         
         echo -e "\n=== Node Resources ==="
         # Get actual memory values in GiB
@@ -98,10 +126,10 @@ collect_node_info() {
         echo "Allocatable Memory: ${allocatable_memory}GiB"
         
         echo -e "\n=== Node Allocatable Resources ==="
-        kubectl get node "$node" -o json | jq '.status.allocatable' || echo "Failed to get allocatable resources"
+        kubectl get node "$node" -o json | jq '.status.allocatable' || echo "Failed to get allocatable resources" >&2
         
         echo -e "\n=== Node Conditions ==="
-        kubectl get node "$node" -o json | jq '.status.conditions' || echo "Failed to get node conditions"
+        kubectl get node "$node" -o json | jq '.status.conditions' || echo "Failed to get node conditions" >&2
         
         echo -e "\n=== Cloud Instance Information ==="
         # Get common labels
@@ -143,18 +171,18 @@ collect_node_info() {
         echo -e "\n=== OOMKill Events ==="
         # Get system OOM events from kernel logs with full messages
         echo "System OOM Events:"
-        kubectl debug node/"$node" -it --image=ubuntu -- dmesg | grep -i "oom-killer" || echo "No system OOM events found"
+        kubectl debug node/"$node" -it --image=ubuntu -- dmesg | grep -i "oom-killer" || echo "No system OOM events found" >&2
         
         # Get Kubernetes OOM events with full messages
         echo -e "\nKubernetes OOMKill Events:"
-        kubectl get events -n "$NAMESPACE" --field-selector type=Warning | grep -i "OOMKilled" || echo "No Kubernetes OOM events found"
+        kubectl get events -n "$NAMESPACE" --field-selector type=Warning | grep -i "OOMKilled" || echo "No Kubernetes OOM events found" >&2
 
         echo -e "\n=== Node OOMKill Events ==="
         # 1. Get system OOM events with full messages
         echo "System OOM Events (last 24h):"
         # Using debug node to access system logs
         kubectl debug node/"$node" -it --image=ubuntu -- journalctl --since "24 hours ago" | grep -i "oom-killer" || \
-            echo "No system OOM events found"
+            echo "No system OOM events found" >&2
 
         # 2. Get all pod OOMKills on this node with full messages
         echo -e "\nPod OOMKills on this node:"
@@ -162,7 +190,7 @@ collect_node_info() {
             jq '.items[] | select(.status.containerStatuses != null) | 
                 .status.containerStatuses[] | select(.lastState.terminated.reason=="OOMKilled") |
                 "Pod \(.name) OOMKilled at \(.lastState.terminated.finishedAt)\nMessage: \(.lastState.terminated.message)\nExit Code: \(.lastState.terminated.exitCode)"' || \
-            echo "No pod OOMKills found"
+            echo "No pod OOMKills found" >&2
     } > "$NODE_DIR/node-info.txt"
 }
 
@@ -177,7 +205,7 @@ collect_pod_info() {
     
     # Check if pod is reachable
     if ! kubectl get pod -n "$NAMESPACE" "$pod" &>/dev/null; then
-        echo "⚠️ Pod $pod is not reachable. Collecting limited information."
+        echo "⚠️ Pod $pod is not reachable. Collecting limited information." >&2
         {
             echo "=== Pod Status ==="
             echo "Pod is not reachable"
@@ -186,17 +214,17 @@ collect_pod_info() {
             echo "Last known message: $(kubectl get pod -n "$NAMESPACE" "$pod" -o jsonpath='{.status.message}' 2>/dev/null || echo "Unknown")"
             
             echo -e "\n=== Recent Events ==="
-            kubectl get events -n "$NAMESPACE" --field-selector involvedObject.name="$pod" --sort-by='.lastTimestamp' 2>/dev/null || echo "No events found"
+            kubectl get events -n "$NAMESPACE" --field-selector involvedObject.name="$pod" --sort-by='.lastTimestamp' 2>/dev/null || echo "No events found" >&2
             
             echo -e "\n=== Previous Container Terminations ==="
-            kubectl get pod -n "$NAMESPACE" "$pod" -o jsonpath='{.status.containerStatuses[*].lastState}' 2>/dev/null || echo "No previous container terminations found"
+            kubectl get pod -n "$NAMESPACE" "$pod" -o jsonpath='{.status.containerStatuses[*].lastState}' 2>/dev/null || echo "No previous container terminations found" >&2
         } > "$POD_DIR/pod-info.txt"
         return
     fi
 
     {
         echo "=== Pod Description ==="
-        kubectl describe pod -n "$NAMESPACE" "$pod" || echo "Failed to describe pod"
+        kubectl describe pod -n "$NAMESPACE" "$pod" || echo "Failed to describe pod" >&2
         
         echo -e "\n=== Pod Resources ==="
         # Get actual memory values in GiB
@@ -206,26 +234,26 @@ collect_pod_info() {
         echo "Memory Limit: ${memory_limit}GiB"
         
         echo -e "\n=== Pod Conditions ==="
-        kubectl get pod -n "$NAMESPACE" "$pod" -o json | jq '.status.conditions' || echo "Failed to get pod conditions"
+        kubectl get pod -n "$NAMESPACE" "$pod" -o json | jq '.status.conditions' || echo "Failed to get pod conditions" >&2
         
         echo -e "\n=== OOMKill Events ==="
         # Get pod OOMKill events with full messages
         echo "Pod OOMKill Events:"
-        kubectl get events -n "$NAMESPACE" --field-selector involvedObject.name="$pod",type=Warning | grep -i "OOMKilled" || echo "No OOMKill events found"
+        kubectl get events -n "$NAMESPACE" --field-selector involvedObject.name="$pod",type=Warning | grep -i "OOMKilled" || echo "No OOMKill events found" >&2
         
         # Get container OOMKill history with full messages
         echo -e "\nContainer OOMKill History:"
         kubectl get pod -n "$NAMESPACE" "$pod" -o json | \
             jq '.status.containerStatuses[] | select(.lastState.terminated.reason=="OOMKilled") |
                 "Container \(.name) OOMKilled at \(.lastState.terminated.finishedAt)\nMessage: \(.lastState.terminated.message)\nExit Code: \(.lastState.terminated.exitCode)"' || \
-            echo "No container OOMKills found"
+            echo "No container OOMKills found" >&2
         
         echo -e "\n=== JVM Memory Settings ==="
         # Get JVM memory settings from pod logs
-        kubectl logs -n "$NAMESPACE" "$pod" | grep -i "Xmx\|Xms" || echo "No JVM memory settings found in logs"
+        kubectl logs -n "$NAMESPACE" "$pod" | grep -i "Xmx\|Xms" || echo "No JVM memory settings found in logs" >&2
         
         echo -e "\n=== Current Memory Usage ==="
-        kubectl top pod -n "$NAMESPACE" "$pod" || echo "Failed to get current memory usage"
+        kubectl top pod -n "$NAMESPACE" "$pod" || echo "Failed to get current memory usage" >&2
     } > "$POD_DIR/pod-info.txt"
 }
 
@@ -327,12 +355,11 @@ for node in $(kubectl get nodes -o jsonpath='{.items[*].metadata.name}'); do
         }'
     } > "$NODE_REQUEST_FILE"
 
-    # Make the API call
-    curl https://api.openai.com/v1/chat/completions \
-        -sS \
-        -H "Authorization: Bearer $OPENAI_API_KEY" \
-        -H "Content-Type: application/json" \
-        -d @"$NODE_REQUEST_FILE" > "$NODE_RESPONSE_FILE"
+    # Make the API call with error handling
+    if ! safe_api_call "$NODE_REQUEST_FILE" "$NODE_RESPONSE_FILE" "node $node"; then
+        echo "⚠️ Skipping analysis for node $node due to API error" >&2
+        continue
+    fi
 
     echo "GPT Analysis for node $node"
     cat "$NODE_RESPONSE_FILE" | jq -r '.choices[0].message.content' | tee "$NODE_ANALYSIS_FILE"
@@ -428,35 +455,41 @@ generate_cluster_summary() {
     CLUSTER_REQUEST_FILE="$OUTPUT_DIR/cluster-request.json"
     CLUSTER_RESPONSE_FILE="$OUTPUT_DIR/cluster-response.json"
 
-    # Collect cluster-wide metrics
+    # Collect cluster-wide metrics from already gathered data
   {
     echo "=============================="
         echo "🌐 CLUSTER OVERVIEW"
     echo "=============================="
 
-        echo -e "\n=== Cluster Nodes ==="
+        echo -e "\n=== Node Resources ==="
         for node in $(kubectl get nodes -o jsonpath='{.items[*].metadata.name}'); do
-            echo -e "\n--- Node: $node ---"
-            # Get instance type and memory from node-info.txt
-            local node_info="$OUTPUT_DIR/nodes/$node/node-info.txt"
-            if [ -f "$node_info" ]; then
-                echo "Instance Type: $(grep "Instance Type:" "$node_info" | cut -d':' -f2- | sed 's/^[[:space:]]*//')"
-                echo "Total Memory: $(grep "Total Memory:" "$node_info" | cut -d':' -f2- | sed 's/^[[:space:]]*//')"
-                echo "Allocatable Memory: $(grep "Allocatable Memory:" "$node_info" | cut -d':' -f2- | sed 's/^[[:space:]]*//')"
-                echo "CPU Cores: $(grep "CPU Cores:" "$node_info" | cut -d':' -f2- | sed 's/^[[:space:]]*//')"
+            echo -e "\nNode: $node"
+            if [ -f "$OUTPUT_DIR/nodes/$node/node-info.txt" ]; then
+                # Extract key node information
+                echo "Instance Type: $(grep "Instance Type:" "$OUTPUT_DIR/nodes/$node/node-info.txt" | cut -d':' -f2- | sed 's/^[[:space:]]*//')"
+                echo "Total Memory: $(grep "Total Memory:" "$OUTPUT_DIR/nodes/$node/node-info.txt" | cut -d':' -f2- | sed 's/^[[:space:]]*//')"
+                echo "Allocatable Memory: $(grep "Allocatable Memory:" "$OUTPUT_DIR/nodes/$node/node-info.txt" | cut -d':' -f2- | sed 's/^[[:space:]]*//')"
+                echo "CPU Cores: $(grep "CPU Cores:" "$OUTPUT_DIR/nodes/$node/node-info.txt" | cut -d':' -f2- | sed 's/^[[:space:]]*//')"
+                
+                # Get node conditions
+                echo -e "\nNode Conditions:"
+                grep -A 5 "Node Conditions:" "$OUTPUT_DIR/nodes/$node/node-info.txt" | tail -n +2
             fi
             
-            echo -e "\n  AVS Pods on node:"
+            echo -e "\n  AVS Pods:"
             if [ -d "$OUTPUT_DIR/nodes/$node/pods" ]; then
                 for pod_dir in "$OUTPUT_DIR/nodes/$node/pods"/*; do
-                    if [ -d "$pod_dir" ]; then
+                    if [ -d "$pod_dir" ] && [ -f "$pod_dir/pod-info.txt" ]; then
                         pod=$(basename "$pod_dir")
                         echo -e "\n    Pod: $pod"
-                        if [ -f "$pod_dir/pod-info.txt" ]; then
-                            echo "    Memory Request: $(grep "Memory Request:" "$pod_dir/pod-info.txt" | cut -d':' -f2- | sed 's/^[[:space:]]*//')"
-                            echo "    Memory Limit: $(grep "Memory Limit:" "$pod_dir/pod-info.txt" | cut -d':' -f2- | sed 's/^[[:space:]]*//')"
-                            echo "    Current Memory Usage: $(grep -A 1 "Current Memory Usage:" "$pod_dir/pod-info.txt" | tail -n1)"
-                        fi
+                        # Extract key pod information
+                        echo "    Memory Request: $(grep "Memory Request:" "$pod_dir/pod-info.txt" | cut -d':' -f2- | sed 's/^[[:space:]]*//')"
+                        echo "    Memory Limit: $(grep "Memory Limit:" "$pod_dir/pod-info.txt" | cut -d':' -f2- | sed 's/^[[:space:]]*//')"
+                        echo "    Current Memory Usage: $(grep -A 1 "Current Memory Usage:" "$pod_dir/pod-info.txt" | tail -n1)"
+                        
+                        # Get OOMKill events for this pod
+                        echo "    OOMKill Events:"
+                        grep -A 3 "OOMKill Events:" "$pod_dir/pod-info.txt" | tail -n +2
                     fi
                 done
             else
@@ -466,31 +499,35 @@ generate_cluster_summary() {
 
         echo -e "\n=== Cluster-wide OOMKill Analysis ==="
         {
-            echo "Summary of Pod Restarts and OOMKills across cluster:"
+            echo "Summary of OOMKill Events:"
             
-            # Get all pods with their restart counts and OOMKill events
+            # Collect OOMKill events with context
             for node in $(kubectl get nodes -o jsonpath='{.items[*].metadata.name}'); do
-                echo -e "\nNode: $node"
                 if [ -f "$OUTPUT_DIR/nodes/$node/node-info.txt" ]; then
+                    # Get node-level OOMKills
+                    echo -e "\nNode: $node"
                     echo "Instance Type: $(grep "Instance Type:" "$OUTPUT_DIR/nodes/$node/node-info.txt" | cut -d':' -f2- | sed 's/^[[:space:]]*//')"
                     echo "Memory: $(grep "Memory:" "$OUTPUT_DIR/nodes/$node/node-info.txt" | cut -d':' -f2- | sed 's/^[[:space:]]*//')"
-                fi
-                
-                # Get OOMKill events for this node
-                echo -e "\nOOMKill Events:"
-                if [ -f "$OUTPUT_DIR/nodes/$node/node-info.txt" ]; then
-                    grep -A 3 "OOMKill Events:" "$OUTPUT_DIR/nodes/$node/node-info.txt" | tail -n +2
-                fi
-                
-                # Get pod OOMKills
-                if [ -d "$OUTPUT_DIR/nodes/$node/pods" ]; then
-                    for pod_dir in "$OUTPUT_DIR/nodes/$node/pods"/*; do
-                        if [ -d "$pod_dir" ] && [ -f "$pod_dir/pod-info.txt" ]; then
-                            pod=$(basename "$pod_dir")
-                            echo -e "\nPod: $pod"
-                            grep -A 3 "OOMKill Events:" "$pod_dir/pod-info.txt" | tail -n +2
-                        fi
-                    done
+                    
+                    # Get system OOM events
+                    echo -e "\nSystem OOM Events:"
+                    grep -A 3 "System OOM Events:" "$OUTPUT_DIR/nodes/$node/node-info.txt" | tail -n +2
+                    
+                    # Get pod OOMKills
+                    if [ -d "$OUTPUT_DIR/nodes/$node/pods" ]; then
+                        for pod_dir in "$OUTPUT_DIR/nodes/$node/pods"/*; do
+                            if [ -d "$pod_dir" ] && [ -f "$pod_dir/pod-info.txt" ]; then
+                                pod=$(basename "$pod_dir")
+                                echo -e "\nPod: $pod"
+                                echo "Memory Settings:"
+                                echo "  Request: $(grep "Memory Request:" "$pod_dir/pod-info.txt" | cut -d':' -f2- | sed 's/^[[:space:]]*//')"
+                                echo "  Limit: $(grep "Memory Limit:" "$pod_dir/pod-info.txt" | cut -d':' -f2- | sed 's/^[[:space:]]*//')"
+                                echo "  Current Usage: $(grep -A 1 "Current Memory Usage:" "$pod_dir/pod-info.txt" | tail -n1)"
+                                echo "OOMKill Events:"
+                                grep -A 3 "OOMKill Events:" "$pod_dir/pod-info.txt" | tail -n +2
+                            fi
+                        done
+                    fi
                 fi
             done
         } >> "$CLUSTER_TMP_FILE"
@@ -514,12 +551,11 @@ generate_cluster_summary() {
         }'
     } > "$CLUSTER_REQUEST_FILE"
 
-    # Make the API call for cluster analysis
-  curl https://api.openai.com/v1/chat/completions \
-    -sS \
-    -H "Authorization: Bearer $OPENAI_API_KEY" \
-    -H "Content-Type: application/json" \
-        -d @"$CLUSTER_REQUEST_FILE" > "$CLUSTER_RESPONSE_FILE"
+    # Make the API call for cluster analysis with error handling
+    if ! safe_api_call "$CLUSTER_REQUEST_FILE" "$CLUSTER_RESPONSE_FILE" "cluster analysis"; then
+        echo "❌ Failed to generate cluster analysis due to API error" >&2
+        return 1
+    fi
 
     # Create the final report
     {
