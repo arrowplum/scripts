@@ -77,11 +77,11 @@ mkdir -p "${BUILD_DIR}" "${BUILD_DIR}/metadata"
 cp -r "${BUILD_DIR}/../current/"* "${BUILD_DIR}"
 
 # Define artifact names
-DOCKER_IMAGE_NAME="aerospike/aerospike-proximus:${ARTIFACT_VERSION}"
+DOCKER_IMAGE_NAME="aerospike/aerospike-vector-search:${ARTIFACT_VERSION}"
 DOCKER_REPO="ecosystem-container-dev-local"
 HELM_CHART="${BUILD_DIR}/aerospike-vector-search-${HELM_CHART_VERSION}.tgz"
-RPM_PACKAGE="${BUILD_DIR}/aerospike-proximus-${ARTIFACT_VERSION}-1.noarch.rpm"
-DEB_PACKAGE="${BUILD_DIR}/aerospike-proximus-${ARTIFACT_VERSION}.all.deb"
+RPM_PACKAGE="${BUILD_DIR}/aerospike-vector-search-${ARTIFACT_VERSION}-1.noarch.rpm"
+DEB_PACKAGE="${BUILD_DIR}/aerospike-vector-search-${ARTIFACT_VERSION}.all.deb"
 SBOM_FILE="${BUILD_DIR}/metadata/${RELEASE_NAME}-${ARTIFACT_VERSION}-sbom.json"
 SNYK_REPORT="${BUILD_DIR}/metadata/snyk-report-${RELEASE_NAME}-${ARTIFACT_VERSION}.sarif"
 SPEC_FILE="${BUILD_DIR}/metadata/spec-${RELEASE_NAME}.json"
@@ -176,7 +176,7 @@ cat <<EOF > "${BUNDLE_SPEC}"
   "sign_immediately": false,
   "files": [
     {
-      "pattern": "ecosystem-container-dev-local/aerospike-proximus/${ARTIFACT_VERSION}/*"
+      "pattern": "ecosystem-container-dev-local/aerospike-vector-search/${ARTIFACT_VERSION}/*"
     },
     {
       "pattern": "ecosystem-helm-dev-local/${RELEASE_NAME}/${HELM_CHART_VERSION}/*"
