@@ -551,7 +551,7 @@ Generate a comprehensive cluster analysis report with the following sections:
    - Create a table showing each node's:
      * Total Memory (from node-aggregates.json)
      * Allocatable Memory (from node-aggregates.json)
-     * AVS Pod Memory (Requested vs Used) (from node-aggregates.json)
+     * AVS pods on node with name and memory information (from node-aggregates.json and pod JVM info)
      * Instance Type (from node-aggregates.json)
      * Status/Health (from node-aggregates.json)
 
@@ -680,26 +680,10 @@ EOF
         -H "Content-Type: application/json" \
         -d @"$CLUSTER_REQUEST_FILE" > "$CLUSTER_RESPONSE_FILE"
     
-    echo -e "\n## 2. Cluster Health Assessment\n"
-    cat "$CLUSTER_RESPONSE_FILE" | jq -r '.choices[0].message.content' | sed -n '/## 2. Cluster Health Assessment/,/## 3. Key Metrics/p' | head -n -1
-    
-    echo -e "\n## 3. Key Metrics\n"
-    cat "$CLUSTER_RESPONSE_FILE" | jq -r '.choices[0].message.content' | sed -n '/## 3. Key Metrics/,/## 4. Potential Issues/p' | head -n -1
-    
-    echo -e "\n## 4. Potential Issues\n"
-    cat "$CLUSTER_RESPONSE_FILE" | jq -r '.choices[0].message.content' | sed -n '/## 4. Potential Issues/,/## 5. OOMKill Analysis/p' | head -n -1
-    
-    echo -e "\n## 5. OOMKill Analysis\n"
-    cat "$CLUSTER_RESPONSE_FILE" | jq -r '.choices[0].message.content' | sed -n '/## 5. OOMKill Analysis/,/## 6. Memory Configuration Assessment/p' | head -n -1
-    
-    echo -e "\n## 6. Memory Configuration Assessment\n"
-    cat "$CLUSTER_RESPONSE_FILE" | jq -r '.choices[0].message.content' | sed -n '/## 6. Memory Configuration Assessment/,/## 7. Recommendations/p' | head -n -1
-    
-    echo -e "\n## 7. Recommendations\n"
-    cat "$CLUSTER_RESPONSE_FILE" | jq -r '.choices[0].message.content' | sed -n '/## 7. Recommendations/,/### Conclusion/p' | head -n -1
-    
-    echo -e "\n### Conclusion\n"
-    cat "$CLUSTER_RESPONSE_FILE" | jq -r '.choices[0].message.content' | sed -n '/### Conclusion/,$p'
+
+    echo "joe maybe here"
+    cat "$CLUSTER_RESPONSE_FILE" | jq -r '.choices[0].message.content' 
+
     
     # Append detailed node analysis
     echo -e "\n## Detailed Node Analysis\n"
