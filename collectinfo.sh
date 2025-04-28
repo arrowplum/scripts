@@ -8,7 +8,7 @@ handle_error() {
   exit 1
 }
 
-set -euo pipefail
+# set -euo pipefail
 if [ "${DEBUG:-false}" = true ]; then
   set -x
 fi
@@ -238,6 +238,103 @@ collect_pod_info() {
     } >> "$TMP_FILE"
 }
 
+# Function to collect and aggregate node information
+collect_node_aggregates() {
+    local NODE_AGGREGATES_FILE="$OUTPUT_DIR/node-aggregates.json"
+    
+    # Initialize JSON structure
+    echo '{"nodes": []}' > "$NODE_AGGREGATES_FILE"
+    
+    # Collect information for each node
+    for node in $(kubectl get nodes -o jsonpath='{.items[*].metadata.name}'); do
+        NODE_DIR="$OUTPUT_DIR/nodes/$node"
+        
+        # Get node capacity and allocatable resources
+        local capacity=$(kubectl get node "$node" -o json | jq '.status.capacity')
+        local allocatable=$(kubectl get node "$node" -o json | jq '.status.allocatable')
+        
+        # Get cloud provider information
+        local labels=$(kubectl get node "$node" -o json | jq -r '.metadata.labels')
+        local instance_type=$(echo "$labels" | jq -r '."node.kubernetes.io/instance-type" // "N/A"')
+        local region=$(echo "$labels" | jq -r '."topology.kubernetes.io/region" // "N/A"')
+        local zone=$(echo "$labels" | jq -r '."topology.kubernetes.io/zone" // "N/A"')
+        
+        # Determine cloud provider
+        local cloud_provider="On-premises"
+        if echo "$labels" | jq -e '."eks.amazonaws.com"' >/dev/null; then
+            cloud_provider="AWS"
+        elif echo "$labels" | jq -e '."cloud.google.com"' >/dev/null; then
+            cloud_provider="GCP"
+            instance_type=$(echo "$labels" | jq -r '."cloud.google.com/machine-type" // "'$instance_type'"')
+        elif echo "$labels" | jq -e '."kubernetes.azure.com"' >/dev/null; then
+            cloud_provider="Azure"
+        fi
+        
+        # Get node conditions
+        local conditions=$(kubectl get node "$node" -o json | jq '.status.conditions')
+        
+        # Get AVS pods on this node
+        local avs_pods=()
+        if [ -d "$NODE_DIR/pods" ]; then
+            for pod_dir in "$NODE_DIR/pods"/*; do
+                if [ -d "$pod_dir" ]; then
+                    pod=$(basename "$pod_dir")
+                    # Get pod memory requests and limits
+                    local memory_request=$(kubectl get pod -n "$NAMESPACE" "$pod" -o jsonpath='{.spec.containers[0].resources.requests.memory}')
+                    local memory_limit=$(kubectl get pod -n "$NAMESPACE" "$pod" -o jsonpath='{.spec.containers[0].resources.limits.memory}')
+                    
+                    # Get JVM heap info if available
+                    local heap_info=""
+                    if [ -f "$pod_dir/jvm-info.txt" ]; then
+                        heap_info=$(grep -A 2 "GC.heap_info" "$pod_dir/jvm-info.txt" || echo "")
+                    fi
+                    
+                    # Create pod JSON with proper escaping
+                    local pod_json=$(jq -n \
+                        --arg name "$pod" \
+                        --arg memory_request "$memory_request" \
+                        --arg memory_limit "$memory_limit" \
+                        --arg heap_info "$heap_info" \
+                        '{
+                            "name": $name,
+                            "memory_request": $memory_request,
+                            "memory_limit": $memory_limit,
+                            "heap_info": $heap_info
+                        }')
+                    avs_pods+=("$pod_json")
+                fi
+            done
+        fi
+        
+        # Create node JSON with proper escaping
+        local node_json=$(jq -n \
+            --arg name "$node" \
+            --argjson capacity "$capacity" \
+            --argjson allocatable "$allocatable" \
+            --arg cloud_provider "$cloud_provider" \
+            --arg instance_type "$instance_type" \
+            --arg region "$region" \
+            --arg zone "$zone" \
+            --argjson conditions "$conditions" \
+            --argjson avs_pods "[$(IFS=,; echo "${avs_pods[*]}")]" \
+            '{
+                "name": $name,
+                "capacity": $capacity,
+                "allocatable": $allocatable,
+                "cloud_provider": $cloud_provider,
+                "instance_type": $instance_type,
+                "region": $region,
+                "zone": $zone,
+                "conditions": $conditions,
+                "avs_pods": $avs_pods
+            }')
+        
+        # Add node to aggregates using jq
+        jq --argjson node "$node_json" '.nodes += [$node]' "$NODE_AGGREGATES_FILE" > "$NODE_AGGREGATES_FILE.tmp"
+        mv "$NODE_AGGREGATES_FILE.tmp" "$NODE_AGGREGATES_FILE"
+    done
+}
+
 # First, collect all node information
 echo "🌐 Collecting node information..."
 for node in $(kubectl get nodes -o jsonpath='{.items[*].metadata.name}'); do
@@ -250,6 +347,10 @@ for pod in $(kubectl get pods -n "$NAMESPACE" -o jsonpath='{.items[*].metadata.n
     node=$(kubectl get pod -n "$NAMESPACE" "$pod" -o jsonpath='{.spec.nodeName}')
     collect_pod_info "$pod" "$node"
 done
+
+# After collecting all node information, collect aggregates
+echo "📊 Collecting node aggregates..."
+collect_node_aggregates
 
 # NEW CODE STARTS HERE
 # GPT prompt for node analysis
@@ -359,14 +460,33 @@ CLUSTER_REQUEST_FILE="$OUTPUT_DIR/cluster-request.json"
 CLUSTER_RESPONSE_FILE="$OUTPUT_DIR/cluster-response.json"
 
 # Collect cluster-wide metrics
-  {
+{
     echo "=============================="
     echo "🌐 CLUSTER OVERVIEW"
     echo "=============================="
 
-    echo -e "\n=== Cluster Nodes ==="
-    kubectl get nodes -o wide
+    # Use the aggregated node information to create a detailed summary table
+    echo -e "\n=== Node Summary Table ==="
+    echo "| Node Name | Total Memory | Allocatable Memory | AVS Pod Memory (Requested vs Used) | Instance Type | Status/Health | Cloud Provider | Region |"
+    echo "|----------|--------------|-------------------|-----------------------------------|---------------|--------------|----------------|--------|"
     
+    # Process each node from the aggregates
+    jq -r '.nodes[] | 
+        .name as $node |
+        .avs_pods[0] as $pod |
+        (.capacity.memory | if . then . else "N/A" end) as $total_mem |
+        (.allocatable.memory | if . then . else "N/A" end) as $alloc_mem |
+        ($pod.memory_request | if . then . else "N/A" end) as $request |
+        ($pod.heap_info // "" | if . != "" then 
+            (match("used ([0-9]+[MG])") | .captures[0].string) // "N/A"
+        else "N/A" end) as $used |
+        (.instance_type | if . then . else "N/A" end) as $instance_type |
+        (.cloud_provider | if . then . else "N/A" end) as $cloud_provider |
+        (.region | if . then . else "N/A" end) as $region |
+        (.conditions[] | select(.type=="Ready") | if .status=="True" then "Healthy" else "Warning" end) as $status |
+        "| \($node) | \($total_mem) | \($alloc_mem) | \($request) vs \($used) | \($instance_type) | \($status) | \($cloud_provider) | \($region) |"' \
+        "$OUTPUT_DIR/node-aggregates.json"
+
     echo -e "\n=== Cluster Resources ==="
     kubectl describe nodes | grep -A 4 "Allocated resources"
     
@@ -391,7 +511,7 @@ CLUSTER_RESPONSE_FILE="$OUTPUT_DIR/cluster-response.json"
             done
         else
             echo "    No AVS pods"
-      fi
+        fi
     done
 
     echo -e "\n=== Cluster-wide OOMKill Analysis ==="
@@ -429,28 +549,29 @@ Generate a comprehensive cluster analysis report with the following sections:
 
 1. Resource Overview Table
    - Create a table showing each node's:
-     * Total vs Allocatable Memory
-     * AVS Pod Memory (Requested vs Used)
-     * Instance Type
-     * Status/Health
+     * Total Memory (from node-aggregates.json)
+     * Allocatable Memory (from node-aggregates.json)
+     * AVS Pod Memory (Requested vs Used) (from node-aggregates.json)
+     * Instance Type (from node-aggregates.json)
+     * Status/Health (from node-aggregates.json)
 
 2. Cluster Health Assessment
-   - Memory distribution across nodes
-   - Resource allocation patterns
-   - GC pressure indicators
-   - Node conditions
+   - Memory distribution across nodes (using node-aggregates.json)
+   - Resource allocation patterns (using node-aggregates.json)
+   - GC pressure indicators (from pod JVM info)
+   - Node conditions (from node-aggregates.json)
 
 3. Key Metrics
-   - Total cluster memory
-   - Average memory per AVS pod
-   - Memory utilization percentages
-   - Resource efficiency
+   - Total cluster memory (sum from node-aggregates.json)
+   - Average memory per AVS pod (calculated from node-aggregates.json)
+   - Memory utilization percentages (calculated from node-aggregates.json)
+   - Resource efficiency (calculated from node-aggregates.json)
 
 4. Potential Issues
-   - Memory pressure points
-   - Resource imbalances
-   - GC concerns
-   - Configuration inconsistencies
+   - Memory pressure points (from node conditions and OOM events)
+   - Resource imbalances (from node-aggregates.json)
+   - GC concerns (from pod JVM info)
+   - Configuration inconsistencies (from pod configs)
 
 5. OOMKill Analysis
    - Detailed timeline of all OOMKill events found:
@@ -494,44 +615,99 @@ When analyzing OOMKills:
 3. Compare memory settings of pods that restarted vs stable pods
 4. Consider the timing of restarts relative to pod age
 
+Use the aggregated node information from node-aggregates.json to ensure accurate and consistent reporting of node resources, instance types, and cloud provider details.
+
+Format the report exactly as shown in the example, with proper markdown formatting and consistent spacing.
 EOF
 )
-
-# Create the cluster analysis request
-{
-    echo '{
-        "model": "'"$MODEL"'",
-        "temperature": 0.3,
-        "messages": [
-            {
-                "role": "system",
-                "content": "'"$CLUSTER_PROMPT"'"
-            },
-            {
-                "role": "user",
-                "content": "'"$(cat "$CLUSTER_TMP_FILE" | sed 's/"/\\"/g')"'"
-            }
-        ]
-    }'
-} > "$CLUSTER_REQUEST_FILE"
-
-# Make the API call for cluster analysis
-  curl https://api.openai.com/v1/chat/completions \
-    -sS \
-    -H "Authorization: Bearer $OPENAI_API_KEY" \
-    -H "Content-Type: application/json" \
-    -d @"$CLUSTER_REQUEST_FILE" > "$CLUSTER_RESPONSE_FILE"
 
 # Create the final report
 {
     echo "# Aerospike Vector Search Cluster Analysis"
-    echo -e "\n## Cluster Overview\n"
-    cat "$CLUSTER_RESPONSE_FILE" | jq -r '.choices[0].message.content'
+    echo -e "\n## 1. Resource Overview Table\n"
+    echo "| Node Name | Total Memory | Allocatable Memory | AVS Pod Memory (Requested vs Used) | Instance Type | Status/Health | Cloud Provider | Region |"
+    echo "|----------|--------------|-------------------|-----------------------------------|---------------|--------------|----------------|--------|"
     
-    echo -e "\n## Individual Node Reports\n"
+    # Process each node from the aggregates
+    jq -r '.nodes[] | 
+        .name as $node |
+        .avs_pods[0] as $pod |
+        (.capacity.memory | if . then . else "N/A" end) as $total_mem |
+        (.allocatable.memory | if . then . else "N/A" end) as $alloc_mem |
+        ($pod.memory_request | if . then . else "N/A" end) as $request |
+        ($pod.heap_info // "" | if . != "" then 
+            (match("used ([0-9]+[MG])") | .captures[0].string) // "N/A"
+        else "N/A" end) as $used |
+        (.instance_type | if . then . else "N/A" end) as $instance_type |
+        (.cloud_provider | if . then . else "N/A" end) as $cloud_provider |
+        (.region | if . then . else "N/A" end) as $region |
+        (.conditions[] | select(.type=="Ready") | if .status=="True" then "Healthy" else "Warning" end) as $status |
+        "| \($node) | \($total_mem) | \($alloc_mem) | \($request) vs \($used) | \($instance_type) | \($status) | \($cloud_provider) | \($region) |"' \
+        "$OUTPUT_DIR/node-aggregates.json"
+    
+    # Collect node-specific information for the analysis
+    NODE_ANALYSIS_CONTENT=""
     for node in $(kubectl get nodes -o jsonpath='{.items[*].metadata.name}'); do
-        echo -e "\n### Node: $node\n"
-        cat "$OUTPUT_DIR/nodes/$node/analysis.md"
+        if [ -f "$OUTPUT_DIR/nodes/$node/analysis.md" ]; then
+            NODE_ANALYSIS_CONTENT+="\n### Node: $node\n"
+            NODE_ANALYSIS_CONTENT+=$(cat "$OUTPUT_DIR/nodes/$node/analysis.md")
+            NODE_ANALYSIS_CONTENT+="\n"
+        fi
+    done
+    
+    # Create the cluster analysis request with node-specific information
+    {
+        echo '{
+            "model": "'"$MODEL"'",
+            "temperature": 0.3,
+            "messages": [
+                {
+                    "role": "system",
+                    "content": "'"$CLUSTER_PROMPT"'"
+                },
+                {
+                    "role": "user",
+                    "content": "'"$(cat "$CLUSTER_TMP_FILE" | sed 's/"/\\"/g')"'\n\nNode-Specific Analysis:\n'"$(echo -e "$NODE_ANALYSIS_CONTENT" | sed 's/"/\\"/g')"'"
+                }
+            ]
+        }'
+    } > "$CLUSTER_REQUEST_FILE"
+
+    # Make the API call for cluster analysis
+    curl https://api.openai.com/v1/chat/completions \
+        -sS \
+        -H "Authorization: Bearer $OPENAI_API_KEY" \
+        -H "Content-Type: application/json" \
+        -d @"$CLUSTER_REQUEST_FILE" > "$CLUSTER_RESPONSE_FILE"
+    
+    echo -e "\n## 2. Cluster Health Assessment\n"
+    cat "$CLUSTER_RESPONSE_FILE" | jq -r '.choices[0].message.content' | sed -n '/## 2. Cluster Health Assessment/,/## 3. Key Metrics/p' | head -n -1
+    
+    echo -e "\n## 3. Key Metrics\n"
+    cat "$CLUSTER_RESPONSE_FILE" | jq -r '.choices[0].message.content' | sed -n '/## 3. Key Metrics/,/## 4. Potential Issues/p' | head -n -1
+    
+    echo -e "\n## 4. Potential Issues\n"
+    cat "$CLUSTER_RESPONSE_FILE" | jq -r '.choices[0].message.content' | sed -n '/## 4. Potential Issues/,/## 5. OOMKill Analysis/p' | head -n -1
+    
+    echo -e "\n## 5. OOMKill Analysis\n"
+    cat "$CLUSTER_RESPONSE_FILE" | jq -r '.choices[0].message.content' | sed -n '/## 5. OOMKill Analysis/,/## 6. Memory Configuration Assessment/p' | head -n -1
+    
+    echo -e "\n## 6. Memory Configuration Assessment\n"
+    cat "$CLUSTER_RESPONSE_FILE" | jq -r '.choices[0].message.content' | sed -n '/## 6. Memory Configuration Assessment/,/## 7. Recommendations/p' | head -n -1
+    
+    echo -e "\n## 7. Recommendations\n"
+    cat "$CLUSTER_RESPONSE_FILE" | jq -r '.choices[0].message.content' | sed -n '/## 7. Recommendations/,/### Conclusion/p' | head -n -1
+    
+    echo -e "\n### Conclusion\n"
+    cat "$CLUSTER_RESPONSE_FILE" | jq -r '.choices[0].message.content' | sed -n '/### Conclusion/,$p'
+    
+    # Append detailed node analysis
+    echo -e "\n## Detailed Node Analysis\n"
+    for node in $(kubectl get nodes -o jsonpath='{.items[*].metadata.name}'); do
+        if [ -f "$OUTPUT_DIR/nodes/$node/analysis.md" ]; then
+            echo -e "\n### Node: $node\n"
+            cat "$OUTPUT_DIR/nodes/$node/analysis.md"
+        fi
     done
 } > "$MARKDOWN_REPORT"
 
