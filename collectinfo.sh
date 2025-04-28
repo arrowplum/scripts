@@ -157,6 +157,10 @@ collect_pod_info() {
       echo ""
       echo "➡️ jcmd $pid GC.heap_info:"
       jcmd "$pid" GC.heap_info
+      echo ""
+      echo "➡️ getting full java command line for pid $pid:"
+      ps $pid 
+      
     fi
   ' > "$POD_DIR/jvm-info.txt" 2>/dev/null || \
     echo "❌ jcmd not available in $pod" | tee "$POD_DIR/jvm-info.txt"
@@ -365,8 +369,9 @@ For this node:
 
 For each AVS pod on this node:
 - 🔍 Review 'aerospike-vector-search.yml': validate node roles, heartbeat seeds, listener addresses, and interconnect settings
-- 📦 Summarize JVM flags, especially memory/Garbage Collector settings
+- 📦 Summarize JVM flags, especially memory/Garbage Collector settings. Include the Xms and Xmx settings.
 - 📈 Analyze GC.heap_info and GC.class_histogram for pressure or leaks
+- 🔍analyze the full java command line in jvm-info.txt for the pod and extract any JVM flags that are set
 - 🛠️ Highlight any failed config-injection logs
 
 Provide specific recommendations for:
@@ -374,8 +379,10 @@ Provide specific recommendations for:
 2. Pod-level configurations
 3. Resource allocation adjustments
 4. Performance improvements
+5. JVM memory settings
 
-Include specific identifiers for the node and pods in your analysis.
+Include specific identifiers for the node and pods in your analysis. 
+Include use of emojis to make the report more engaging.
 EOF
 )
 
@@ -551,7 +558,7 @@ Generate a comprehensive cluster analysis report with the following sections:
    - Create a table showing each node's:
      * Total Memory (from node-aggregates.json)
      * Allocatable Memory (from node-aggregates.json)
-     * AVS pods on node with name and memory information (from node-aggregates.json and pod JVM info)
+     * AVS pods on node (with name from node-aggregates.json) and JVM Configuration JVM Flags:
      * Instance Type (from node-aggregates.json)
      * Status/Health (from node-aggregates.json)
 
@@ -608,43 +615,22 @@ Pay special attention to:
 - Exit codes (137 indicates OOMKill)
 - Time correlation between restarts and node pressure
 - Pattern of restarts across the cluster
+- Reletive uptime of the pods
 
 When analyzing OOMKills:
 1. Look at both container termination states AND system events
 2. Check if restarts happened close to memory pressure events
 3. Compare memory settings of pods that restarted vs stable pods
 4. Consider the timing of restarts relative to pod age
-
+5. Consider the relative uptime of the pods (if nodes restart it looks like 0 restarts)
 Use the aggregated node information from node-aggregates.json to ensure accurate and consistent reporting of node resources, instance types, and cloud provider details.
 
-Format the report exactly as shown in the example, with proper markdown formatting and consistent spacing.
+Format the report exactly as shown in the example, with proper markdown formatting and consistent spacing. Please make use of emojis to make the report more engaging.
 EOF
 )
 
 # Create the final report
 {
-    echo "# Aerospike Vector Search Cluster Analysis"
-    echo -e "\n## 1. Resource Overview Table\n"
-    echo "| Node Name | Total Memory | Allocatable Memory | AVS Pod Memory (Requested vs Used) | Instance Type | Status/Health | Cloud Provider | Region |"
-    echo "|----------|--------------|-------------------|-----------------------------------|---------------|--------------|----------------|--------|"
-    
-    # Process each node from the aggregates
-    jq -r '.nodes[] | 
-        .name as $node |
-        .avs_pods[0] as $pod |
-        (.capacity.memory | if . then . else "N/A" end) as $total_mem |
-        (.allocatable.memory | if . then . else "N/A" end) as $alloc_mem |
-        ($pod.memory_request | if . then . else "N/A" end) as $request |
-        ($pod.heap_info // "" | if . != "" then 
-            (match("used ([0-9]+[MG])") | .captures[0].string) // "N/A"
-        else "N/A" end) as $used |
-        (.instance_type | if . then . else "N/A" end) as $instance_type |
-        (.cloud_provider | if . then . else "N/A" end) as $cloud_provider |
-        (.region | if . then . else "N/A" end) as $region |
-        (.conditions[] | select(.type=="Ready") | if .status=="True" then "Healthy" else "Warning" end) as $status |
-        "| \($node) | \($total_mem) | \($alloc_mem) | \($request) vs \($used) | \($instance_type) | \($status) | \($cloud_provider) | \($region) |"' \
-        "$OUTPUT_DIR/node-aggregates.json"
-    
     # Collect node-specific information for the analysis
     NODE_ANALYSIS_CONTENT=""
     for node in $(kubectl get nodes -o jsonpath='{.items[*].metadata.name}'); do
@@ -681,7 +667,6 @@ EOF
         -d @"$CLUSTER_REQUEST_FILE" > "$CLUSTER_RESPONSE_FILE"
     
 
-    echo "joe maybe here"
     cat "$CLUSTER_RESPONSE_FILE" | jq -r '.choices[0].message.content' 
 
     
