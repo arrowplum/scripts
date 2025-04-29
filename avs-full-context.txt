@@ -1,266 +1,164 @@
 
 ==============================
 🧵 POD: avs-app-aerospike-vector-search-0
-Running on node: aks-avsstandp-48043846-vmss000000
+Running on node: ip-192-168-52-147.ec2.internal
 ==============================
 === Node Information ===
 === Node Description ===
-Name:               aks-avsstandp-48043846-vmss000000
+Name:               ip-192-168-52-147.ec2.internal
 Roles:              <none>
-Labels:             aerospike.io/node-pool=avs
+Labels:             aerospike.io/group=avs-standalone-pool
+                    aerospike.io/node-pool=avs
                     aerospike.io/role-label=standalone-indexer-nodes
-                    agentpool=avsstandp
+                    alpha.eksctl.io/cluster-name=letsrememberopen2
+                    alpha.eksctl.io/nodegroup-name=avs-standalone-pool
                     beta.kubernetes.io/arch=amd64
-                    beta.kubernetes.io/instance-type=Standard_D16_v3
+                    beta.kubernetes.io/instance-type=r5.2xlarge
                     beta.kubernetes.io/os=linux
-                    failure-domain.beta.kubernetes.io/region=eastus
-                    failure-domain.beta.kubernetes.io/zone=0
-                    kubernetes.azure.com/agentpool=avsstandp
-                    kubernetes.azure.com/azure-cni-overlay=true
-                    kubernetes.azure.com/cluster=MC_myntra3-rg_myntra3_eastus
-                    kubernetes.azure.com/consolidated-additional-properties=6ccb9d90-1fa8-11f0-b79a-72621d55faf0
-                    kubernetes.azure.com/kubelet-identity-client-id=54b5fde4-e2e9-4b1c-a092-bd84d9e52a8b
-                    kubernetes.azure.com/mode=user
-                    kubernetes.azure.com/network-name=aks-vnet-16422918
-                    kubernetes.azure.com/network-resourcegroup=myntra3-rg
-                    kubernetes.azure.com/network-subnet=aks-subnet
-                    kubernetes.azure.com/network-subscription=9dcbd702-1653-442f-b361-2de694f9dd9c
-                    kubernetes.azure.com/node-image-version=AKSUbuntu-2204containerd-202504.06.0
-                    kubernetes.azure.com/nodenetwork-vnetguid=db93c545-e895-46f9-a46f-856d5b1a1164
-                    kubernetes.azure.com/nodepool-type=VirtualMachineScaleSets
-                    kubernetes.azure.com/os-sku=Ubuntu
-                    kubernetes.azure.com/podnetwork-type=overlay
-                    kubernetes.azure.com/role=agent
-                    kubernetes.azure.com/storageprofile=managed
-                    kubernetes.azure.com/storagetier=Standard_LRS
+                    eks.amazonaws.com/capacityType=ON_DEMAND
+                    eks.amazonaws.com/nodegroup=avs-standalone-pool
+                    eks.amazonaws.com/nodegroup-image=ami-01fc98868662094f9
+                    eks.amazonaws.com/sourceLaunchTemplateId=lt-040807b7dc4058323
+                    eks.amazonaws.com/sourceLaunchTemplateVersion=1
+                    failure-domain.beta.kubernetes.io/region=us-east-1
+                    failure-domain.beta.kubernetes.io/zone=us-east-1d
+                    k8s.io/cloud-provider-aws=7b106a2a28f90fcf8e2b12bdb82ef1dc
                     kubernetes.io/arch=amd64
-                    kubernetes.io/hostname=aks-avsstandp-48043846-vmss000000
+                    kubernetes.io/hostname=ip-192-168-52-147.ec2.internal
                     kubernetes.io/os=linux
-                    node.kubernetes.io/instance-type=Standard_D16_v3
-                    storageprofile=managed
-                    storagetier=Standard_LRS
-                    topology.disk.csi.azure.com/zone=
-                    topology.kubernetes.io/region=eastus
-                    topology.kubernetes.io/zone=0
-Annotations:        alpha.kubernetes.io/provided-node-ip: 10.224.0.6
-                    csi.volume.kubernetes.io/nodeid:
-                      {"disk.csi.azure.com":"aks-avsstandp-48043846-vmss000000","file.csi.azure.com":"aks-avsstandp-48043846-vmss000000"}
+                    node.kubernetes.io/instance-type=r5.2xlarge
+                    topology.ebs.csi.aws.com/zone=us-east-1d
+                    topology.k8s.aws/zone-id=use1-az1
+                    topology.kubernetes.io/region=us-east-1
+                    topology.kubernetes.io/zone=us-east-1d
+Annotations:        alpha.kubernetes.io/provided-node-ip: 192.168.52.147
+                    csi.volume.kubernetes.io/nodeid: {"ebs.csi.aws.com":"i-00c6a97714db38acc"}
                     node.alpha.kubernetes.io/ttl: 0
                     volumes.kubernetes.io/controller-managed-attach-detach: true
-CreationTimestamp:  Tue, 22 Apr 2025 11:35:58 -0700
+CreationTimestamp:  Tue, 29 Apr 2025 12:06:42 -0700
 Taints:             <none>
 Unschedulable:      false
 Lease:
-  HolderIdentity:  aks-avsstandp-48043846-vmss000000
+  HolderIdentity:  ip-192-168-52-147.ec2.internal
   AcquireTime:     <unset>
-  RenewTime:       Sun, 27 Apr 2025 22:30:09 -0700
+  RenewTime:       Tue, 29 Apr 2025 16:08:28 -0700
 Conditions:
-  Type                          Status  LastHeartbeatTime                 LastTransitionTime                Reason                          Message
-  ----                          ------  -----------------                 ------------------                ------                          -------
-  FrequentKubeletRestart        False   Sun, 27 Apr 2025 22:25:59 -0700   Fri, 25 Apr 2025 20:50:10 -0700   NoFrequentKubeletRestart        kubelet is functioning properly
-  FrequentDockerRestart         False   Sun, 27 Apr 2025 22:25:59 -0700   Fri, 25 Apr 2025 20:50:10 -0700   NoFrequentDockerRestart         docker is functioning properly
-  ContainerRuntimeProblem       False   Sun, 27 Apr 2025 22:25:59 -0700   Fri, 25 Apr 2025 20:50:10 -0700   ContainerRuntimeIsUp            container runtime service is up
-  VMEventScheduled              False   Sun, 27 Apr 2025 22:25:59 -0700   Fri, 25 Apr 2025 20:50:10 -0700   NoVMEventScheduled              VM has no scheduled event
-  FrequentUnregisterNetDevice   False   Sun, 27 Apr 2025 22:25:59 -0700   Fri, 25 Apr 2025 20:50:10 -0700   NoFrequentUnregisterNetDevice   node is functioning properly
-  ReadonlyFilesystem            False   Sun, 27 Apr 2025 22:25:59 -0700   Fri, 25 Apr 2025 20:50:10 -0700   FilesystemIsNotReadOnly         Filesystem is not read-only
-  FrequentContainerdRestart     False   Sun, 27 Apr 2025 22:25:59 -0700   Fri, 25 Apr 2025 20:50:10 -0700   NoFrequentContainerdRestart     containerd is functioning properly
-  KubeletProblem                False   Sun, 27 Apr 2025 22:25:59 -0700   Fri, 25 Apr 2025 20:50:10 -0700   KubeletIsUp                     kubelet service is up
-  FilesystemCorruptionProblem   False   Sun, 27 Apr 2025 22:25:59 -0700   Fri, 25 Apr 2025 20:50:10 -0700   FilesystemIsOK                  Filesystem is healthy
-  KernelDeadlock                False   Sun, 27 Apr 2025 22:25:59 -0700   Fri, 25 Apr 2025 20:50:10 -0700   KernelHasNoDeadlock             kernel has no deadlock
-  MemoryPressure                False   Sun, 27 Apr 2025 22:28:00 -0700   Tue, 22 Apr 2025 11:35:58 -0700   KubeletHasSufficientMemory      kubelet has sufficient memory available
-  DiskPressure                  False   Sun, 27 Apr 2025 22:28:00 -0700   Tue, 22 Apr 2025 11:35:58 -0700   KubeletHasNoDiskPressure        kubelet has no disk pressure
-  PIDPressure                   False   Sun, 27 Apr 2025 22:28:00 -0700   Tue, 22 Apr 2025 11:35:58 -0700   KubeletHasSufficientPID         kubelet has sufficient PID available
-  Ready                         True    Sun, 27 Apr 2025 22:28:00 -0700   Tue, 22 Apr 2025 11:36:16 -0700   KubeletReady                    kubelet is posting ready status
+  Type             Status  LastHeartbeatTime                 LastTransitionTime                Reason                       Message
+  ----             ------  -----------------                 ------------------                ------                       -------
+  MemoryPressure   False   Tue, 29 Apr 2025 16:05:27 -0700   Tue, 29 Apr 2025 12:06:40 -0700   KubeletHasSufficientMemory   kubelet has sufficient memory available
+  DiskPressure     False   Tue, 29 Apr 2025 16:05:27 -0700   Tue, 29 Apr 2025 12:06:40 -0700   KubeletHasNoDiskPressure     kubelet has no disk pressure
+  PIDPressure      False   Tue, 29 Apr 2025 16:05:27 -0700   Tue, 29 Apr 2025 12:06:40 -0700   KubeletHasSufficientPID      kubelet has sufficient PID available
+  Ready            True    Tue, 29 Apr 2025 16:05:27 -0700   Tue, 29 Apr 2025 12:06:55 -0700   KubeletReady                 kubelet is posting ready status
 Addresses:
-  InternalIP:  10.224.0.6
-  Hostname:    aks-avsstandp-48043846-vmss000000
+  InternalIP:   192.168.52.147
+  ExternalIP:   3.238.188.22
+  InternalDNS:  ip-192-168-52-147.ec2.internal
+  Hostname:     ip-192-168-52-147.ec2.internal
+  ExternalDNS:  ec2-3-238-188-22.compute-1.amazonaws.com
 Capacity:
-  cpu:                16
-  ephemeral-storage:  520125348Ki
+  cpu:                8
+  ephemeral-storage:  83873772Ki
   hugepages-1Gi:      0
   hugepages-2Mi:      0
-  memory:             65843892Ki
-  pods:               250
+  memory:             65023384Ki
+  pods:               58
 Allocatable:
-  cpu:                15740m
-  ephemeral-storage:  479347519924
+  cpu:                7910m
+  ephemeral-storage:  76224326324
   hugepages-1Gi:      0
   hugepages-2Mi:      0
-  memory:             60570292Ki
-  pods:               250
+  memory:             64006552Ki
+  pods:               58
 System Info:
-  Machine ID:                 14013769cfbd4612909c0b94d610fe3e
-  System UUID:                75460553-6e74-6640-9b5b-a6e2358e2d54
-  Boot ID:                    bccebc37-f0e4-441b-adc0-c8b705dd2360
-  Kernel Version:             5.15.0-1086-azure
-  OS Image:                   Ubuntu 22.04.5 LTS
+  Machine ID:                 ec28cbcdf2703d164770f6f713c32a76
+  System UUID:                ec28cbcd-f270-3d16-4770-f6f713c32a76
+  Boot ID:                    991d9291-b2bd-46ca-b4c8-74020c72b999
+  Kernel Version:             5.10.235-227.919.amzn2.x86_64
+  OS Image:                   Amazon Linux 2
   Operating System:           linux
   Architecture:               amd64
-  Container Runtime Version:  containerd://1.7.27-1
-  Kubelet Version:            v1.31.7
-  Kube-Proxy Version:         v1.31.7
-ProviderID:                   azure:///subscriptions/9dcbd702-1653-442f-b361-2de694f9dd9c/resourceGroups/mc_myntra3-rg_myntra3_eastus/providers/Microsoft.Compute/virtualMachineScaleSets/aks-avsstandp-48043846-vmss/virtualMachines/0
-Non-terminated Pods:          (18 in total)
+  Container Runtime Version:  containerd://1.7.27
+  Kubelet Version:            v1.30.9-eks-5d632ec
+  Kube-Proxy Version:         v1.30.9-eks-5d632ec
+ProviderID:                   aws:///us-east-1d/i-00c6a97714db38acc
+Non-terminated Pods:          (15 in total)
   Namespace                   Name                                                      CPU Requests  CPU Limits  Memory Requests  Memory Limits  Age
   ---------                   ----                                                      ------------  ----------  ---------------  -------------  ---
-  avs                         avs-app-aerospike-vector-search-0                         0 (0%)        0 (0%)      0 (0%)           0 (0%)         5d10h
-  kube-system                 azure-cns-9k4dp                                           40m (0%)      40m (0%)    250Mi (0%)       250Mi (0%)     5d10h
-  kube-system                 azure-ip-masq-agent-pcdwh                                 100m (0%)     500m (3%)   50Mi (0%)        250Mi (0%)     5d10h
-  kube-system                 cloud-node-manager-h5dnc                                  50m (0%)      0 (0%)      50Mi (0%)        512Mi (0%)     5d10h
-  kube-system                 csi-azuredisk-node-6ng6x                                  30m (0%)      0 (0%)      60Mi (0%)        2800Mi (4%)    5d10h
-  kube-system                 csi-azurefile-node-k4lz9                                  30m (0%)      0 (0%)      60Mi (0%)        600Mi (1%)     5d10h
-  kube-system                 konnectivity-agent-b569f8b76-d9xv2                        20m (0%)      1 (6%)      20Mi (0%)        1Gi (1%)       5d10h
-  kube-system                 kube-proxy-lv5mj                                          100m (0%)     0 (0%)      0 (0%)           0 (0%)         5d10h
-  monitoring                  alertmanager-monitoring-stack-kube-prom-alertmanager-0    0 (0%)        0 (0%)      200Mi (0%)       0 (0%)         5d10h
-  monitoring                  monitoring-stack-grafana-6fcb85849d-7xc9p                 0 (0%)        0 (0%)      0 (0%)           0 (0%)         5d10h
-  monitoring                  monitoring-stack-kube-prom-operator-bd6c885d6-v95m6       0 (0%)        0 (0%)      0 (0%)           0 (0%)         5d10h
-  monitoring                  monitoring-stack-kube-state-metrics-84586d697c-l7kd6      0 (0%)        0 (0%)      0 (0%)           0 (0%)         5d10h
-  monitoring                  monitoring-stack-prometheus-node-exporter-gh6lt           0 (0%)        0 (0%)      0 (0%)           0 (0%)         5d10h
-  monitoring                  prometheus-monitoring-stack-kube-prom-prometheus-0        0 (0%)        0 (0%)      0 (0%)           0 (0%)         5d10h
-  olm                         catalog-operator-6d75669569-c6x2g                         10m (0%)      0 (0%)      80Mi (0%)        0 (0%)         5d10h
-  olm                         olm-operator-54b6f7b668-86kbr                             10m (0%)      0 (0%)      160Mi (0%)       0 (0%)         5d10h
-  olm                         packageserver-88f9c495c-xqdrj                             10m (0%)      0 (0%)      50Mi (0%)        0 (0%)         5d10h
-  operators                   aerospike-operator-controller-manager-656d4bcbb7-f96zz    10m (0%)      400m (2%)   64Mi (0%)        512Mi (0%)     5d10h
+  avs                         avs-app-aerospike-vector-search-0                         0 (0%)        0 (0%)      0 (0%)           0 (0%)         3h51m
+  kube-system                 aws-node-qsfx9                                            50m (0%)      0 (0%)      0 (0%)           0 (0%)         4h2m
+  kube-system                 ebs-csi-node-x9s4v                                        30m (0%)      0 (0%)      120Mi (0%)       768Mi (1%)     4h2m
+  kube-system                 kube-proxy-528ls                                          100m (1%)     0 (0%)      0 (0%)           0 (0%)         4h2m
+  monitoring                  alertmanager-monitoring-stack-kube-prom-alertmanager-0    0 (0%)        0 (0%)      200Mi (0%)       0 (0%)         3h50m
+  monitoring                  monitoring-stack-grafana-86dbbf556b-sft9w                 0 (0%)        0 (0%)      0 (0%)           0 (0%)         3h50m
+  monitoring                  monitoring-stack-kube-prom-operator-78588cb66f-xmq6g      0 (0%)        0 (0%)      0 (0%)           0 (0%)         3h50m
+  monitoring                  monitoring-stack-kube-state-metrics-5f78d49cb9-7z65l      0 (0%)        0 (0%)      0 (0%)           0 (0%)         3h50m
+  monitoring                  monitoring-stack-prometheus-node-exporter-cwpkp           0 (0%)        0 (0%)      0 (0%)           0 (0%)         3h50m
+  monitoring                  prometheus-monitoring-stack-kube-prom-prometheus-0        0 (0%)        0 (0%)      0 (0%)           0 (0%)         3h50m
+  olm                         catalog-operator-86f5bc67bb-7k545                         10m (0%)      0 (0%)      80Mi (0%)        0 (0%)         3h53m
+  olm                         olm-operator-69cdd96c89-dhhzh                             10m (0%)      0 (0%)      160Mi (0%)       0 (0%)         3h53m
+  olm                         operatorhubio-catalog-kcvj4                               10m (0%)      0 (0%)      50Mi (0%)        0 (0%)         3h53m
+  olm                         packageserver-7f68ff99c8-dq99m                            10m (0%)      0 (0%)      50Mi (0%)        0 (0%)         3h53m
+  operators                   aerospike-operator-controller-manager-67f5b6bfd4-7h2l9    10m (0%)      400m (5%)   64Mi (0%)        512Mi (0%)     3h52m
 Allocated resources:
   (Total limits may be over 100 percent, i.e., overcommitted.)
-  Resource           Requests     Limits
-  --------           --------     ------
-  cpu                410m (2%)    1940m (12%)
-  memory             1044Mi (1%)  5948Mi (10%)
-  ephemeral-storage  0 (0%)       0 (0%)
-  hugepages-1Gi      0 (0%)       0 (0%)
-  hugepages-2Mi      0 (0%)       0 (0%)
+  Resource           Requests    Limits
+  --------           --------    ------
+  cpu                230m (2%)   400m (5%)
+  memory             724Mi (1%)  1280Mi (2%)
+  ephemeral-storage  0 (0%)      0 (0%)
+  hugepages-1Gi      0 (0%)      0 (0%)
+  hugepages-2Mi      0 (0%)      0 (0%)
 Events:              <none>
 
 === Node Resources ===
 {
-  "cpu": "16",
-  "ephemeral-storage": "520125348Ki",
+  "cpu": "8",
+  "ephemeral-storage": "83873772Ki",
   "hugepages-1Gi": "0",
   "hugepages-2Mi": "0",
-  "memory": "65843892Ki",
-  "pods": "250"
+  "memory": "65023384Ki",
+  "pods": "58"
 }
 
 === Node Allocatable Resources ===
 {
-  "cpu": "15740m",
-  "ephemeral-storage": "479347519924",
+  "cpu": "7910m",
+  "ephemeral-storage": "76224326324",
   "hugepages-1Gi": "0",
   "hugepages-2Mi": "0",
-  "memory": "60570292Ki",
-  "pods": "250"
+  "memory": "64006552Ki",
+  "pods": "58"
 }
 
 === Node Conditions ===
 [
   {
-    "lastHeartbeatTime": "2025-04-28T05:25:59Z",
-    "lastTransitionTime": "2025-04-26T03:50:10Z",
-    "message": "kubelet is functioning properly",
-    "reason": "NoFrequentKubeletRestart",
-    "status": "False",
-    "type": "FrequentKubeletRestart"
-  },
-  {
-    "lastHeartbeatTime": "2025-04-28T05:25:59Z",
-    "lastTransitionTime": "2025-04-26T03:50:10Z",
-    "message": "docker is functioning properly",
-    "reason": "NoFrequentDockerRestart",
-    "status": "False",
-    "type": "FrequentDockerRestart"
-  },
-  {
-    "lastHeartbeatTime": "2025-04-28T05:25:59Z",
-    "lastTransitionTime": "2025-04-26T03:50:10Z",
-    "message": "container runtime service is up",
-    "reason": "ContainerRuntimeIsUp",
-    "status": "False",
-    "type": "ContainerRuntimeProblem"
-  },
-  {
-    "lastHeartbeatTime": "2025-04-28T05:25:59Z",
-    "lastTransitionTime": "2025-04-26T03:50:10Z",
-    "message": "VM has no scheduled event",
-    "reason": "NoVMEventScheduled",
-    "status": "False",
-    "type": "VMEventScheduled"
-  },
-  {
-    "lastHeartbeatTime": "2025-04-28T05:25:59Z",
-    "lastTransitionTime": "2025-04-26T03:50:10Z",
-    "message": "node is functioning properly",
-    "reason": "NoFrequentUnregisterNetDevice",
-    "status": "False",
-    "type": "FrequentUnregisterNetDevice"
-  },
-  {
-    "lastHeartbeatTime": "2025-04-28T05:25:59Z",
-    "lastTransitionTime": "2025-04-26T03:50:10Z",
-    "message": "Filesystem is not read-only",
-    "reason": "FilesystemIsNotReadOnly",
-    "status": "False",
-    "type": "ReadonlyFilesystem"
-  },
-  {
-    "lastHeartbeatTime": "2025-04-28T05:25:59Z",
-    "lastTransitionTime": "2025-04-26T03:50:10Z",
-    "message": "containerd is functioning properly",
-    "reason": "NoFrequentContainerdRestart",
-    "status": "False",
-    "type": "FrequentContainerdRestart"
-  },
-  {
-    "lastHeartbeatTime": "2025-04-28T05:25:59Z",
-    "lastTransitionTime": "2025-04-26T03:50:10Z",
-    "message": "kubelet service is up",
-    "reason": "KubeletIsUp",
-    "status": "False",
-    "type": "KubeletProblem"
-  },
-  {
-    "lastHeartbeatTime": "2025-04-28T05:25:59Z",
-    "lastTransitionTime": "2025-04-26T03:50:10Z",
-    "message": "Filesystem is healthy",
-    "reason": "FilesystemIsOK",
-    "status": "False",
-    "type": "FilesystemCorruptionProblem"
-  },
-  {
-    "lastHeartbeatTime": "2025-04-28T05:25:59Z",
-    "lastTransitionTime": "2025-04-26T03:50:10Z",
-    "message": "kernel has no deadlock",
-    "reason": "KernelHasNoDeadlock",
-    "status": "False",
-    "type": "KernelDeadlock"
-  },
-  {
-    "lastHeartbeatTime": "2025-04-28T05:28:00Z",
-    "lastTransitionTime": "2025-04-22T18:35:58Z",
+    "lastHeartbeatTime": "2025-04-29T23:05:27Z",
+    "lastTransitionTime": "2025-04-29T19:06:40Z",
     "message": "kubelet has sufficient memory available",
     "reason": "KubeletHasSufficientMemory",
     "status": "False",
     "type": "MemoryPressure"
   },
   {
-    "lastHeartbeatTime": "2025-04-28T05:28:00Z",
-    "lastTransitionTime": "2025-04-22T18:35:58Z",
+    "lastHeartbeatTime": "2025-04-29T23:05:27Z",
+    "lastTransitionTime": "2025-04-29T19:06:40Z",
     "message": "kubelet has no disk pressure",
     "reason": "KubeletHasNoDiskPressure",
     "status": "False",
     "type": "DiskPressure"
   },
   {
-    "lastHeartbeatTime": "2025-04-28T05:28:00Z",
-    "lastTransitionTime": "2025-04-22T18:35:58Z",
+    "lastHeartbeatTime": "2025-04-29T23:05:27Z",
+    "lastTransitionTime": "2025-04-29T19:06:40Z",
     "message": "kubelet has sufficient PID available",
     "reason": "KubeletHasSufficientPID",
     "status": "False",
     "type": "PIDPressure"
   },
   {
-    "lastHeartbeatTime": "2025-04-28T05:28:00Z",
-    "lastTransitionTime": "2025-04-22T18:36:16Z",
+    "lastHeartbeatTime": "2025-04-29T23:05:27Z",
+    "lastTransitionTime": "2025-04-29T19:06:55Z",
     "message": "kubelet is posting ready status",
     "reason": "KubeletReady",
     "status": "True",
@@ -270,9 +168,9 @@ Events:              <none>
 
 === Cloud Instance Information ===
 Cloud Provider: On-premises
-Instance Type: Standard_D16_v3
-Region: eastus
-Zone: 0
+Instance Type: r5.2xlarge
+Region: us-east-1
+Zone: us-east-1d
 
 === OOMKill Events ===
 System OOM Events:
@@ -323,7 +221,7 @@ service:
     "5000":
       advertised-listeners:
         default:
-        - address: 10.224.0.6
+        - address: 3.238.188.22
           port: 5000
 storage:
   client-policy: {}
@@ -333,8 +231,8 @@ storage:
 
 📄 FILE: init-container.log
 ------------------------------
-2025/04/22 19:05:17 Init container started
-2025/04/22 19:05:17 Initial configuration:
+2025/04/29 19:17:13 Init container started
+2025/04/29 19:17:13 Initial configuration:
 {
   "cluster": {
     "cluster-name": "avs-db-1"
@@ -387,59 +285,64 @@ storage:
     ]
   }
 }
-2025/04/22 19:05:17 Starting setRoles()
-2025/04/22 19:05:17 Starting getAerospikeVectorSearchRoles()
-2025/04/22 19:05:17 Starting getNodeLabels()
-2025/04/22 19:05:17 Starting GetNodeInstance()
-2025/04/22 19:05:17 NODE_NAME: aks-avsstandp-48043846-vmss000000
-2025/04/22 19:05:17 SERVICE_NAME: avs-app-aerospike-vector-search
-2025/04/22 19:05:17 POD_NAMESPACE: avs
-2025/04/22 19:05:17 In-cluster config obtained successfully
-2025/04/22 19:05:17 Fetched node: aks-avsstandp-48043846-vmss000000
-2025/04/22 19:05:17 Service avs-app-aerospike-vector-search not found in namespace avs; proceeding with node only
-2025/04/22 19:05:17 Found node label: aerospike.io/role-label=standalone-indexer-nodes
-2025/04/22 19:05:17 Available roles: map[default-nodes:[query index-update] indexer-nodes:[index-update] query-nodes:[query] standalone-indexer-nodes:[standalone-indexer] standalone-nodes:[standalone-indexer]]
-2025/04/22 19:05:17 Found role for label standalone-indexer-nodes: [standalone-indexer]
-2025/04/22 19:05:17 Successfully set roles in cluster configuration
-2025/04/22 19:05:17 Starting setAdvertisedListeners()
-2025/04/22 19:05:17 Operating in NETWORK_MODE: hostnetwork
-2025/04/22 19:05:17 CONTAINER_PORT: 5000 for hostnetwork mode
-2025/04/22 19:05:17 Setting advertised listeners to IP: 10.224.0.6, Port: 5000
-2025/04/22 19:05:17 Setting advertised-listeners for port 5000
-Pod ID: 0
-2025/04/22 19:05:17 Updated ports configuration: {
+2025/04/29 19:17:13 Starting setRoles()
+2025/04/29 19:17:13 Starting getAerospikeVectorSearchRoles()
+2025/04/29 19:17:13 Starting getNodeLabels()
+2025/04/29 19:17:13 Starting GetNodeInstance()
+2025/04/29 19:17:13 NODE_NAME: ip-192-168-52-147.ec2.internal
+2025/04/29 19:17:13 SERVICE_NAME: avs-app-aerospike-vector-search
+2025/04/29 19:17:13 POD_NAMESPACE: avs
+2025/04/29 19:17:13 In-cluster config obtained successfully
+2025/04/29 19:17:13 Fetched node: ip-192-168-52-147.ec2.internal
+2025/04/29 19:17:13 Service avs-app-aerospike-vector-search not found in namespace avs; proceeding with node only
+2025/04/29 19:17:13 Found node label: aerospike.io/role-label=standalone-indexer-nodes
+2025/04/29 19:17:13 Available roles: map[default-nodes:[query index-update] indexer-nodes:[index-update] query-nodes:[query] standalone-indexer-nodes:[standalone-indexer] standalone-nodes:[standalone-indexer]]
+2025/04/29 19:17:13 Found role for label standalone-indexer-nodes: [standalone-indexer]
+2025/04/29 19:17:13 Successfully set roles in cluster configuration
+2025/04/29 19:17:13 Starting setAdvertisedListeners()
+2025/04/29 19:17:13 Operating in NETWORK_MODE: hostnetwork
+2025/04/29 19:17:13 CONTAINER_PORT: 5000 for hostnetwork mode
+2025/04/29 19:17:13 Setting advertised listeners to IP: 3.238.188.22, Port: 5000
+2025/04/29 19:17:13 Setting advertised-listeners for port 5000
+2025/04/29 19:17:13 Updated ports configuration: {
   "5000": {
     "advertised-listeners": {
       "default": [
         {
-          "address": "10.224.0.6",
+Pod ID: 0
+          "address": "3.238.188.22",
           "port": 5000
         }
       ]
     }
   }
 }
-2025/04/22 19:05:17 Setting up heartbeat seeds...
-2025/04/22 19:05:17 Generating heartbeat seed DNS names...
-2025/04/22 19:05:17 Checking for heartbeat configuration...
-2025/04/22 19:05:17 Found heartbeat seed configuration: address=avs-app-aerospike-vector-search-0.avs-app-aerospike-vector-search-internal.avs.svc.cluster.local, port=5001
-2025/04/22 19:05:17 Successfully configured heartbeat with 2 seed(s)
-2025/04/22 19:05:17 Calculated JVM options: -Xmx51440m
-2025/04/22 19:05:17 Set JAVA_OPTS to: -Xmx51440m
-2025/04/22 19:05:17 Wrote JVM options to file: /etc/aerospike-vector-search/jvm.opts
-2025/04/22 19:05:17 Init container completed successfully
+2025/04/29 19:17:13 Setting up heartbeat seeds...
+2025/04/29 19:17:13 Generating heartbeat seed DNS names...
+2025/04/29 19:17:13 Checking for heartbeat configuration...
+2025/04/29 19:17:13 Found heartbeat seed configuration: address=avs-app-aerospike-vector-search-0.avs-app-aerospike-vector-search-internal.avs.svc.cluster.local, port=5001
+2025/04/29 19:17:13 Successfully configured heartbeat with 2 seed(s)
+2025/04/29 19:17:13 No real memory limit set, using system total memory: 66583945216 bytes
+2025/04/29 19:17:13 Calculated JVM options: -Xmx50799m
+2025/04/29 19:17:13 Set JAVA_OPTS to: -Xmx50799m
+2025/04/29 19:17:13 Wrote JVM options to file: /etc/aerospike-vector-search/jvm.opts
+2025/04/29 19:17:13 Init container completed successfully
 
 📄 FILE: jvm-info.txt
 ------------------------------
 ➡️ jcmd 9 VM.flags:
 9:
--XX:+AlwaysPreTouch -XX:CICompilerCount=12 -XX:+ExitOnOutOfMemoryError -XX:InitialHeapSize=1054867456 -XX:MaxHeapSize=53938749440 -XX:MinHeapDeltaBytes=2097152 -XX:MinHeapSize=8388608 -XX:NonNMethodCodeHeapSize=7602480 -XX:NonProfiledCodeHeapSize=122027880 -XX:ProfiledCodeHeapSize=122027880 -XX:ReservedCodeCacheSize=251658240 -XX:+SegmentedCodeCache -XX:SoftMaxHeapSize=53938749440 -XX:-UseNUMA -XX:-UseNUMAInterleaving -XX:+UseZGC -XX:+ZGenerational -XX:ZOldGCThreads=4 -XX:ZYoungGCThreads=4 
+-XX:+AlwaysPreTouch -XX:CICompilerCount=4 -XX:+ExitOnOutOfMemoryError -XX:InitialHeapSize=1027604480 -XX:MaxHeapSize=53267660800 -XX:MinHeapDeltaBytes=2097152 -XX:MinHeapSize=8388608 -XX:NonNMethodCodeHeapSize=5839372 -XX:NonProfiledCodeHeapSize=122909434 -XX:ProfiledCodeHeapSize=122909434 -XX:ReservedCodeCacheSize=251658240 -XX:+SegmentedCodeCache -XX:SoftMaxHeapSize=53267660800 -XX:-THPStackMitigation -XX:+UseFastUnorderedTimeStamps -XX:-UseNUMA -XX:-UseNUMAInterleaving -XX:+UseZGC -XX:+ZGenerational -XX:ZOldGCThreads=2 -XX:ZYoungGCThreads=2 
 
 ➡️ jcmd 9 GC.heap_info:
 9:
- ZHeap           used 1188M, capacity 1564M, max capacity 51440M
- Metaspace       used 83130K, committed 83840K, reserved 1179648K
-  class space    used 8814K, committed 9280K, reserved 1048576K
+ ZHeap           used 3500M, capacity 23728M, max capacity 50800M
+ Metaspace       used 80875K, committed 81664K, reserved 1179648K
+  class space    used 8817K, committed 9216K, reserved 1048576K
+
+➡️ getting full java command line for pid 9:
+    PID TTY      STAT   TIME COMMAND
+      9 ?        Sl   388:17 /usr/lib/jvm/jre/bin/java -Djava.security.egd=file:/dev/./urandom -Dconnect.product.name=aerospike-vector-search -Dconnect.product.version=1.1.0 -XX:+ExitOnOutOfMemoryError -XX:+UseZGC -XX:+ZGenerational -XX:+AlwaysPreTouch --add-modules jdk.incubator.vector --add-opens java.base/jdk.internal.util=ALL-UNNAMED --add-exports java.base/jdk.internal.ref=ALL-UNNAMED --add-exports java.base/sun.nio.ch=ALL-UNNAMED --add-exports jdk.unsupported/sun.misc=ALL-UNNAMED --add-exports jdk.compiler/com.sun.tools.javac.file=ALL-UNNAMED --add-opens jdk.compiler/com.sun.tools.javac=ALL-UNNAMED --add-opens java.base/java.lang=ALL-UNNAMED --add-opens java.base/java.lang.reflect=ALL-UNNAMED --add-opens java.base/java.io=ALL-UNNAMED --add-opens java.base/java.util=ALL-UNNAMED -DFMA_SUPPORTED=true -Xmx50799m -classpath /opt/aerospike-vector-search/lib/aerospike-vector-search-1.1.0.jar:/opt/aerospike-vector-search/lib/aerospike-vector-search-transact-1.1.0.jar:/opt/aerospike-vector-search/lib/aerospike-vector-search-clustering-1.1.0.jar:/opt/aerospike-vector-search/lib/aerospike-vector-search-index-1.1.0.jar:/opt/aerospike-vector-search/lib/aerospike-vector-search-security-1.1.0.jar:/opt/aerospike-vector-search/lib/aerospike-vector-search-cluster-common-1.1.0.jar:/opt/aerospike-vector-search/lib/aerospike-vector-search-storage-aerospike-1.1.0.jar:/opt/aerospike-vector-search/lib/aerospike-vector-search-embedded-client-1.1.0.jar:/opt/aerospike-vector-search/lib/aerospike-vector-search-common-1.1.0.jar:/opt/aerospike-vector-search/lib/aerospike-manage-1.0.15.jar:/opt/aerospike-vector-search/lib/aerospike-aerospike-2.2.11.jar:/opt/aerospike-vector-search/lib/aerospike-tls-1.2.12.jar:/opt/aerospike-vector-search/lib/aerospike-vector-search-licensing-1.1.0.jar:/opt/aerospike-vector-search/lib/aerospike-vector-search-server-stub-1.1.0.jar:/opt/aerospike-vector-search/lib/aerospike-metrics-1.0.9.jar:/opt/aerospike-vector-search/lib/aerospike-serde-1.1.12.jar:/opt/aerospike-vector-search/lib/aerospike-io-1.0.12.jar:/opt/aerospike-vector-search/lib/aerospike-logging-1.2.6.jar:/opt/aerospike-vector-search/lib/aerospike-undertow-patch-2.3.18.jar:/opt/aerospike-vector-search/lib/guice-assistedinject-6.0.0.jar:/opt/aerospike-vector-search/lib/guice-bridge-3.0.4.jar:/opt/aerospike-vector-search/lib/guice-servlet-6.0.0.jar:/opt/aerospike-vector-search/lib/guice-6.0.0.jar:/opt/aerospike-vector-search/lib/validation-api-2.0.1.Final.jar:/opt/aerospike-vector-search/lib/grpc-netty-1.71.0.jar:/opt/aerospike-vector-search/lib/netty-handler-proxy-4.1.119.Final.jar:/opt/aerospike-vector-search/lib/netty-codec-http2-4.1.119.Final.jar:/opt/aerospike-vector-search/lib/netty-transport-native-epoll-4.1.119.Final-linux-x86_64.jar:/opt/aerospike-vector-search/lib/netty-transport-native-kqueue-4.1.119.Final-osx-x86_64.jar:/opt/aerospike-vector-search/lib/netty-codec-socks-4.1.119.Final.jar:/opt/aerospike-vector-search/lib/netty-codec-http-4.1.119.Final.jar:/opt/aerospike-vector-search/lib/netty-handler-4.1.119.Final.jar:/opt/aerospike-vector-search/lib/netty-codec-4.1.119.Final.jar:/opt/aerospike-vector-search/lib/netty-transport-classes-epoll-4.1.119.Final.jar:/opt/aerospike-vector-search/lib/netty-transport-classes-kqueue-4.1.119.Final.jar:/opt/aerospike-vector-search/lib/netty-transport-native-unix-common-4.1.119.Final.jar:/opt/aerospike-vector-search/lib/netty-transport-4.1.119.Final.jar:/opt/aerospike-vector-search/lib/grpc-kotlin-stub-1.4.1.jar:/opt/aerospike-vector-search/lib/kotlinx-coroutines-core-jvm-1.10.1.jar:/opt/aerospike-vector-search/lib/java-jwt-4.5.0.jar:/opt/aerospike-vector-search/lib/jackson-dataformat-yaml-2.17.2.jar:/opt/aerospike-vector-search/lib/jackson-dataformat-msgpack-0.9.8.jar:/opt/aerospike-vector-search/lib/jersey-media-json-jackson-3.1.5.jar:/opt/aerospike-vector-search/lib/metrics-json-4.2.25.jar:/opt/aerospike-vector-search/lib/jackson-module-jakarta-xmlbind-annotations-2.17.2.jar:/opt/aerospike-vector-search/lib/jackson-databind-2.17.2.jar:/opt/aerospike-vector-search/lib/jackson-annotations-2.17.2.jar:/opt/aerospike-vector-search/lib/jackson-core-2.17.2.jar:/opt/aerospike-vector-search/lib/jackson-module-kotlin-2.17.2.jar:/opt/aerospike-vector-search/lib/kotlin-reflect-2.1.10.jar:/opt/aerospike-vector-search/lib/kotlin-stdlib-jdk7-2.1.10.jar:/opt/aerospike-vector-search/lib/protobuf-kotlin-3.25.6.jar:/opt/aerospike-vector-search/lib/kotlin-logging-jvm-3.0.5.jar:/opt/aerospike-vector-search/lib/kotlin-stdlib-2.1.10.jar:/opt/aerospike-vector-search/lib/kotlin-stdlib-jdk8-2.1.10.jar:/opt/aerospike-vector-search/lib/grpc-util-1.71.0.jar:/opt/aerospike-vector-search/lib/grpc-core-1.71.0.jar:/opt/aerospike-vector-search/lib/protobuf-java-util-3.25.6.jar:/opt/aerospike-vector-search/lib/dsiutils-2.7.3.jar:/opt/aerospike-vector-search/lib/grpc-context-1.71.0.jar:/opt/aerospike-vector-search/lib/grpc-protobuf-1.71.0.jar:/opt/aerospike-vector-search/lib/grpc-stub-1.71.0.jar:/opt/aerospike-vector-search/lib/grpc-protobuf-lite-1.71.0.jar:/opt/aerospike-vector-search/lib/grpc-api-1.71.0.jar:/opt/aerospike-vector-search/lib/guava-33.4.0-jre.jar:/opt/aerospike-vector-search/lib/perfmark-api-0.27.0.jar:/opt/aerospike-vector-search/lib/picocli-4.7.6.jar:/opt/aerospike-vector-search/lib/caffeine-3.2.0.jar:/opt/aerospike-vector-search/lib/bcpkix-jdk18on-1.80.jar:/opt/aerospike-vector-search/lib/bcutil-jdk18on-1.80.jar:/opt/aerospike-vector-search/lib/bcprov-jdk18on-1.80.jar:/opt/aerospike-vector-search/lib/lombok-1.18.30.jar:/opt/aerospike-vector-search/lib/commons-lang3-3.13.0.jar:/opt/aerospike-vector-search/lib/commons-collections4-4.4.jar:/opt/aerospike-vector-search/lib/jul-to-slf4j-1.7.36.jar:/opt/aerospike-vector-search/lib/logback-json-classic-0.1.5.jar:/opt/aerospike-vector-search/lib/logback-classic-1.5.15.jar:/opt/aerospike-vector-search/lib/cron-utils-9.2.1.jar:/opt/aerospike-vector-search/lib/chronicle-map-3.27ea0.jar:/opt/aerospike-vector-search/lib/reflections-0.10.2.jar:/opt/aerospike-vector-search/lib/metrics-jvm-4.2.25.jar:/opt/aerospike-vector-search/lib/metrics-core-4.2.25.jar:/opt/aerospike-vector-search/lib/chronicle-wire-2.27ea0.jar:/opt/aerospike-vector-search/lib/chronicle-threads-2.27ea0.jar:/opt/aerospike-vector-search/lib/affinity-3.27ea0.jar:/opt/aerospike-vector-search/lib/chronicle-values-2.27ea0.jar:/opt/aerospike-vector-search/lib/chronicle-algorithms-2.27ea0.jar:/opt/aerospike-vector-search/lib/chronicle-bytes-2.27ea0.jar:/opt/aerospike-vector-search/lib/chronicle-core-2.27ea0.jar:/opt/aerospike-vector-search/lib/posix-2.27ea0.jar:/opt/aerospike-vector-search/lib/compiler-2.27ea0.jar:/opt/aerospike-vector-search/lib/slf4j-api-2.0.15.jar:/opt/aerospike-vector-search/lib/logback-jackson-0.1.5.jar:/opt/aerospike-vector-search/lib/logback-json-core-0.1.5.jar:/opt/aerospike-vector-search/lib/logback-core-1.5.15.jar:/opt/aerospike-vector-search/lib/javax.inject-1.jar:/opt/aerospike-vector-search/lib/jersey-container-servlet-core-3.1.5.jar:/opt/aerospike-vector-search/lib/jersey-server-3.1.5.jar:/opt/aerospike-vector-search/lib/jersey-hk2-3.1.5.jar:/opt/aerospike-vector-search/lib/jersey-media-multipart-3.1.5.jar:/opt/aerospike-vector-search/lib/jersey-client-3.1.5.jar:/opt/aerospike-vector-search/lib/jersey-common-3.1.5.jar:/opt/aerospike-vector-search/lib/hk2-locator-3.0.5.jar:/opt/aerospike-vector-search/lib/hk2-api-3.0.5.jar:/opt/aerospike-vector-search/lib/hk2-utils-3.0.5.jar:/opt/aerospike-vector-search/lib/jakarta.inject-api-2.0.1.jar:/opt/aerospike-vector-search/lib/aopalliance-1.0.jar:/opt/aerospike-vector-search/lib/mbassador-1.3.2.jar:/opt/aerospike-vector-search/lib/vault-java-driver-5.1.0.jar:/opt/aerospike-vector-search/lib/aerospike-client-jdk21-9.0.4.jar:/opt/aerospike-vector-search/lib/commons-math3-3.6.1.jar:/opt/aerospike-vector-search/lib/jbcrypt-0.4.jar:/opt/aerospike-vector-search/lib/animal-sniffer-annotations-1.24.jar:/opt/aerospike-vector-search/lib/gson-2.11.0.jar:/opt/aerospike-vector-search/lib/error_prone_annotations-2.36.0.jar:/opt/aerospike-vector-search/lib/netty-buffer-4.1.119.Final.jar:/opt/aerospike-vector-search/lib/netty-resolver-4.1.119.Final.jar:/opt/aerospike-vector-search/lib/netty-common-4.1.119.Final.jar:/opt/aerospike-vector-search/lib/failureaccess-1.0.2.jar:/opt/aerospike-vector-search/lib/listenablefuture-9999.0-empty-to-avoid-conflict-with-guava.jar:/opt/aerospike-vector-search/lib/jsr305-3.0.2.jar:/opt/aerospike-vector-search/lib/checker-qual-3.43.0.jar:/opt/aerospike-vector-search/lib/j2objc-annotations-3.0.0.jar:/opt/aerospike-vector-search/lib/annotations-4.1.1.4.jar:/opt/aerospike-vector-search/lib/jspecify-1.0.0.jar:/opt/aerospike-vector-search/lib/annotations-23.0.0.jar:/opt/aerospike-vector-search/lib/proto-google-common-protos-2.51.0.jar:/opt/aerospike-vector-search/lib/protobuf-java-3.25.6.jar:/opt/aerospike-vector-search/lib/simpleclient_dropwizard-0.16.0.jar:/opt/aerospike-vector-search/lib/simpleclient_servlet-0.16.0.jar:/opt/aerospike-vector-search/lib/undertow-servlet-2.3.18.Final.jar:/opt/aerospike-vector-search/lib/gnu-crypto-2.0.1.jar:/opt/aerospike-vector-search/lib/luaj-jse-3.0.1.jar:/opt/aerospike-vector-search/lib/aerospike-connect-outbound-sdk-2.2.0.jar:/opt/aerospike-vector-search/lib/commons-io-2.15.1.jar:/opt/aerospike-vector-search/lib/fastutil-8.5.12.jar:/opt/aerospike-vector-search/lib/jsap-20210129.jar:/opt/aerospike-vector-search/lib/jna-platform-5.5.0.jar:/opt/aerospike-vector-search/lib/jna-5.5.0.jar:/opt/aerospike-vector-search/lib/snakeyaml-2.2.jar:/opt/aerospike-vector-search/lib/msgpack-core-0.9.8.jar:/opt/aerospike-vector-search/lib/javax.annotation-api-1.3.2.jar:/opt/aerospike-vector-search/lib/simpleclient_servlet_common-0.16.0.jar:/opt/aerospike-vector-search/lib/simpleclient_common-0.16.0.jar:/opt/aerospike-vector-search/lib/simpleclient-0.16.0.jar:/opt/aerospike-vector-search/lib/javassist-3.29.2-GA.jar:/opt/aerospike-vector-search/lib/mimepull-1.9.15.jar:/opt/aerospike-vector-search/lib/jersey-entity-filtering-3.1.5.jar:/opt/aerospike-vector-search/lib/jakarta.xml.bind-api-4.0.0.jar:/opt/aerospike-vector-search/lib/jakarta.servlet-api-6.0.0.jar:/opt/aerospike-vector-search/lib/jakarta.annotation-api-2.1.1.jar:/opt/aerospike-vector-search/lib/jakarta.ws.rs-api-3.1.0.jar:/opt/aerospike-vector-search/lib/jakarta.validation-api-3.0.2.jar:/opt/aerospike-vector-search/lib/xnio-nio-3.8.16.Final.jar:/opt/aerospike-vector-search/lib/xnio-api-3.8.16.Final.jar:/opt/aerospike-vector-search/lib/wildfly-client-config-1.0.1.Final.jar:/opt/aerospike-vector-search/lib/jboss-threads-3.5.0.Final.jar:/opt/aerospike-vector-search/lib/jboss-logging-3.4.3.Final.jar:/opt/aerospike-vector-search/lib/wildfly-common-1.5.4.Final.jar:/opt/aerospike-vector-search/lib/chronicle-analytics-2.27ea0.jar:/opt/aerospike-vector-search/lib/jnr-ffi-2.2.15.jar:/opt/aerospike-vector-search/lib/jnr-constants-0.10.4.jar:/opt/aerospike-vector-search/lib/javapoet-1.13.0.jar:/opt/aerospike-vector-search/lib/simpleclient_tracer_otel-0.16.0.jar:/opt/aerospike-vector-search/lib/simpleclient_tracer_otel_agent-0.16.0.jar:/opt/aerospike-vector-search/lib/osgi-resource-locator-1.0.3.jar:/opt/aerospike-vector-search/lib/aopalliance-repackaged-3.0.5.jar:/opt/aerospike-vector-search/lib/jakarta.activation-api-2.1.0.jar:/opt/aerospike-vector-search/lib/jffi-1.3.12.jar:/opt/aerospike-vector-search/lib/jffi-1.3.12-native.jar:/opt/aerospike-vector-search/lib/asm-9.2.jar:/opt/aerospike-vector-search/lib/jnr-a64asm-1.0.0.jar:/opt/aerospike-vector-search/lib/jnr-x86asm-1.0.2.jar:/opt/aerospike-vector-search/lib/simpleclient_tracer_common-0.16.0.jar com.aerospike.vector.VectorDbMainKt -f /etc/aerospike-vector-search/aerospike-vector-search.yml
 
 
 
@@ -449,35 +352,35 @@ Container Status Summary:
 Container: aerospike-vector-search
 Restart Count: 0
 Last State: {}
-Current State: {"running":{"startedAt":"2025-04-22T19:05:25Z"}}
+Current State: {"running":{"startedAt":"2025-04-29T19:17:19Z"}}
 ---
 
 Previous Terminations (including OOMKills):
 
 Pod Events History (last 1 hour):
 LAST SEEN   TYPE      REASON                            OBJECT                                  MESSAGE
-10s         Warning   FailedToRetrieveImagePullSecret   pod/avs-app-aerospike-vector-search-0   Unable to retrieve some image pull secrets (jfrog-secret); attempting to pull the image may not succeed.
+77s         Warning   FailedToRetrieveImagePullSecret   pod/avs-app-aerospike-vector-search-0   Unable to retrieve some image pull secrets (jfrog-secret); attempting to pull the image may not succeed.
 
 Node Conditions at Recent Restarts:
 {
-  "lastHeartbeatTime": "2025-04-28T05:28:00Z",
-  "lastTransitionTime": "2025-04-22T18:35:58Z",
+  "lastHeartbeatTime": "2025-04-29T23:05:27Z",
+  "lastTransitionTime": "2025-04-29T19:06:40Z",
   "message": "kubelet has sufficient memory available",
   "reason": "KubeletHasSufficientMemory",
   "status": "False",
   "type": "MemoryPressure"
 }
 {
-  "lastHeartbeatTime": "2025-04-28T05:28:00Z",
-  "lastTransitionTime": "2025-04-22T18:35:58Z",
+  "lastHeartbeatTime": "2025-04-29T23:05:27Z",
+  "lastTransitionTime": "2025-04-29T19:06:40Z",
   "message": "kubelet has no disk pressure",
   "reason": "KubeletHasNoDiskPressure",
   "status": "False",
   "type": "DiskPressure"
 }
 {
-  "lastHeartbeatTime": "2025-04-28T05:28:00Z",
-  "lastTransitionTime": "2025-04-22T18:35:58Z",
+  "lastHeartbeatTime": "2025-04-29T23:05:27Z",
+  "lastTransitionTime": "2025-04-29T19:06:40Z",
   "message": "kubelet has sufficient PID available",
   "reason": "KubeletHasSufficientPID",
   "status": "False",
@@ -491,7 +394,7 @@ Container Memory Limit:
 JVM Memory Settings:
 ➡️ jcmd 9 VM.flags:
 9:
--XX:+AlwaysPreTouch -XX:CICompilerCount=12 -XX:+ExitOnOutOfMemoryError -XX:InitialHeapSize=1054867456 -XX:MaxHeapSize=53938749440 -XX:MinHeapDeltaBytes=2097152 -XX:MinHeapSize=8388608 -XX:NonNMethodCodeHeapSize=7602480 -XX:NonProfiledCodeHeapSize=122027880 -XX:ProfiledCodeHeapSize=122027880 -XX:ReservedCodeCacheSize=251658240 -XX:+SegmentedCodeCache -XX:SoftMaxHeapSize=53938749440 -XX:-UseNUMA -XX:-UseNUMAInterleaving -XX:+UseZGC -XX:+ZGenerational -XX:ZOldGCThreads=4 -XX:ZYoungGCThreads=4 
+-XX:+AlwaysPreTouch -XX:CICompilerCount=4 -XX:+ExitOnOutOfMemoryError -XX:InitialHeapSize=1027604480 -XX:MaxHeapSize=53267660800 -XX:MinHeapDeltaBytes=2097152 -XX:MinHeapSize=8388608 -XX:NonNMethodCodeHeapSize=5839372 -XX:NonProfiledCodeHeapSize=122909434 -XX:ProfiledCodeHeapSize=122909434 -XX:ReservedCodeCacheSize=251658240 -XX:+SegmentedCodeCache -XX:SoftMaxHeapSize=53267660800 -XX:-THPStackMitigation -XX:+UseFastUnorderedTimeStamps -XX:-UseNUMA -XX:-UseNUMAInterleaving -XX:+UseZGC -XX:+ZGenerational -XX:ZOldGCThreads=2 -XX:ZYoungGCThreads=2 
 
 ➡️ jcmd 9 GC.heap_info:
 9:
@@ -499,275 +402,161 @@ JVM Memory Settings:
 Heap Info:
 ➡️ jcmd 9 GC.heap_info:
 9:
- ZHeap           used 1188M, capacity 1564M, max capacity 51440M
- Metaspace       used 83130K, committed 83840K, reserved 1179648K
-  class space    used 8814K, committed 9280K, reserved 1048576K
+ ZHeap           used 3500M, capacity 23728M, max capacity 50800M
+ Metaspace       used 80875K, committed 81664K, reserved 1179648K
+  class space    used 8817K, committed 9216K, reserved 1048576K
+
 ==============================
 🧵 POD: avs-app-aerospike-vector-search-1
-Running on node: aks-avsindexp-13574360-vmss000000
+Running on node: ip-192-168-28-89.ec2.internal
 ==============================
 === Node Information ===
 === Node Description ===
-Name:               aks-avsindexp-13574360-vmss000000
+Name:               ip-192-168-28-89.ec2.internal
 Roles:              <none>
-Labels:             aerospike.io/node-pool=avs
+Labels:             aerospike.io/group=avs-index-pool
+                    aerospike.io/node-pool=avs
                     aerospike.io/role-label=indexer-nodes
-                    agentpool=avsindexp
+                    alpha.eksctl.io/cluster-name=letsrememberopen2
+                    alpha.eksctl.io/nodegroup-name=avs-index-pool
                     beta.kubernetes.io/arch=amd64
-                    beta.kubernetes.io/instance-type=Standard_D8_v3
+                    beta.kubernetes.io/instance-type=m5.xlarge
                     beta.kubernetes.io/os=linux
-                    failure-domain.beta.kubernetes.io/region=eastus
-                    failure-domain.beta.kubernetes.io/zone=0
-                    kubernetes.azure.com/agentpool=avsindexp
-                    kubernetes.azure.com/azure-cni-overlay=true
-                    kubernetes.azure.com/cluster=MC_myntra3-rg_myntra3_eastus
-                    kubernetes.azure.com/consolidated-additional-properties=18ea0bea-1fa9-11f0-bd62-6ae0693153c2
-                    kubernetes.azure.com/kubelet-identity-client-id=54b5fde4-e2e9-4b1c-a092-bd84d9e52a8b
-                    kubernetes.azure.com/mode=user
-                    kubernetes.azure.com/network-name=aks-vnet-16422918
-                    kubernetes.azure.com/network-resourcegroup=myntra3-rg
-                    kubernetes.azure.com/network-subnet=aks-subnet
-                    kubernetes.azure.com/network-subscription=9dcbd702-1653-442f-b361-2de694f9dd9c
-                    kubernetes.azure.com/node-image-version=AKSUbuntu-2204containerd-202504.06.0
-                    kubernetes.azure.com/nodenetwork-vnetguid=db93c545-e895-46f9-a46f-856d5b1a1164
-                    kubernetes.azure.com/nodepool-type=VirtualMachineScaleSets
-                    kubernetes.azure.com/os-sku=Ubuntu
-                    kubernetes.azure.com/podnetwork-type=overlay
-                    kubernetes.azure.com/role=agent
-                    kubernetes.azure.com/storageprofile=managed
-                    kubernetes.azure.com/storagetier=Standard_LRS
+                    eks.amazonaws.com/capacityType=ON_DEMAND
+                    eks.amazonaws.com/nodegroup=avs-index-pool
+                    eks.amazonaws.com/nodegroup-image=ami-01fc98868662094f9
+                    eks.amazonaws.com/sourceLaunchTemplateId=lt-041601238a74d6e2e
+                    eks.amazonaws.com/sourceLaunchTemplateVersion=1
+                    failure-domain.beta.kubernetes.io/region=us-east-1
+                    failure-domain.beta.kubernetes.io/zone=us-east-1b
+                    k8s.io/cloud-provider-aws=7b106a2a28f90fcf8e2b12bdb82ef1dc
                     kubernetes.io/arch=amd64
-                    kubernetes.io/hostname=aks-avsindexp-13574360-vmss000000
+                    kubernetes.io/hostname=ip-192-168-28-89.ec2.internal
                     kubernetes.io/os=linux
-                    node.kubernetes.io/instance-type=Standard_D8_v3
-                    storageprofile=managed
-                    storagetier=Standard_LRS
-                    topology.disk.csi.azure.com/zone=
-                    topology.kubernetes.io/region=eastus
-                    topology.kubernetes.io/zone=0
-Annotations:        alpha.kubernetes.io/provided-node-ip: 10.224.0.8
-                    csi.volume.kubernetes.io/nodeid:
-                      {"disk.csi.azure.com":"aks-avsindexp-13574360-vmss000000","file.csi.azure.com":"aks-avsindexp-13574360-vmss000000"}
+                    node.kubernetes.io/instance-type=m5.xlarge
+                    topology.ebs.csi.aws.com/zone=us-east-1b
+                    topology.k8s.aws/zone-id=use1-az4
+                    topology.kubernetes.io/region=us-east-1
+                    topology.kubernetes.io/zone=us-east-1b
+Annotations:        alpha.kubernetes.io/provided-node-ip: 192.168.28.89
+                    csi.volume.kubernetes.io/nodeid: {"ebs.csi.aws.com":"i-0ac1607ea6f0a2edc"}
                     node.alpha.kubernetes.io/ttl: 0
                     volumes.kubernetes.io/controller-managed-attach-detach: true
-CreationTimestamp:  Tue, 22 Apr 2025 11:40:48 -0700
+CreationTimestamp:  Tue, 29 Apr 2025 12:13:42 -0700
 Taints:             <none>
 Unschedulable:      false
 Lease:
-  HolderIdentity:  aks-avsindexp-13574360-vmss000000
+  HolderIdentity:  ip-192-168-28-89.ec2.internal
   AcquireTime:     <unset>
-  RenewTime:       Sun, 27 Apr 2025 22:29:50 -0700
+  RenewTime:       Tue, 29 Apr 2025 16:08:21 -0700
 Conditions:
-  Type                          Status  LastHeartbeatTime                 LastTransitionTime                Reason                          Message
-  ----                          ------  -----------------                 ------------------                ------                          -------
-  ContainerRuntimeProblem       False   Sun, 27 Apr 2025 22:28:29 -0700   Fri, 25 Apr 2025 20:52:30 -0700   ContainerRuntimeIsUp            container runtime service is up
-  FrequentContainerdRestart     False   Sun, 27 Apr 2025 22:28:29 -0700   Fri, 25 Apr 2025 20:52:30 -0700   NoFrequentContainerdRestart     containerd is functioning properly
-  VMEventScheduled              False   Sun, 27 Apr 2025 22:28:29 -0700   Fri, 25 Apr 2025 20:52:30 -0700   NoVMEventScheduled              VM has no scheduled event
-  FrequentDockerRestart         False   Sun, 27 Apr 2025 22:28:29 -0700   Fri, 25 Apr 2025 20:52:30 -0700   NoFrequentDockerRestart         docker is functioning properly
-  KubeletProblem                False   Sun, 27 Apr 2025 22:28:29 -0700   Fri, 25 Apr 2025 20:52:30 -0700   KubeletIsUp                     kubelet service is up
-  FrequentUnregisterNetDevice   False   Sun, 27 Apr 2025 22:28:29 -0700   Fri, 25 Apr 2025 20:52:30 -0700   NoFrequentUnregisterNetDevice   node is functioning properly
-  FilesystemCorruptionProblem   False   Sun, 27 Apr 2025 22:28:29 -0700   Fri, 25 Apr 2025 20:52:30 -0700   FilesystemIsOK                  Filesystem is healthy
-  KernelDeadlock                False   Sun, 27 Apr 2025 22:28:29 -0700   Fri, 25 Apr 2025 20:52:30 -0700   KernelHasNoDeadlock             kernel has no deadlock
-  FrequentKubeletRestart        False   Sun, 27 Apr 2025 22:28:29 -0700   Fri, 25 Apr 2025 20:52:30 -0700   NoFrequentKubeletRestart        kubelet is functioning properly
-  ReadonlyFilesystem            False   Sun, 27 Apr 2025 22:28:29 -0700   Fri, 25 Apr 2025 20:52:30 -0700   FilesystemIsNotReadOnly         Filesystem is not read-only
-  MemoryPressure                False   Sun, 27 Apr 2025 22:28:15 -0700   Sun, 27 Apr 2025 22:28:15 -0700   KubeletHasSufficientMemory      kubelet has sufficient memory available
-  DiskPressure                  False   Sun, 27 Apr 2025 22:28:15 -0700   Tue, 22 Apr 2025 11:40:48 -0700   KubeletHasNoDiskPressure        kubelet has no disk pressure
-  PIDPressure                   False   Sun, 27 Apr 2025 22:28:15 -0700   Tue, 22 Apr 2025 11:40:48 -0700   KubeletHasSufficientPID         kubelet has sufficient PID available
-  Ready                         True    Sun, 27 Apr 2025 22:28:15 -0700   Tue, 22 Apr 2025 11:41:08 -0700   KubeletReady                    kubelet is posting ready status
+  Type             Status  LastHeartbeatTime                 LastTransitionTime                Reason                       Message
+  ----             ------  -----------------                 ------------------                ------                       -------
+  MemoryPressure   False   Tue, 29 Apr 2025 16:05:26 -0700   Tue, 29 Apr 2025 12:13:40 -0700   KubeletHasSufficientMemory   kubelet has sufficient memory available
+  DiskPressure     False   Tue, 29 Apr 2025 16:05:26 -0700   Tue, 29 Apr 2025 12:13:40 -0700   KubeletHasNoDiskPressure     kubelet has no disk pressure
+  PIDPressure      False   Tue, 29 Apr 2025 16:05:26 -0700   Tue, 29 Apr 2025 12:13:40 -0700   KubeletHasSufficientPID      kubelet has sufficient PID available
+  Ready            True    Tue, 29 Apr 2025 16:05:26 -0700   Tue, 29 Apr 2025 12:13:55 -0700   KubeletReady                 kubelet is posting ready status
 Addresses:
-  InternalIP:  10.224.0.8
-  Hostname:    aks-avsindexp-13574360-vmss000000
+  InternalIP:   192.168.28.89
+  ExternalIP:   54.226.248.213
+  InternalDNS:  ip-192-168-28-89.ec2.internal
+  Hostname:     ip-192-168-28-89.ec2.internal
+  ExternalDNS:  ec2-54-226-248-213.compute-1.amazonaws.com
 Capacity:
-  cpu:                8
-  ephemeral-storage:  259966896Ki
+  cpu:                4
+  ephemeral-storage:  83873772Ki
   hugepages-1Gi:      0
   hugepages-2Mi:      0
-  memory:             32864956Ki
-  pods:               250
+  memory:             16069020Ki
+  pods:               58
 Allocatable:
-  cpu:                7820m
-  ephemeral-storage:  239585490957
+  cpu:                3920m
+  ephemeral-storage:  76224326324
   hugepages-1Gi:      0
   hugepages-2Mi:      0
-  memory:             27591356Ki
-  pods:               250
+  memory:             15052188Ki
+  pods:               58
 System Info:
-  Machine ID:                 7dfb6144a61f49ad9aa475dfa35898a3
-  System UUID:                94ce577d-6731-6841-a61f-5b3d266a2f9a
-  Boot ID:                    9e162828-d56b-44ab-854d-bb44c8722e3b
-  Kernel Version:             5.15.0-1086-azure
-  OS Image:                   Ubuntu 22.04.5 LTS
+  Machine ID:                 ec2acfb13eb90f016a432869284336b9
+  System UUID:                ec2acfb1-3eb9-0f01-6a43-2869284336b9
+  Boot ID:                    b662caac-c865-4777-bde1-1fbafd9d4e53
+  Kernel Version:             5.10.235-227.919.amzn2.x86_64
+  OS Image:                   Amazon Linux 2
   Operating System:           linux
   Architecture:               amd64
-  Container Runtime Version:  containerd://1.7.27-1
-  Kubelet Version:            v1.31.7
-  Kube-Proxy Version:         v1.31.7
-ProviderID:                   azure:///subscriptions/9dcbd702-1653-442f-b361-2de694f9dd9c/resourceGroups/mc_myntra3-rg_myntra3_eastus/providers/Microsoft.Compute/virtualMachineScaleSets/aks-avsindexp-13574360-vmss/virtualMachines/0
-Non-terminated Pods:          (11 in total)
+  Container Runtime Version:  containerd://1.7.27
+  Kubelet Version:            v1.30.9-eks-5d632ec
+  Kube-Proxy Version:         v1.30.9-eks-5d632ec
+ProviderID:                   aws:///us-east-1b/i-0ac1607ea6f0a2edc
+Non-terminated Pods:          (6 in total)
   Namespace                   Name                                                      CPU Requests  CPU Limits  Memory Requests  Memory Limits  Age
   ---------                   ----                                                      ------------  ----------  ---------------  -------------  ---
-  avs                         avs-app-aerospike-vector-search-1                         0 (0%)        0 (0%)      0 (0%)           0 (0%)         7m1s
-  kube-system                 azure-cns-4m9wg                                           40m (0%)      40m (0%)    250Mi (0%)       250Mi (0%)     5d10h
-  kube-system                 azure-ip-masq-agent-l5zj6                                 100m (1%)     500m (6%)   50Mi (0%)        250Mi (0%)     5d10h
-  kube-system                 cloud-node-manager-9j4ms                                  50m (0%)      0 (0%)      50Mi (0%)        512Mi (1%)     5d10h
-  kube-system                 csi-azuredisk-node-66jtd                                  30m (0%)      0 (0%)      60Mi (0%)        2800Mi (10%)   5d10h
-  kube-system                 csi-azurefile-node-g2gm8                                  30m (0%)      0 (0%)      60Mi (0%)        600Mi (2%)     5d10h
-  kube-system                 kube-proxy-9bcs5                                          100m (1%)     0 (0%)      0 (0%)           0 (0%)         5d10h
-  monitoring                  monitoring-stack-prometheus-node-exporter-vrsnv           0 (0%)        0 (0%)      0 (0%)           0 (0%)         5d10h
-  olm                         operatorhubio-catalog-xdlsz                               10m (0%)      0 (0%)      50Mi (0%)        0 (0%)         2d13h
-  olm                         packageserver-88f9c495c-qkhv9                             10m (0%)      0 (0%)      50Mi (0%)        0 (0%)         5d10h
-  operators                   aerospike-operator-controller-manager-656d4bcbb7-q4cds    10m (0%)      400m (5%)   64Mi (0%)        512Mi (1%)     5d10h
+  avs                         avs-app-aerospike-vector-search-1                         0 (0%)        0 (0%)      0 (0%)           0 (0%)         3h51m
+  kube-system                 aws-node-929zg                                            50m (1%)      0 (0%)      0 (0%)           0 (0%)         3h54m
+  kube-system                 ebs-csi-node-7c5xp                                        30m (0%)      0 (0%)      120Mi (0%)       768Mi (5%)     3h54m
+  kube-system                 kube-proxy-qsxzq                                          100m (2%)     0 (0%)      0 (0%)           0 (0%)         3h54m
+  monitoring                  monitoring-stack-prometheus-node-exporter-nflrl           0 (0%)        0 (0%)      0 (0%)           0 (0%)         3h50m
+  operators                   aerospike-operator-controller-manager-67f5b6bfd4-9gg6d    10m (0%)      400m (10%)  64Mi (0%)        512Mi (3%)     3h52m
 Allocated resources:
   (Total limits may be over 100 percent, i.e., overcommitted.)
   Resource           Requests    Limits
   --------           --------    ------
-  cpu                380m (4%)   940m (12%)
-  memory             634Mi (2%)  4924Mi (18%)
+  cpu                190m (4%)   400m (10%)
+  memory             184Mi (1%)  1280Mi (8%)
   ephemeral-storage  0 (0%)      0 (0%)
   hugepages-1Gi      0 (0%)      0 (0%)
   hugepages-2Mi      0 (0%)      0 (0%)
-Events:
-  Type     Reason                     Age                     From            Message
-  ----     ------                     ----                    ----            -------
-  Warning  OOMKilling                 27m                     kernel-monitor  Memory cgroup out of memory: Killed process 2251358 (java) total-vm:444429372kB, anon-rss:2047712kB, file-rss:25620kB, shmem-rss:24934800kB, UID:0 pgtables:53996kB oom_score_adj:1000
-  Warning  OOMKilling                 27m                     kernel-monitor  Memory cgroup out of memory: Killed process 2251343 (as-tini-static) total-vm:1156kB, anon-rss:4kB, file-rss:0kB, shmem-rss:0kB, UID:0 pgtables:32kB oom_score_adj:1000
-  Warning  OOMKilling                 27m                     kernel-monitor  Memory cgroup out of memory: Killed process 2251423 (ZWorkerYoung#1) total-vm:444429372kB, anon-rss:2054136kB, file-rss:26068kB, shmem-rss:24961084kB, UID:0 pgtables:53996kB oom_score_adj:1000
-  Warning  OOMKilling                 15m                     kernel-monitor  Memory cgroup out of memory: Killed process 2324889 (java) total-vm:443841944kB, anon-rss:1320400kB, file-rss:25184kB, shmem-rss:25647880kB, UID:0 pgtables:54196kB oom_score_adj:1000
-  Warning  OOMKilling                 15m                     kernel-monitor  Memory cgroup out of memory: Killed process 2324876 (as-tini-static) total-vm:1156kB, anon-rss:4kB, file-rss:0kB, shmem-rss:0kB, UID:0 pgtables:32kB oom_score_adj:1000
-  Warning  OOMKilling                 15m                     kernel-monitor  Memory cgroup out of memory: Killed process 2325119 (pool-12-thread-) total-vm:443841944kB, anon-rss:1331876kB, file-rss:25820kB, shmem-rss:25672744kB, UID:0 pgtables:54196kB oom_score_adj:1000
-  Warning  EvictionThresholdMet       7m7s (x166 over 5d6h)   kubelet         Attempting to reclaim memory
-  Normal   NodeHasInsufficientMemory  7m2s (x165 over 5d6h)   kubelet         Node aks-avsindexp-13574360-vmss000000 status is now: NodeHasInsufficientMemory
-  Normal   NodeHasSufficientMemory    116s (x189 over 5d10h)  kubelet         Node aks-avsindexp-13574360-vmss000000 status is now: NodeHasSufficientMemory
+Events:              <none>
 
 === Node Resources ===
 {
-  "cpu": "8",
-  "ephemeral-storage": "259966896Ki",
+  "cpu": "4",
+  "ephemeral-storage": "83873772Ki",
   "hugepages-1Gi": "0",
   "hugepages-2Mi": "0",
-  "memory": "32864956Ki",
-  "pods": "250"
+  "memory": "16069020Ki",
+  "pods": "58"
 }
 
 === Node Allocatable Resources ===
 {
-  "cpu": "7820m",
-  "ephemeral-storage": "239585490957",
+  "cpu": "3920m",
+  "ephemeral-storage": "76224326324",
   "hugepages-1Gi": "0",
   "hugepages-2Mi": "0",
-  "memory": "27591356Ki",
-  "pods": "250"
+  "memory": "15052188Ki",
+  "pods": "58"
 }
 
 === Node Conditions ===
 [
   {
-    "lastHeartbeatTime": "2025-04-28T05:28:29Z",
-    "lastTransitionTime": "2025-04-26T03:52:30Z",
-    "message": "container runtime service is up",
-    "reason": "ContainerRuntimeIsUp",
-    "status": "False",
-    "type": "ContainerRuntimeProblem"
-  },
-  {
-    "lastHeartbeatTime": "2025-04-28T05:28:29Z",
-    "lastTransitionTime": "2025-04-26T03:52:30Z",
-    "message": "containerd is functioning properly",
-    "reason": "NoFrequentContainerdRestart",
-    "status": "False",
-    "type": "FrequentContainerdRestart"
-  },
-  {
-    "lastHeartbeatTime": "2025-04-28T05:28:29Z",
-    "lastTransitionTime": "2025-04-26T03:52:30Z",
-    "message": "VM has no scheduled event",
-    "reason": "NoVMEventScheduled",
-    "status": "False",
-    "type": "VMEventScheduled"
-  },
-  {
-    "lastHeartbeatTime": "2025-04-28T05:28:29Z",
-    "lastTransitionTime": "2025-04-26T03:52:30Z",
-    "message": "docker is functioning properly",
-    "reason": "NoFrequentDockerRestart",
-    "status": "False",
-    "type": "FrequentDockerRestart"
-  },
-  {
-    "lastHeartbeatTime": "2025-04-28T05:28:29Z",
-    "lastTransitionTime": "2025-04-26T03:52:30Z",
-    "message": "kubelet service is up",
-    "reason": "KubeletIsUp",
-    "status": "False",
-    "type": "KubeletProblem"
-  },
-  {
-    "lastHeartbeatTime": "2025-04-28T05:28:29Z",
-    "lastTransitionTime": "2025-04-26T03:52:30Z",
-    "message": "node is functioning properly",
-    "reason": "NoFrequentUnregisterNetDevice",
-    "status": "False",
-    "type": "FrequentUnregisterNetDevice"
-  },
-  {
-    "lastHeartbeatTime": "2025-04-28T05:28:29Z",
-    "lastTransitionTime": "2025-04-26T03:52:30Z",
-    "message": "Filesystem is healthy",
-    "reason": "FilesystemIsOK",
-    "status": "False",
-    "type": "FilesystemCorruptionProblem"
-  },
-  {
-    "lastHeartbeatTime": "2025-04-28T05:28:29Z",
-    "lastTransitionTime": "2025-04-26T03:52:30Z",
-    "message": "kernel has no deadlock",
-    "reason": "KernelHasNoDeadlock",
-    "status": "False",
-    "type": "KernelDeadlock"
-  },
-  {
-    "lastHeartbeatTime": "2025-04-28T05:28:29Z",
-    "lastTransitionTime": "2025-04-26T03:52:30Z",
-    "message": "kubelet is functioning properly",
-    "reason": "NoFrequentKubeletRestart",
-    "status": "False",
-    "type": "FrequentKubeletRestart"
-  },
-  {
-    "lastHeartbeatTime": "2025-04-28T05:28:29Z",
-    "lastTransitionTime": "2025-04-26T03:52:30Z",
-    "message": "Filesystem is not read-only",
-    "reason": "FilesystemIsNotReadOnly",
-    "status": "False",
-    "type": "ReadonlyFilesystem"
-  },
-  {
-    "lastHeartbeatTime": "2025-04-28T05:28:15Z",
-    "lastTransitionTime": "2025-04-28T05:28:15Z",
+    "lastHeartbeatTime": "2025-04-29T23:05:26Z",
+    "lastTransitionTime": "2025-04-29T19:13:40Z",
     "message": "kubelet has sufficient memory available",
     "reason": "KubeletHasSufficientMemory",
     "status": "False",
     "type": "MemoryPressure"
   },
   {
-    "lastHeartbeatTime": "2025-04-28T05:28:15Z",
-    "lastTransitionTime": "2025-04-22T18:40:48Z",
+    "lastHeartbeatTime": "2025-04-29T23:05:26Z",
+    "lastTransitionTime": "2025-04-29T19:13:40Z",
     "message": "kubelet has no disk pressure",
     "reason": "KubeletHasNoDiskPressure",
     "status": "False",
     "type": "DiskPressure"
   },
   {
-    "lastHeartbeatTime": "2025-04-28T05:28:15Z",
-    "lastTransitionTime": "2025-04-22T18:40:48Z",
+    "lastHeartbeatTime": "2025-04-29T23:05:26Z",
+    "lastTransitionTime": "2025-04-29T19:13:40Z",
     "message": "kubelet has sufficient PID available",
     "reason": "KubeletHasSufficientPID",
     "status": "False",
     "type": "PIDPressure"
   },
   {
-    "lastHeartbeatTime": "2025-04-28T05:28:15Z",
-    "lastTransitionTime": "2025-04-22T18:41:08Z",
+    "lastHeartbeatTime": "2025-04-29T23:05:26Z",
+    "lastTransitionTime": "2025-04-29T19:13:55Z",
     "message": "kubelet is posting ready status",
     "reason": "KubeletReady",
     "status": "True",
@@ -777,9 +566,9 @@ Events:
 
 === Cloud Instance Information ===
 Cloud Provider: On-premises
-Instance Type: Standard_D8_v3
-Region: eastus
-Zone: 0
+Instance Type: m5.xlarge
+Region: us-east-1
+Zone: us-east-1b
 
 === OOMKill Events ===
 System OOM Events:
@@ -830,7 +619,7 @@ service:
     "5000":
       advertised-listeners:
         default:
-        - address: 10.224.0.8
+        - address: 54.226.248.213
           port: 5000
 storage:
   client-policy: {}
@@ -840,8 +629,8 @@ storage:
 
 📄 FILE: init-container.log
 ------------------------------
-2025/04/28 05:28:16 Init container started
-2025/04/28 05:28:16 Initial configuration:
+2025/04/29 19:17:13 Init container started
+2025/04/29 19:17:13 Initial configuration:
 {
   "cluster": {
     "cluster-name": "avs-db-1"
@@ -894,59 +683,64 @@ storage:
     ]
   }
 }
-2025/04/28 05:28:16 Starting setRoles()
-2025/04/28 05:28:16 Starting getAerospikeVectorSearchRoles()
-2025/04/28 05:28:16 Starting getNodeLabels()
-2025/04/28 05:28:16 Starting GetNodeInstance()
-2025/04/28 05:28:16 NODE_NAME: aks-avsindexp-13574360-vmss000000
-2025/04/28 05:28:16 SERVICE_NAME: avs-app-aerospike-vector-search
-2025/04/28 05:28:16 POD_NAMESPACE: avs
-2025/04/28 05:28:16 In-cluster config obtained successfully
-2025/04/28 05:28:17 Fetched node: aks-avsindexp-13574360-vmss000000
-2025/04/28 05:28:17 Service avs-app-aerospike-vector-search not found in namespace avs; proceeding with node only
-2025/04/28 05:28:17 Found node label: aerospike.io/role-label=indexer-nodes
-2025/04/28 05:28:17 Available roles: map[default-nodes:[query index-update] indexer-nodes:[index-update] query-nodes:[query] standalone-indexer-nodes:[standalone-indexer] standalone-nodes:[standalone-indexer]]
-2025/04/28 05:28:17 Found role for label indexer-nodes: [index-update]
-2025/04/28 05:28:17 Successfully set roles in cluster configuration
-2025/04/28 05:28:17 Starting setAdvertisedListeners()
-2025/04/28 05:28:17 Operating in NETWORK_MODE: hostnetwork
-2025/04/28 05:28:17 CONTAINER_PORT: 5000 for hostnetwork mode
-2025/04/28 05:28:17 Setting advertised listeners to IP: 10.224.0.8, Port: 5000
-2025/04/28 05:28:17 Setting advertised-listeners for port 5000
-Pod ID: 1
-2025/04/28 05:28:17 Updated ports configuration: {
+2025/04/29 19:17:13 Starting setRoles()
+2025/04/29 19:17:13 Starting getAerospikeVectorSearchRoles()
+2025/04/29 19:17:13 Starting getNodeLabels()
+2025/04/29 19:17:13 Starting GetNodeInstance()
+2025/04/29 19:17:13 NODE_NAME: ip-192-168-28-89.ec2.internal
+2025/04/29 19:17:13 SERVICE_NAME: avs-app-aerospike-vector-search
+2025/04/29 19:17:13 POD_NAMESPACE: avs
+2025/04/29 19:17:13 In-cluster config obtained successfully
+2025/04/29 19:17:13 Fetched node: ip-192-168-28-89.ec2.internal
+2025/04/29 19:17:13 Service avs-app-aerospike-vector-search not found in namespace avs; proceeding with node only
+2025/04/29 19:17:13 Found node label: aerospike.io/role-label=indexer-nodes
+2025/04/29 19:17:13 Available roles: map[default-nodes:[query index-update] indexer-nodes:[index-update] query-nodes:[query] standalone-indexer-nodes:[standalone-indexer] standalone-nodes:[standalone-indexer]]
+2025/04/29 19:17:13 Found role for label indexer-nodes: [index-update]
+2025/04/29 19:17:13 Successfully set roles in cluster configuration
+2025/04/29 19:17:13 Starting setAdvertisedListeners()
+2025/04/29 19:17:13 Operating in NETWORK_MODE: hostnetwork
+2025/04/29 19:17:13 CONTAINER_PORT: 5000 for hostnetwork mode
+2025/04/29 19:17:13 Setting advertised listeners to IP: 54.226.248.213, Port: 5000
+2025/04/29 19:17:13 Setting advertised-listeners for port 5000
+2025/04/29 19:17:13 Updated ports configuration: {
   "5000": {
     "advertised-listeners": {
       "default": [
         {
-          "address": "10.224.0.8",
+          "address": "54.226.248.213",
           "port": 5000
         }
       ]
     }
   }
 }
-2025/04/28 05:28:17 Setting up heartbeat seeds...
-2025/04/28 05:28:17 Generating heartbeat seed DNS names...
-2025/04/28 05:28:17 Checking for heartbeat configuration...
-2025/04/28 05:28:17 Found heartbeat seed configuration: address=avs-app-aerospike-vector-search-0.avs-app-aerospike-vector-search-internal.avs.svc.cluster.local, port=5001
-2025/04/28 05:28:17 Successfully configured heartbeat with 2 seed(s)
-2025/04/28 05:28:17 Calculated JVM options: -Xmx25675m
-2025/04/28 05:28:17 Set JAVA_OPTS to: -Xmx25675m
-2025/04/28 05:28:17 Wrote JVM options to file: /etc/aerospike-vector-search/jvm.opts
-2025/04/28 05:28:17 Init container completed successfully
+2025/04/29 19:17:13 Setting up heartbeat seeds...
+2025/04/29 19:17:13 Generating heartbeat seed DNS names...
+2025/04/29 19:17:13 Checking for heartbeat configuration...
+2025/04/29 19:17:13 Found heartbeat seed configuration: address=avs-app-aerospike-vector-search-0.avs-app-aerospike-vector-search-internal.avs.svc.cluster.local, port=5001
+2025/04/29 19:17:13 Successfully configured heartbeat with 2 seed(s)
+Pod ID: 1
+2025/04/29 19:17:13 No real memory limit set, using system total memory: 16454676480 bytes
+2025/04/29 19:17:13 Calculated JVM options: -Xmx12553m
+2025/04/29 19:17:13 Set JAVA_OPTS to: -Xmx12553m
+2025/04/29 19:17:13 Wrote JVM options to file: /etc/aerospike-vector-search/jvm.opts
+2025/04/29 19:17:13 Init container completed successfully
 
 📄 FILE: jvm-info.txt
 ------------------------------
-➡️ jcmd 9 VM.flags:
-9:
--XX:+AlwaysPreTouch -XX:CICompilerCount=4 -XX:+ExitOnOutOfMemoryError -XX:InitialHeapSize=526385152 -XX:MaxHeapSize=26923237376 -XX:MinHeapDeltaBytes=2097152 -XX:MinHeapSize=8388608 -XX:NonNMethodCodeHeapSize=5839372 -XX:NonProfiledCodeHeapSize=122909434 -XX:ProfiledCodeHeapSize=122909434 -XX:ReservedCodeCacheSize=251658240 -XX:+SegmentedCodeCache -XX:SoftMaxHeapSize=26923237376 -XX:-UseCompressedOops -XX:-UseNUMA -XX:-UseNUMAInterleaving -XX:+UseZGC -XX:+ZGenerational -XX:ZOldGCThreads=2 -XX:ZYoungGCThreads=2 
+➡️ jcmd 10 VM.flags:
+10:
+-XX:+AlwaysPreTouch -XX:CICompilerCount=3 -XX:+ExitOnOutOfMemoryError -XX:InitialHeapSize=243269632 -XX:MaxHeapSize=13163823104 -XX:MinHeapDeltaBytes=2097152 -XX:MinHeapSize=8388608 -XX:NonNMethodCodeHeapSize=5832780 -XX:NonProfiledCodeHeapSize=122912730 -XX:ProfiledCodeHeapSize=122912730 -XX:ReservedCodeCacheSize=251658240 -XX:+SegmentedCodeCache -XX:SoftMaxHeapSize=13163823104 -XX:-THPStackMitigation -XX:-UseCompressedOops -XX:+UseFastUnorderedTimeStamps -XX:-UseNUMA -XX:-UseNUMAInterleaving -XX:+UseZGC -XX:+ZGenerational -XX:ZOldGCThreads=1 -XX:ZYoungGCThreads=1 
 
-➡️ jcmd 9 GC.heap_info:
-9:
- ZHeap           used 5416M, capacity 7902M, max capacity 25676M
- Metaspace       used 77427K, committed 78272K, reserved 1179648K
-  class space    used 8764K, committed 9152K, reserved 1048576K
+➡️ jcmd 10 GC.heap_info:
+10:
+ ZHeap           used 1254M, capacity 1514M, max capacity 12554M
+ Metaspace       used 82354K, committed 83392K, reserved 1179648K
+  class space    used 8910K, committed 9344K, reserved 1048576K
+
+➡️ getting full java command line for pid 10:
+    PID TTY      STAT   TIME COMMAND
+     10 ?        Sl    26:22 /usr/lib/jvm/jre/bin/java -Djava.security.egd=file:/dev/./urandom -Dconnect.product.name=aerospike-vector-search -Dconnect.product.version=1.1.0 -XX:+ExitOnOutOfMemoryError -XX:+UseZGC -XX:+ZGenerational -XX:+AlwaysPreTouch --add-modules jdk.incubator.vector --add-opens java.base/jdk.internal.util=ALL-UNNAMED --add-exports java.base/jdk.internal.ref=ALL-UNNAMED --add-exports java.base/sun.nio.ch=ALL-UNNAMED --add-exports jdk.unsupported/sun.misc=ALL-UNNAMED --add-exports jdk.compiler/com.sun.tools.javac.file=ALL-UNNAMED --add-opens jdk.compiler/com.sun.tools.javac=ALL-UNNAMED --add-opens java.base/java.lang=ALL-UNNAMED --add-opens java.base/java.lang.reflect=ALL-UNNAMED --add-opens java.base/java.io=ALL-UNNAMED --add-opens java.base/java.util=ALL-UNNAMED -DFMA_SUPPORTED=true -Xmx12553m -classpath /opt/aerospike-vector-search/lib/aerospike-vector-search-1.1.0.jar:/opt/aerospike-vector-search/lib/aerospike-vector-search-transact-1.1.0.jar:/opt/aerospike-vector-search/lib/aerospike-vector-search-clustering-1.1.0.jar:/opt/aerospike-vector-search/lib/aerospike-vector-search-index-1.1.0.jar:/opt/aerospike-vector-search/lib/aerospike-vector-search-security-1.1.0.jar:/opt/aerospike-vector-search/lib/aerospike-vector-search-cluster-common-1.1.0.jar:/opt/aerospike-vector-search/lib/aerospike-vector-search-storage-aerospike-1.1.0.jar:/opt/aerospike-vector-search/lib/aerospike-vector-search-embedded-client-1.1.0.jar:/opt/aerospike-vector-search/lib/aerospike-vector-search-common-1.1.0.jar:/opt/aerospike-vector-search/lib/aerospike-manage-1.0.15.jar:/opt/aerospike-vector-search/lib/aerospike-aerospike-2.2.11.jar:/opt/aerospike-vector-search/lib/aerospike-tls-1.2.12.jar:/opt/aerospike-vector-search/lib/aerospike-vector-search-licensing-1.1.0.jar:/opt/aerospike-vector-search/lib/aerospike-vector-search-server-stub-1.1.0.jar:/opt/aerospike-vector-search/lib/aerospike-metrics-1.0.9.jar:/opt/aerospike-vector-search/lib/aerospike-serde-1.1.12.jar:/opt/aerospike-vector-search/lib/aerospike-io-1.0.12.jar:/opt/aerospike-vector-search/lib/aerospike-logging-1.2.6.jar:/opt/aerospike-vector-search/lib/aerospike-undertow-patch-2.3.18.jar:/opt/aerospike-vector-search/lib/guice-assistedinject-6.0.0.jar:/opt/aerospike-vector-search/lib/guice-bridge-3.0.4.jar:/opt/aerospike-vector-search/lib/guice-servlet-6.0.0.jar:/opt/aerospike-vector-search/lib/guice-6.0.0.jar:/opt/aerospike-vector-search/lib/validation-api-2.0.1.Final.jar:/opt/aerospike-vector-search/lib/grpc-netty-1.71.0.jar:/opt/aerospike-vector-search/lib/netty-handler-proxy-4.1.119.Final.jar:/opt/aerospike-vector-search/lib/netty-codec-http2-4.1.119.Final.jar:/opt/aerospike-vector-search/lib/netty-transport-native-epoll-4.1.119.Final-linux-x86_64.jar:/opt/aerospike-vector-search/lib/netty-transport-native-kqueue-4.1.119.Final-osx-x86_64.jar:/opt/aerospike-vector-search/lib/netty-codec-socks-4.1.119.Final.jar:/opt/aerospike-vector-search/lib/netty-codec-http-4.1.119.Final.jar:/opt/aerospike-vector-search/lib/netty-handler-4.1.119.Final.jar:/opt/aerospike-vector-search/lib/netty-codec-4.1.119.Final.jar:/opt/aerospike-vector-search/lib/netty-transport-classes-epoll-4.1.119.Final.jar:/opt/aerospike-vector-search/lib/netty-transport-classes-kqueue-4.1.119.Final.jar:/opt/aerospike-vector-search/lib/netty-transport-native-unix-common-4.1.119.Final.jar:/opt/aerospike-vector-search/lib/netty-transport-4.1.119.Final.jar:/opt/aerospike-vector-search/lib/grpc-kotlin-stub-1.4.1.jar:/opt/aerospike-vector-search/lib/kotlinx-coroutines-core-jvm-1.10.1.jar:/opt/aerospike-vector-search/lib/java-jwt-4.5.0.jar:/opt/aerospike-vector-search/lib/jackson-dataformat-yaml-2.17.2.jar:/opt/aerospike-vector-search/lib/jackson-dataformat-msgpack-0.9.8.jar:/opt/aerospike-vector-search/lib/jersey-media-json-jackson-3.1.5.jar:/opt/aerospike-vector-search/lib/metrics-json-4.2.25.jar:/opt/aerospike-vector-search/lib/jackson-module-jakarta-xmlbind-annotations-2.17.2.jar:/opt/aerospike-vector-search/lib/jackson-databind-2.17.2.jar:/opt/aerospike-vector-search/lib/jackson-annotations-2.17.2.jar:/opt/aerospike-vector-search/lib/jackson-core-2.17.2.jar:/opt/aerospike-vector-search/lib/jackson-module-kotlin-2.17.2.jar:/opt/aerospike-vector-search/lib/kotlin-reflect-2.1.10.jar:/opt/aerospike-vector-search/lib/kotlin-stdlib-jdk7-2.1.10.jar:/opt/aerospike-vector-search/lib/protobuf-kotlin-3.25.6.jar:/opt/aerospike-vector-search/lib/kotlin-logging-jvm-3.0.5.jar:/opt/aerospike-vector-search/lib/kotlin-stdlib-2.1.10.jar:/opt/aerospike-vector-search/lib/kotlin-stdlib-jdk8-2.1.10.jar:/opt/aerospike-vector-search/lib/grpc-util-1.71.0.jar:/opt/aerospike-vector-search/lib/grpc-core-1.71.0.jar:/opt/aerospike-vector-search/lib/protobuf-java-util-3.25.6.jar:/opt/aerospike-vector-search/lib/dsiutils-2.7.3.jar:/opt/aerospike-vector-search/lib/grpc-context-1.71.0.jar:/opt/aerospike-vector-search/lib/grpc-protobuf-1.71.0.jar:/opt/aerospike-vector-search/lib/grpc-stub-1.71.0.jar:/opt/aerospike-vector-search/lib/grpc-protobuf-lite-1.71.0.jar:/opt/aerospike-vector-search/lib/grpc-api-1.71.0.jar:/opt/aerospike-vector-search/lib/guava-33.4.0-jre.jar:/opt/aerospike-vector-search/lib/perfmark-api-0.27.0.jar:/opt/aerospike-vector-search/lib/picocli-4.7.6.jar:/opt/aerospike-vector-search/lib/caffeine-3.2.0.jar:/opt/aerospike-vector-search/lib/bcpkix-jdk18on-1.80.jar:/opt/aerospike-vector-search/lib/bcutil-jdk18on-1.80.jar:/opt/aerospike-vector-search/lib/bcprov-jdk18on-1.80.jar:/opt/aerospike-vector-search/lib/lombok-1.18.30.jar:/opt/aerospike-vector-search/lib/commons-lang3-3.13.0.jar:/opt/aerospike-vector-search/lib/commons-collections4-4.4.jar:/opt/aerospike-vector-search/lib/jul-to-slf4j-1.7.36.jar:/opt/aerospike-vector-search/lib/logback-json-classic-0.1.5.jar:/opt/aerospike-vector-search/lib/logback-classic-1.5.15.jar:/opt/aerospike-vector-search/lib/cron-utils-9.2.1.jar:/opt/aerospike-vector-search/lib/chronicle-map-3.27ea0.jar:/opt/aerospike-vector-search/lib/reflections-0.10.2.jar:/opt/aerospike-vector-search/lib/metrics-jvm-4.2.25.jar:/opt/aerospike-vector-search/lib/metrics-core-4.2.25.jar:/opt/aerospike-vector-search/lib/chronicle-wire-2.27ea0.jar:/opt/aerospike-vector-search/lib/chronicle-threads-2.27ea0.jar:/opt/aerospike-vector-search/lib/affinity-3.27ea0.jar:/opt/aerospike-vector-search/lib/chronicle-values-2.27ea0.jar:/opt/aerospike-vector-search/lib/chronicle-algorithms-2.27ea0.jar:/opt/aerospike-vector-search/lib/chronicle-bytes-2.27ea0.jar:/opt/aerospike-vector-search/lib/chronicle-core-2.27ea0.jar:/opt/aerospike-vector-search/lib/posix-2.27ea0.jar:/opt/aerospike-vector-search/lib/compiler-2.27ea0.jar:/opt/aerospike-vector-search/lib/slf4j-api-2.0.15.jar:/opt/aerospike-vector-search/lib/logback-jackson-0.1.5.jar:/opt/aerospike-vector-search/lib/logback-json-core-0.1.5.jar:/opt/aerospike-vector-search/lib/logback-core-1.5.15.jar:/opt/aerospike-vector-search/lib/javax.inject-1.jar:/opt/aerospike-vector-search/lib/jersey-container-servlet-core-3.1.5.jar:/opt/aerospike-vector-search/lib/jersey-server-3.1.5.jar:/opt/aerospike-vector-search/lib/jersey-hk2-3.1.5.jar:/opt/aerospike-vector-search/lib/jersey-media-multipart-3.1.5.jar:/opt/aerospike-vector-search/lib/jersey-client-3.1.5.jar:/opt/aerospike-vector-search/lib/jersey-common-3.1.5.jar:/opt/aerospike-vector-search/lib/hk2-locator-3.0.5.jar:/opt/aerospike-vector-search/lib/hk2-api-3.0.5.jar:/opt/aerospike-vector-search/lib/hk2-utils-3.0.5.jar:/opt/aerospike-vector-search/lib/jakarta.inject-api-2.0.1.jar:/opt/aerospike-vector-search/lib/aopalliance-1.0.jar:/opt/aerospike-vector-search/lib/mbassador-1.3.2.jar:/opt/aerospike-vector-search/lib/vault-java-driver-5.1.0.jar:/opt/aerospike-vector-search/lib/aerospike-client-jdk21-9.0.4.jar:/opt/aerospike-vector-search/lib/commons-math3-3.6.1.jar:/opt/aerospike-vector-search/lib/jbcrypt-0.4.jar:/opt/aerospike-vector-search/lib/animal-sniffer-annotations-1.24.jar:/opt/aerospike-vector-search/lib/gson-2.11.0.jar:/opt/aerospike-vector-search/lib/error_prone_annotations-2.36.0.jar:/opt/aerospike-vector-search/lib/netty-buffer-4.1.119.Final.jar:/opt/aerospike-vector-search/lib/netty-resolver-4.1.119.Final.jar:/opt/aerospike-vector-search/lib/netty-common-4.1.119.Final.jar:/opt/aerospike-vector-search/lib/failureaccess-1.0.2.jar:/opt/aerospike-vector-search/lib/listenablefuture-9999.0-empty-to-avoid-conflict-with-guava.jar:/opt/aerospike-vector-search/lib/jsr305-3.0.2.jar:/opt/aerospike-vector-search/lib/checker-qual-3.43.0.jar:/opt/aerospike-vector-search/lib/j2objc-annotations-3.0.0.jar:/opt/aerospike-vector-search/lib/annotations-4.1.1.4.jar:/opt/aerospike-vector-search/lib/jspecify-1.0.0.jar:/opt/aerospike-vector-search/lib/annotations-23.0.0.jar:/opt/aerospike-vector-search/lib/proto-google-common-protos-2.51.0.jar:/opt/aerospike-vector-search/lib/protobuf-java-3.25.6.jar:/opt/aerospike-vector-search/lib/simpleclient_dropwizard-0.16.0.jar:/opt/aerospike-vector-search/lib/simpleclient_servlet-0.16.0.jar:/opt/aerospike-vector-search/lib/undertow-servlet-2.3.18.Final.jar:/opt/aerospike-vector-search/lib/gnu-crypto-2.0.1.jar:/opt/aerospike-vector-search/lib/luaj-jse-3.0.1.jar:/opt/aerospike-vector-search/lib/aerospike-connect-outbound-sdk-2.2.0.jar:/opt/aerospike-vector-search/lib/commons-io-2.15.1.jar:/opt/aerospike-vector-search/lib/fastutil-8.5.12.jar:/opt/aerospike-vector-search/lib/jsap-20210129.jar:/opt/aerospike-vector-search/lib/jna-platform-5.5.0.jar:/opt/aerospike-vector-search/lib/jna-5.5.0.jar:/opt/aerospike-vector-search/lib/snakeyaml-2.2.jar:/opt/aerospike-vector-search/lib/msgpack-core-0.9.8.jar:/opt/aerospike-vector-search/lib/javax.annotation-api-1.3.2.jar:/opt/aerospike-vector-search/lib/simpleclient_servlet_common-0.16.0.jar:/opt/aerospike-vector-search/lib/simpleclient_common-0.16.0.jar:/opt/aerospike-vector-search/lib/simpleclient-0.16.0.jar:/opt/aerospike-vector-search/lib/javassist-3.29.2-GA.jar:/opt/aerospike-vector-search/lib/mimepull-1.9.15.jar:/opt/aerospike-vector-search/lib/jersey-entity-filtering-3.1.5.jar:/opt/aerospike-vector-search/lib/jakarta.xml.bind-api-4.0.0.jar:/opt/aerospike-vector-search/lib/jakarta.servlet-api-6.0.0.jar:/opt/aerospike-vector-search/lib/jakarta.annotation-api-2.1.1.jar:/opt/aerospike-vector-search/lib/jakarta.ws.rs-api-3.1.0.jar:/opt/aerospike-vector-search/lib/jakarta.validation-api-3.0.2.jar:/opt/aerospike-vector-search/lib/xnio-nio-3.8.16.Final.jar:/opt/aerospike-vector-search/lib/xnio-api-3.8.16.Final.jar:/opt/aerospike-vector-search/lib/wildfly-client-config-1.0.1.Final.jar:/opt/aerospike-vector-search/lib/jboss-threads-3.5.0.Final.jar:/opt/aerospike-vector-search/lib/jboss-logging-3.4.3.Final.jar:/opt/aerospike-vector-search/lib/wildfly-common-1.5.4.Final.jar:/opt/aerospike-vector-search/lib/chronicle-analytics-2.27ea0.jar:/opt/aerospike-vector-search/lib/jnr-ffi-2.2.15.jar:/opt/aerospike-vector-search/lib/jnr-constants-0.10.4.jar:/opt/aerospike-vector-search/lib/javapoet-1.13.0.jar:/opt/aerospike-vector-search/lib/simpleclient_tracer_otel-0.16.0.jar:/opt/aerospike-vector-search/lib/simpleclient_tracer_otel_agent-0.16.0.jar:/opt/aerospike-vector-search/lib/osgi-resource-locator-1.0.3.jar:/opt/aerospike-vector-search/lib/aopalliance-repackaged-3.0.5.jar:/opt/aerospike-vector-search/lib/jakarta.activation-api-2.1.0.jar:/opt/aerospike-vector-search/lib/jffi-1.3.12.jar:/opt/aerospike-vector-search/lib/jffi-1.3.12-native.jar:/opt/aerospike-vector-search/lib/asm-9.2.jar:/opt/aerospike-vector-search/lib/jnr-a64asm-1.0.0.jar:/opt/aerospike-vector-search/lib/jnr-x86asm-1.0.2.jar:/opt/aerospike-vector-search/lib/simpleclient_tracer_common-0.16.0.jar com.aerospike.vector.VectorDbMainKt -f /etc/aerospike-vector-search/aerospike-vector-search.yml
 
 
 
@@ -956,57 +750,35 @@ Container Status Summary:
 Container: aerospike-vector-search
 Restart Count: 0
 Last State: {}
-Current State: {"running":{"startedAt":"2025-04-28T05:28:18Z"}}
+Current State: {"running":{"startedAt":"2025-04-29T19:17:19Z"}}
 ---
 
 Previous Terminations (including OOMKills):
 
 Pod Events History (last 1 hour):
 LAST SEEN   TYPE      REASON                            OBJECT                                  MESSAGE
-27m         Warning   FailedScheduling                  pod/avs-app-aerospike-vector-search-1   0/5 nodes are available: 1 node(s) had untolerated taint {node.kubernetes.io/memory-pressure: }, 2 node(s) didn't have free ports for the requested pod ports, 2 node(s) didn't match Pod's node affinity/selector. preemption: 0/5 nodes are available: 2 No preemption victims found for incoming pod, 3 Preemption is not helpful for scheduling.
-24m         Warning   FailedScheduling                  pod/avs-app-aerospike-vector-search-1   0/5 nodes are available: 1 node(s) had untolerated taint {node.kubernetes.io/memory-pressure: }, 2 node(s) didn't have free ports for the requested pod ports, 2 node(s) didn't match Pod's node affinity/selector. preemption: 0/5 nodes are available: 2 No preemption victims found for incoming pod, 3 Preemption is not helpful for scheduling.
-22m         Normal    Scheduled                         pod/avs-app-aerospike-vector-search-1   Successfully assigned avs/avs-app-aerospike-vector-search-1 to aks-avsindexp-13574360-vmss000000
-2m30s       Normal    Scheduled                         pod/avs-app-aerospike-vector-search-1   Successfully assigned avs/avs-app-aerospike-vector-search-1 to aks-avsindexp-13574360-vmss000000
-7m35s       Warning   FailedScheduling                  pod/avs-app-aerospike-vector-search-1   0/5 nodes are available: 1 node(s) had untolerated taint {node.kubernetes.io/memory-pressure: }, 2 node(s) didn't have free ports for the requested pod ports, 2 node(s) didn't match Pod's node affinity/selector. preemption: 0/5 nodes are available: 2 No preemption victims found for incoming pod, 3 Preemption is not helpful for scheduling.
-28m         Warning   FailedToRetrieveImagePullSecret   pod/avs-app-aerospike-vector-search-1   Unable to retrieve some image pull secrets (jfrog-secret); attempting to pull the image may not succeed.
-22m         Normal    Pulling                           pod/avs-app-aerospike-vector-search-1   Pulling image "artifact.aerospike.io/container/avs-init-container:1.2.0"
-22m         Normal    Pulled                            pod/avs-app-aerospike-vector-search-1   Successfully pulled image "artifact.aerospike.io/container/avs-init-container:1.2.0" in 822ms (822ms including waiting). Image size: 22509115 bytes.
-22m         Normal    Created                           pod/avs-app-aerospike-vector-search-1   Created container: config-injector
-22m         Normal    Started                           pod/avs-app-aerospike-vector-search-1   Started container config-injector
-15m         Normal    Created                           pod/avs-app-aerospike-vector-search-1   Created container: aerospike-vector-search
-15m         Normal    Started                           pod/avs-app-aerospike-vector-search-1   Started container aerospike-vector-search
-15m         Normal    Pulled                            pod/avs-app-aerospike-vector-search-1   Container image "aerospike/aerospike-vector-search:1.1.0" already present on machine
-11m         Warning   FailedToRetrieveImagePullSecret   pod/avs-app-aerospike-vector-search-1   Unable to retrieve some image pull secrets (jfrog-secret); attempting to pull the image may not succeed.
-7m41s       Warning   Evicted                           pod/avs-app-aerospike-vector-search-1   The node was low on resource: memory. Threshold quantity: 100Mi, available: 58828Ki. Container aerospike-vector-search was using 26967000Ki, request is 0, has larger consumption of memory.
-2m29s       Normal    Pulling                           pod/avs-app-aerospike-vector-search-1   Pulling image "artifact.aerospike.io/container/avs-init-container:1.2.0"
-2m29s       Normal    Pulled                            pod/avs-app-aerospike-vector-search-1   Successfully pulled image "artifact.aerospike.io/container/avs-init-container:1.2.0" in 741ms (741ms including waiting). Image size: 22509115 bytes.
-2m29s       Normal    Created                           pod/avs-app-aerospike-vector-search-1   Created container: config-injector
-2m29s       Normal    Started                           pod/avs-app-aerospike-vector-search-1   Started container config-injector
-2m27s       Normal    Pulled                            pod/avs-app-aerospike-vector-search-1   Container image "aerospike/aerospike-vector-search:1.1.0" already present on machine
-2m27s       Normal    Created                           pod/avs-app-aerospike-vector-search-1   Created container: aerospike-vector-search
-2m27s       Normal    Started                           pod/avs-app-aerospike-vector-search-1   Started container aerospike-vector-search
-63s         Warning   FailedToRetrieveImagePullSecret   pod/avs-app-aerospike-vector-search-1   Unable to retrieve some image pull secrets (jfrog-secret); attempting to pull the image may not succeed.
+115s        Warning   FailedToRetrieveImagePullSecret   pod/avs-app-aerospike-vector-search-1   Unable to retrieve some image pull secrets (jfrog-secret); attempting to pull the image may not succeed.
 
 Node Conditions at Recent Restarts:
 {
-  "lastHeartbeatTime": "2025-04-28T05:28:15Z",
-  "lastTransitionTime": "2025-04-28T05:28:15Z",
+  "lastHeartbeatTime": "2025-04-29T23:05:26Z",
+  "lastTransitionTime": "2025-04-29T19:13:40Z",
   "message": "kubelet has sufficient memory available",
   "reason": "KubeletHasSufficientMemory",
   "status": "False",
   "type": "MemoryPressure"
 }
 {
-  "lastHeartbeatTime": "2025-04-28T05:28:15Z",
-  "lastTransitionTime": "2025-04-22T18:40:48Z",
+  "lastHeartbeatTime": "2025-04-29T23:05:26Z",
+  "lastTransitionTime": "2025-04-29T19:13:40Z",
   "message": "kubelet has no disk pressure",
   "reason": "KubeletHasNoDiskPressure",
   "status": "False",
   "type": "DiskPressure"
 }
 {
-  "lastHeartbeatTime": "2025-04-28T05:28:15Z",
-  "lastTransitionTime": "2025-04-22T18:40:48Z",
+  "lastHeartbeatTime": "2025-04-29T23:05:26Z",
+  "lastTransitionTime": "2025-04-29T19:13:40Z",
   "message": "kubelet has sufficient PID available",
   "reason": "KubeletHasSufficientPID",
   "status": "False",
@@ -1018,138 +790,116 @@ Container Memory Request:
 Container Memory Limit: 
 
 JVM Memory Settings:
-➡️ jcmd 9 VM.flags:
-9:
--XX:+AlwaysPreTouch -XX:CICompilerCount=4 -XX:+ExitOnOutOfMemoryError -XX:InitialHeapSize=526385152 -XX:MaxHeapSize=26923237376 -XX:MinHeapDeltaBytes=2097152 -XX:MinHeapSize=8388608 -XX:NonNMethodCodeHeapSize=5839372 -XX:NonProfiledCodeHeapSize=122909434 -XX:ProfiledCodeHeapSize=122909434 -XX:ReservedCodeCacheSize=251658240 -XX:+SegmentedCodeCache -XX:SoftMaxHeapSize=26923237376 -XX:-UseCompressedOops -XX:-UseNUMA -XX:-UseNUMAInterleaving -XX:+UseZGC -XX:+ZGenerational -XX:ZOldGCThreads=2 -XX:ZYoungGCThreads=2 
+➡️ jcmd 10 VM.flags:
+10:
+-XX:+AlwaysPreTouch -XX:CICompilerCount=3 -XX:+ExitOnOutOfMemoryError -XX:InitialHeapSize=243269632 -XX:MaxHeapSize=13163823104 -XX:MinHeapDeltaBytes=2097152 -XX:MinHeapSize=8388608 -XX:NonNMethodCodeHeapSize=5832780 -XX:NonProfiledCodeHeapSize=122912730 -XX:ProfiledCodeHeapSize=122912730 -XX:ReservedCodeCacheSize=251658240 -XX:+SegmentedCodeCache -XX:SoftMaxHeapSize=13163823104 -XX:-THPStackMitigation -XX:-UseCompressedOops -XX:+UseFastUnorderedTimeStamps -XX:-UseNUMA -XX:-UseNUMAInterleaving -XX:+UseZGC -XX:+ZGenerational -XX:ZOldGCThreads=1 -XX:ZYoungGCThreads=1 
 
-➡️ jcmd 9 GC.heap_info:
-9:
+➡️ jcmd 10 GC.heap_info:
+10:
 
 Heap Info:
-➡️ jcmd 9 GC.heap_info:
-9:
- ZHeap           used 5416M, capacity 7902M, max capacity 25676M
- Metaspace       used 77427K, committed 78272K, reserved 1179648K
-  class space    used 8764K, committed 9152K, reserved 1048576K
+➡️ jcmd 10 GC.heap_info:
+10:
+ ZHeap           used 1254M, capacity 1514M, max capacity 12554M
+ Metaspace       used 82354K, committed 83392K, reserved 1179648K
+  class space    used 8910K, committed 9344K, reserved 1048576K
+
 ==============================
 🧵 POD: avs-app-aerospike-vector-search-2
-Running on node: aks-avsqueryp-24007022-vmss000000
+Running on node: ip-192-168-27-123.ec2.internal
 ==============================
 === Node Information ===
 === Node Description ===
-Name:               aks-avsqueryp-24007022-vmss000000
+Name:               ip-192-168-27-123.ec2.internal
 Roles:              <none>
-Labels:             aerospike.io/node-pool=avs
+Labels:             aerospike.io/group=avs-query-pool
+                    aerospike.io/node-pool=avs
                     aerospike.io/role-label=query-nodes
-                    agentpool=avsqueryp
+                    alpha.eksctl.io/cluster-name=letsrememberopen2
+                    alpha.eksctl.io/nodegroup-name=avs-query-pool
                     beta.kubernetes.io/arch=amd64
-                    beta.kubernetes.io/instance-type=Standard_D8_v3
+                    beta.kubernetes.io/instance-type=m5.xlarge
                     beta.kubernetes.io/os=linux
-                    failure-domain.beta.kubernetes.io/region=eastus
-                    failure-domain.beta.kubernetes.io/zone=0
-                    kubernetes.azure.com/agentpool=avsqueryp
-                    kubernetes.azure.com/azure-cni-overlay=true
-                    kubernetes.azure.com/cluster=MC_myntra3-rg_myntra3_eastus
-                    kubernetes.azure.com/consolidated-additional-properties=b9e0263f-1fa8-11f0-a54d-2a6823368150
-                    kubernetes.azure.com/kubelet-identity-client-id=54b5fde4-e2e9-4b1c-a092-bd84d9e52a8b
-                    kubernetes.azure.com/mode=user
-                    kubernetes.azure.com/network-name=aks-vnet-16422918
-                    kubernetes.azure.com/network-resourcegroup=myntra3-rg
-                    kubernetes.azure.com/network-subnet=aks-subnet
-                    kubernetes.azure.com/network-subscription=9dcbd702-1653-442f-b361-2de694f9dd9c
-                    kubernetes.azure.com/node-image-version=AKSUbuntu-2204containerd-202504.06.0
-                    kubernetes.azure.com/nodenetwork-vnetguid=db93c545-e895-46f9-a46f-856d5b1a1164
-                    kubernetes.azure.com/nodepool-type=VirtualMachineScaleSets
-                    kubernetes.azure.com/os-sku=Ubuntu
-                    kubernetes.azure.com/podnetwork-type=overlay
-                    kubernetes.azure.com/role=agent
-                    kubernetes.azure.com/storageprofile=managed
-                    kubernetes.azure.com/storagetier=Standard_LRS
+                    eks.amazonaws.com/capacityType=ON_DEMAND
+                    eks.amazonaws.com/nodegroup=avs-query-pool
+                    eks.amazonaws.com/nodegroup-image=ami-01fc98868662094f9
+                    eks.amazonaws.com/sourceLaunchTemplateId=lt-0ded039a0982bbba3
+                    eks.amazonaws.com/sourceLaunchTemplateVersion=1
+                    failure-domain.beta.kubernetes.io/region=us-east-1
+                    failure-domain.beta.kubernetes.io/zone=us-east-1b
+                    k8s.io/cloud-provider-aws=7b106a2a28f90fcf8e2b12bdb82ef1dc
                     kubernetes.io/arch=amd64
-                    kubernetes.io/hostname=aks-avsqueryp-24007022-vmss000000
+                    kubernetes.io/hostname=ip-192-168-27-123.ec2.internal
                     kubernetes.io/os=linux
-                    node.kubernetes.io/instance-type=Standard_D8_v3
-                    storageprofile=managed
-                    storagetier=Standard_LRS
-                    topology.disk.csi.azure.com/zone=
-                    topology.kubernetes.io/region=eastus
-                    topology.kubernetes.io/zone=0
-Annotations:        alpha.kubernetes.io/provided-node-ip: 10.224.0.7
-                    csi.volume.kubernetes.io/nodeid:
-                      {"disk.csi.azure.com":"aks-avsqueryp-24007022-vmss000000","file.csi.azure.com":"aks-avsqueryp-24007022-vmss000000"}
+                    node.kubernetes.io/instance-type=m5.xlarge
+                    topology.ebs.csi.aws.com/zone=us-east-1b
+                    topology.k8s.aws/zone-id=use1-az4
+                    topology.kubernetes.io/region=us-east-1
+                    topology.kubernetes.io/zone=us-east-1b
+Annotations:        alpha.kubernetes.io/provided-node-ip: 192.168.27.123
+                    csi.volume.kubernetes.io/nodeid: {"ebs.csi.aws.com":"i-061fa95344eaa63d0"}
                     node.alpha.kubernetes.io/ttl: 0
                     volumes.kubernetes.io/controller-managed-attach-detach: true
-CreationTimestamp:  Tue, 22 Apr 2025 11:38:21 -0700
+CreationTimestamp:  Tue, 29 Apr 2025 12:10:12 -0700
 Taints:             <none>
 Unschedulable:      false
 Lease:
-  HolderIdentity:  aks-avsqueryp-24007022-vmss000000
+  HolderIdentity:  ip-192-168-27-123.ec2.internal
   AcquireTime:     <unset>
-  RenewTime:       Sun, 27 Apr 2025 22:29:58 -0700
+  RenewTime:       Tue, 29 Apr 2025 16:08:09 -0700
 Conditions:
-  Type                          Status  LastHeartbeatTime                 LastTransitionTime                Reason                          Message
-  ----                          ------  -----------------                 ------------------                ------                          -------
-  FrequentKubeletRestart        False   Sun, 27 Apr 2025 22:27:03 -0700   Fri, 25 Apr 2025 20:51:18 -0700   NoFrequentKubeletRestart        kubelet is functioning properly
-  FrequentContainerdRestart     False   Sun, 27 Apr 2025 22:27:03 -0700   Fri, 25 Apr 2025 20:51:18 -0700   NoFrequentContainerdRestart     containerd is functioning properly
-  FilesystemCorruptionProblem   False   Sun, 27 Apr 2025 22:27:03 -0700   Fri, 25 Apr 2025 20:51:18 -0700   FilesystemIsOK                  Filesystem is healthy
-  ReadonlyFilesystem            False   Sun, 27 Apr 2025 22:27:03 -0700   Fri, 25 Apr 2025 20:51:18 -0700   FilesystemIsNotReadOnly         Filesystem is not read-only
-  FrequentUnregisterNetDevice   False   Sun, 27 Apr 2025 22:27:03 -0700   Fri, 25 Apr 2025 20:51:18 -0700   NoFrequentUnregisterNetDevice   node is functioning properly
-  VMEventScheduled              False   Sun, 27 Apr 2025 22:27:03 -0700   Fri, 25 Apr 2025 20:51:18 -0700   NoVMEventScheduled              VM has no scheduled event
-  ContainerRuntimeProblem       False   Sun, 27 Apr 2025 22:27:03 -0700   Fri, 25 Apr 2025 20:51:18 -0700   ContainerRuntimeIsUp            container runtime service is up
-  KubeletProblem                False   Sun, 27 Apr 2025 22:27:03 -0700   Fri, 25 Apr 2025 20:51:18 -0700   KubeletIsUp                     kubelet service is up
-  KernelDeadlock                False   Sun, 27 Apr 2025 22:27:03 -0700   Fri, 25 Apr 2025 20:51:18 -0700   KernelHasNoDeadlock             kernel has no deadlock
-  FrequentDockerRestart         False   Sun, 27 Apr 2025 22:27:03 -0700   Fri, 25 Apr 2025 20:51:18 -0700   NoFrequentDockerRestart         docker is functioning properly
-  MemoryPressure                False   Sun, 27 Apr 2025 22:26:52 -0700   Tue, 22 Apr 2025 11:38:21 -0700   KubeletHasSufficientMemory      kubelet has sufficient memory available
-  DiskPressure                  False   Sun, 27 Apr 2025 22:26:52 -0700   Tue, 22 Apr 2025 11:38:21 -0700   KubeletHasNoDiskPressure        kubelet has no disk pressure
-  PIDPressure                   False   Sun, 27 Apr 2025 22:26:52 -0700   Tue, 22 Apr 2025 11:38:21 -0700   KubeletHasSufficientPID         kubelet has sufficient PID available
-  Ready                         True    Sun, 27 Apr 2025 22:26:52 -0700   Tue, 22 Apr 2025 11:38:38 -0700   KubeletReady                    kubelet is posting ready status
+  Type             Status  LastHeartbeatTime                 LastTransitionTime                Reason                       Message
+  ----             ------  -----------------                 ------------------                ------                       -------
+  MemoryPressure   False   Tue, 29 Apr 2025 16:05:29 -0700   Tue, 29 Apr 2025 12:10:12 -0700   KubeletHasSufficientMemory   kubelet has sufficient memory available
+  DiskPressure     False   Tue, 29 Apr 2025 16:05:29 -0700   Tue, 29 Apr 2025 12:10:12 -0700   KubeletHasNoDiskPressure     kubelet has no disk pressure
+  PIDPressure      False   Tue, 29 Apr 2025 16:05:29 -0700   Tue, 29 Apr 2025 12:10:12 -0700   KubeletHasSufficientPID      kubelet has sufficient PID available
+  Ready            True    Tue, 29 Apr 2025 16:05:29 -0700   Tue, 29 Apr 2025 12:10:24 -0700   KubeletReady                 kubelet is posting ready status
 Addresses:
-  InternalIP:  10.224.0.7
-  Hostname:    aks-avsqueryp-24007022-vmss000000
+  InternalIP:   192.168.27.123
+  ExternalIP:   3.90.200.129
+  InternalDNS:  ip-192-168-27-123.ec2.internal
+  Hostname:     ip-192-168-27-123.ec2.internal
+  ExternalDNS:  ec2-3-90-200-129.compute-1.amazonaws.com
 Capacity:
-  cpu:                8
-  ephemeral-storage:  259966896Ki
+  cpu:                4
+  ephemeral-storage:  83873772Ki
   hugepages-1Gi:      0
   hugepages-2Mi:      0
-  memory:             32864952Ki
-  pods:               250
+  memory:             15896988Ki
+  pods:               58
 Allocatable:
-  cpu:                7820m
-  ephemeral-storage:  239585490957
+  cpu:                3920m
+  ephemeral-storage:  76224326324
   hugepages-1Gi:      0
   hugepages-2Mi:      0
-  memory:             27591352Ki
-  pods:               250
+  memory:             14880156Ki
+  pods:               58
 System Info:
-  Machine ID:                 cbcef6b9761c4dbc968d328310cae0bf
-  System UUID:                23f76e78-f04e-d149-a243-190a6a736de9
-  Boot ID:                    55a22bf6-71b8-467d-b1f6-d7e67ba97659
-  Kernel Version:             5.15.0-1086-azure
-  OS Image:                   Ubuntu 22.04.5 LTS
+  Machine ID:                 ec2af54649071adbcd4a4f8cd8a8f83d
+  System UUID:                ec2af546-4907-1adb-cd4a-4f8cd8a8f83d
+  Boot ID:                    809185be-2de5-43de-a0be-84c43edde0bc
+  Kernel Version:             5.10.235-227.919.amzn2.x86_64
+  OS Image:                   Amazon Linux 2
   Operating System:           linux
   Architecture:               amd64
-  Container Runtime Version:  containerd://1.7.27-1
-  Kubelet Version:            v1.31.7
-  Kube-Proxy Version:         v1.31.7
-ProviderID:                   azure:///subscriptions/9dcbd702-1653-442f-b361-2de694f9dd9c/resourceGroups/mc_myntra3-rg_myntra3_eastus/providers/Microsoft.Compute/virtualMachineScaleSets/aks-avsqueryp-24007022-vmss/virtualMachines/0
-Non-terminated Pods:          (9 in total)
+  Container Runtime Version:  containerd://1.7.27
+  Kubelet Version:            v1.30.9-eks-5d632ec
+  Kube-Proxy Version:         v1.30.9-eks-5d632ec
+ProviderID:                   aws:///us-east-1b/i-061fa95344eaa63d0
+Non-terminated Pods:          (5 in total)
   Namespace                   Name                                               CPU Requests  CPU Limits  Memory Requests  Memory Limits  Age
   ---------                   ----                                               ------------  ----------  ---------------  -------------  ---
-  avs                         avs-app-aerospike-vector-search-2                  0 (0%)        0 (0%)      0 (0%)           0 (0%)         5d10h
-  kube-system                 azure-cns-xfpmz                                    40m (0%)      40m (0%)    250Mi (0%)       250Mi (0%)     5d10h
-  kube-system                 azure-ip-masq-agent-cgbq8                          100m (1%)     500m (6%)   50Mi (0%)        250Mi (0%)     5d10h
-  kube-system                 cloud-node-manager-b7kcm                           50m (0%)      0 (0%)      50Mi (0%)        512Mi (1%)     5d10h
-  kube-system                 csi-azuredisk-node-w7n82                           30m (0%)      0 (0%)      60Mi (0%)        2800Mi (10%)   5d10h
-  kube-system                 csi-azurefile-node-kqkm6                           30m (0%)      0 (0%)      60Mi (0%)        600Mi (2%)     5d10h
-  kube-system                 kube-proxy-rt8hw                                   100m (1%)     0 (0%)      0 (0%)           0 (0%)         5d10h
-  kube-system                 metrics-server-78c8db547-ltxhx                     158m (2%)     253m (3%)   150Mi (0%)       420Mi (1%)     5d10h
-  monitoring                  monitoring-stack-prometheus-node-exporter-cnq95    0 (0%)        0 (0%)      0 (0%)           0 (0%)         5d10h
+  avs                         avs-app-aerospike-vector-search-2                  0 (0%)        0 (0%)      0 (0%)           0 (0%)         3h51m
+  kube-system                 aws-node-q6fz6                                     50m (1%)      0 (0%)      0 (0%)           0 (0%)         3h58m
+  kube-system                 ebs-csi-node-dhpkb                                 30m (0%)      0 (0%)      120Mi (0%)       768Mi (5%)     3h58m
+  kube-system                 kube-proxy-pg2m7                                   100m (2%)     0 (0%)      0 (0%)           0 (0%)         3h58m
+  monitoring                  monitoring-stack-prometheus-node-exporter-7lmgf    0 (0%)        0 (0%)      0 (0%)           0 (0%)         3h50m
 Allocated resources:
   (Total limits may be over 100 percent, i.e., overcommitted.)
   Resource           Requests    Limits
   --------           --------    ------
-  cpu                508m (6%)   793m (10%)
-  memory             620Mi (2%)  4832Mi (17%)
+  cpu                180m (4%)   0 (0%)
+  memory             120Mi (0%)  768Mi (5%)
   ephemeral-storage  0 (0%)      0 (0%)
   hugepages-1Gi      0 (0%)      0 (0%)
   hugepages-2Mi      0 (0%)      0 (0%)
@@ -1157,133 +907,53 @@ Events:              <none>
 
 === Node Resources ===
 {
-  "cpu": "8",
-  "ephemeral-storage": "259966896Ki",
+  "cpu": "4",
+  "ephemeral-storage": "83873772Ki",
   "hugepages-1Gi": "0",
   "hugepages-2Mi": "0",
-  "memory": "32864952Ki",
-  "pods": "250"
+  "memory": "15896988Ki",
+  "pods": "58"
 }
 
 === Node Allocatable Resources ===
 {
-  "cpu": "7820m",
-  "ephemeral-storage": "239585490957",
+  "cpu": "3920m",
+  "ephemeral-storage": "76224326324",
   "hugepages-1Gi": "0",
   "hugepages-2Mi": "0",
-  "memory": "27591352Ki",
-  "pods": "250"
+  "memory": "14880156Ki",
+  "pods": "58"
 }
 
 === Node Conditions ===
 [
   {
-    "lastHeartbeatTime": "2025-04-28T05:27:03Z",
-    "lastTransitionTime": "2025-04-26T03:51:18Z",
-    "message": "kubelet is functioning properly",
-    "reason": "NoFrequentKubeletRestart",
-    "status": "False",
-    "type": "FrequentKubeletRestart"
-  },
-  {
-    "lastHeartbeatTime": "2025-04-28T05:27:03Z",
-    "lastTransitionTime": "2025-04-26T03:51:18Z",
-    "message": "containerd is functioning properly",
-    "reason": "NoFrequentContainerdRestart",
-    "status": "False",
-    "type": "FrequentContainerdRestart"
-  },
-  {
-    "lastHeartbeatTime": "2025-04-28T05:27:03Z",
-    "lastTransitionTime": "2025-04-26T03:51:18Z",
-    "message": "Filesystem is healthy",
-    "reason": "FilesystemIsOK",
-    "status": "False",
-    "type": "FilesystemCorruptionProblem"
-  },
-  {
-    "lastHeartbeatTime": "2025-04-28T05:27:03Z",
-    "lastTransitionTime": "2025-04-26T03:51:18Z",
-    "message": "Filesystem is not read-only",
-    "reason": "FilesystemIsNotReadOnly",
-    "status": "False",
-    "type": "ReadonlyFilesystem"
-  },
-  {
-    "lastHeartbeatTime": "2025-04-28T05:27:03Z",
-    "lastTransitionTime": "2025-04-26T03:51:18Z",
-    "message": "node is functioning properly",
-    "reason": "NoFrequentUnregisterNetDevice",
-    "status": "False",
-    "type": "FrequentUnregisterNetDevice"
-  },
-  {
-    "lastHeartbeatTime": "2025-04-28T05:27:03Z",
-    "lastTransitionTime": "2025-04-26T03:51:18Z",
-    "message": "VM has no scheduled event",
-    "reason": "NoVMEventScheduled",
-    "status": "False",
-    "type": "VMEventScheduled"
-  },
-  {
-    "lastHeartbeatTime": "2025-04-28T05:27:03Z",
-    "lastTransitionTime": "2025-04-26T03:51:18Z",
-    "message": "container runtime service is up",
-    "reason": "ContainerRuntimeIsUp",
-    "status": "False",
-    "type": "ContainerRuntimeProblem"
-  },
-  {
-    "lastHeartbeatTime": "2025-04-28T05:27:03Z",
-    "lastTransitionTime": "2025-04-26T03:51:18Z",
-    "message": "kubelet service is up",
-    "reason": "KubeletIsUp",
-    "status": "False",
-    "type": "KubeletProblem"
-  },
-  {
-    "lastHeartbeatTime": "2025-04-28T05:27:03Z",
-    "lastTransitionTime": "2025-04-26T03:51:18Z",
-    "message": "kernel has no deadlock",
-    "reason": "KernelHasNoDeadlock",
-    "status": "False",
-    "type": "KernelDeadlock"
-  },
-  {
-    "lastHeartbeatTime": "2025-04-28T05:27:03Z",
-    "lastTransitionTime": "2025-04-26T03:51:18Z",
-    "message": "docker is functioning properly",
-    "reason": "NoFrequentDockerRestart",
-    "status": "False",
-    "type": "FrequentDockerRestart"
-  },
-  {
-    "lastHeartbeatTime": "2025-04-28T05:26:52Z",
-    "lastTransitionTime": "2025-04-22T18:38:21Z",
+    "lastHeartbeatTime": "2025-04-29T23:05:29Z",
+    "lastTransitionTime": "2025-04-29T19:10:12Z",
     "message": "kubelet has sufficient memory available",
     "reason": "KubeletHasSufficientMemory",
     "status": "False",
     "type": "MemoryPressure"
   },
   {
-    "lastHeartbeatTime": "2025-04-28T05:26:52Z",
-    "lastTransitionTime": "2025-04-22T18:38:21Z",
+    "lastHeartbeatTime": "2025-04-29T23:05:29Z",
+    "lastTransitionTime": "2025-04-29T19:10:12Z",
     "message": "kubelet has no disk pressure",
     "reason": "KubeletHasNoDiskPressure",
     "status": "False",
     "type": "DiskPressure"
   },
   {
-    "lastHeartbeatTime": "2025-04-28T05:26:52Z",
-    "lastTransitionTime": "2025-04-22T18:38:21Z",
+    "lastHeartbeatTime": "2025-04-29T23:05:29Z",
+    "lastTransitionTime": "2025-04-29T19:10:12Z",
     "message": "kubelet has sufficient PID available",
     "reason": "KubeletHasSufficientPID",
     "status": "False",
     "type": "PIDPressure"
   },
   {
-    "lastHeartbeatTime": "2025-04-28T05:26:52Z",
-    "lastTransitionTime": "2025-04-22T18:38:38Z",
+    "lastHeartbeatTime": "2025-04-29T23:05:29Z",
+    "lastTransitionTime": "2025-04-29T19:10:24Z",
     "message": "kubelet is posting ready status",
     "reason": "KubeletReady",
     "status": "True",
@@ -1293,9 +963,9 @@ Events:              <none>
 
 === Cloud Instance Information ===
 Cloud Provider: On-premises
-Instance Type: Standard_D8_v3
-Region: eastus
-Zone: 0
+Instance Type: m5.xlarge
+Region: us-east-1
+Zone: us-east-1b
 
 === OOMKill Events ===
 System OOM Events:
@@ -1346,7 +1016,7 @@ service:
     "5000":
       advertised-listeners:
         default:
-        - address: 10.224.0.7
+        - address: 3.90.200.129
           port: 5000
 storage:
   client-policy: {}
@@ -1356,8 +1026,8 @@ storage:
 
 📄 FILE: init-container.log
 ------------------------------
-2025/04/22 19:05:17 Init container started
-2025/04/22 19:05:17 Initial configuration:
+2025/04/29 19:17:12 Init container started
+2025/04/29 19:17:12 Initial configuration:
 {
   "cluster": {
     "cluster-name": "avs-db-1"
@@ -1410,59 +1080,64 @@ storage:
     ]
   }
 }
-2025/04/22 19:05:17 Starting setRoles()
-2025/04/22 19:05:17 Starting getAerospikeVectorSearchRoles()
-2025/04/22 19:05:17 Starting getNodeLabels()
-2025/04/22 19:05:17 Starting GetNodeInstance()
-2025/04/22 19:05:17 NODE_NAME: aks-avsqueryp-24007022-vmss000000
-2025/04/22 19:05:17 SERVICE_NAME: avs-app-aerospike-vector-search
-2025/04/22 19:05:17 POD_NAMESPACE: avs
-2025/04/22 19:05:17 In-cluster config obtained successfully
-2025/04/22 19:05:17 Fetched node: aks-avsqueryp-24007022-vmss000000
-2025/04/22 19:05:17 Service avs-app-aerospike-vector-search not found in namespace avs; proceeding with node only
-2025/04/22 19:05:17 Found node label: aerospike.io/role-label=query-nodes
-2025/04/22 19:05:17 Available roles: map[default-nodes:[query index-update] indexer-nodes:[index-update] query-nodes:[query] standalone-indexer-nodes:[standalone-indexer] standalone-nodes:[standalone-indexer]]
-2025/04/22 19:05:17 Found role for label query-nodes: [query]
-2025/04/22 19:05:17 Successfully set roles in cluster configuration
-2025/04/22 19:05:17 Starting setAdvertisedListeners()
-2025/04/22 19:05:17 Operating in NETWORK_MODE: hostnetwork
-2025/04/22 19:05:17 CONTAINER_PORT: 5000 for hostnetwork mode
-2025/04/22 19:05:17 Setting advertised listeners to IP: 10.224.0.7, Port: 5000
-2025/04/22 19:05:17 Setting advertised-listeners for port 5000
-2025/04/22 19:05:17 Updated ports configuration: {
+2025/04/29 19:17:12 Starting setRoles()
+2025/04/29 19:17:12 Starting getAerospikeVectorSearchRoles()
+2025/04/29 19:17:12 Starting getNodeLabels()
+2025/04/29 19:17:12 Starting GetNodeInstance()
+2025/04/29 19:17:12 NODE_NAME: ip-192-168-27-123.ec2.internal
+2025/04/29 19:17:12 SERVICE_NAME: avs-app-aerospike-vector-search
+2025/04/29 19:17:12 POD_NAMESPACE: avs
+2025/04/29 19:17:12 In-cluster config obtained successfully
+2025/04/29 19:17:13 Fetched node: ip-192-168-27-123.ec2.internal
+2025/04/29 19:17:13 Service avs-app-aerospike-vector-search not found in namespace avs; proceeding with node only
+2025/04/29 19:17:13 Found node label: aerospike.io/role-label=query-nodes
+2025/04/29 19:17:13 Available roles: map[default-nodes:[query index-update] indexer-nodes:[index-update] query-nodes:[query] standalone-indexer-nodes:[standalone-indexer] standalone-nodes:[standalone-indexer]]
+2025/04/29 19:17:13 Found role for label query-nodes: [query]
+2025/04/29 19:17:13 Successfully set roles in cluster configuration
+2025/04/29 19:17:13 Starting setAdvertisedListeners()
+2025/04/29 19:17:13 Operating in NETWORK_MODE: hostnetwork
+2025/04/29 19:17:13 CONTAINER_PORT: 5000 for hostnetwork mode
+2025/04/29 19:17:13 Setting advertised listeners to IP: 3.90.200.129, Port: 5000
+2025/04/29 19:17:13 Setting advertised-listeners for port 5000
+2025/04/29 19:17:13 Updated ports configuration: {
   "5000": {
     "advertised-listeners": {
-Pod ID: 2
       "default": [
         {
-          "address": "10.224.0.7",
+          "address": "3.90.200.129",
           "port": 5000
         }
       ]
     }
   }
 }
-2025/04/22 19:05:17 Setting up heartbeat seeds...
-2025/04/22 19:05:17 Generating heartbeat seed DNS names...
-2025/04/22 19:05:17 Checking for heartbeat configuration...
-2025/04/22 19:05:17 Found heartbeat seed configuration: address=avs-app-aerospike-vector-search-0.avs-app-aerospike-vector-search-internal.avs.svc.cluster.local, port=5001
-2025/04/22 19:05:17 Successfully configured heartbeat with 2 seed(s)
-2025/04/22 19:05:17 Calculated JVM options: -Xmx25675m
-2025/04/22 19:05:17 Set JAVA_OPTS to: -Xmx25675m
-2025/04/22 19:05:17 Wrote JVM options to file: /etc/aerospike-vector-search/jvm.opts
-2025/04/22 19:05:17 Init container completed successfully
+2025/04/29 19:17:13 Setting up heartbeat seeds...
+2025/04/29 19:17:13 Generating heartbeat seed DNS names...
+2025/04/29 19:17:13 Checking for heartbeat configuration...
+2025/04/29 19:17:13 Found heartbeat seed configuration: address=avs-app-aerospike-vector-search-0.avs-app-aerospike-vector-search-internal.avs.svc.cluster.local, port=5001
+Pod ID: 2
+2025/04/29 19:17:13 Successfully configured heartbeat with 2 seed(s)
+2025/04/29 19:17:13 No real memory limit set, using system total memory: 16278515712 bytes
+2025/04/29 19:17:13 Calculated JVM options: -Xmx12419m
+2025/04/29 19:17:13 Set JAVA_OPTS to: -Xmx12419m
+2025/04/29 19:17:13 Wrote JVM options to file: /etc/aerospike-vector-search/jvm.opts
+2025/04/29 19:17:13 Init container completed successfully
 
 📄 FILE: jvm-info.txt
 ------------------------------
 ➡️ jcmd 9 VM.flags:
 9:
--XX:+AlwaysPreTouch -XX:CICompilerCount=4 -XX:+ExitOnOutOfMemoryError -XX:InitialHeapSize=526385152 -XX:MaxHeapSize=26923237376 -XX:MinHeapDeltaBytes=2097152 -XX:MinHeapSize=8388608 -XX:NonNMethodCodeHeapSize=5839372 -XX:NonProfiledCodeHeapSize=122909434 -XX:ProfiledCodeHeapSize=122909434 -XX:ReservedCodeCacheSize=251658240 -XX:+SegmentedCodeCache -XX:SoftMaxHeapSize=26923237376 -XX:-UseCompressedOops -XX:-UseNUMA -XX:-UseNUMAInterleaving -XX:+UseZGC -XX:+ZGenerational -XX:ZOldGCThreads=2 -XX:ZYoungGCThreads=2 
+-XX:+AlwaysPreTouch -XX:CICompilerCount=3 -XX:+ExitOnOutOfMemoryError -XX:InitialHeapSize=241172480 -XX:MaxHeapSize=13023313920 -XX:MinHeapDeltaBytes=2097152 -XX:MinHeapSize=8388608 -XX:NonNMethodCodeHeapSize=5832780 -XX:NonProfiledCodeHeapSize=122912730 -XX:ProfiledCodeHeapSize=122912730 -XX:ReservedCodeCacheSize=251658240 -XX:+SegmentedCodeCache -XX:SoftMaxHeapSize=13023313920 -XX:-THPStackMitigation -XX:-UseCompressedOops -XX:+UseFastUnorderedTimeStamps -XX:-UseNUMA -XX:-UseNUMAInterleaving -XX:+UseZGC -XX:+ZGenerational -XX:ZOldGCThreads=1 -XX:ZYoungGCThreads=1 
 
 ➡️ jcmd 9 GC.heap_info:
 9:
- ZHeap           used 794M, capacity 1936M, max capacity 25676M
- Metaspace       used 82132K, committed 82816K, reserved 1179648K
-  class space    used 8698K, committed 9152K, reserved 1048576K
+ ZHeap           used 720M, capacity 976M, max capacity 12420M
+ Metaspace       used 77573K, committed 78592K, reserved 1179648K
+  class space    used 8414K, committed 8832K, reserved 1048576K
+
+➡️ getting full java command line for pid 9:
+    PID TTY      STAT   TIME COMMAND
+      9 ?        Sl     4:35 /usr/lib/jvm/jre/bin/java -Djava.security.egd=file:/dev/./urandom -Dconnect.product.name=aerospike-vector-search -Dconnect.product.version=1.1.0 -XX:+ExitOnOutOfMemoryError -XX:+UseZGC -XX:+ZGenerational -XX:+AlwaysPreTouch --add-modules jdk.incubator.vector --add-opens java.base/jdk.internal.util=ALL-UNNAMED --add-exports java.base/jdk.internal.ref=ALL-UNNAMED --add-exports java.base/sun.nio.ch=ALL-UNNAMED --add-exports jdk.unsupported/sun.misc=ALL-UNNAMED --add-exports jdk.compiler/com.sun.tools.javac.file=ALL-UNNAMED --add-opens jdk.compiler/com.sun.tools.javac=ALL-UNNAMED --add-opens java.base/java.lang=ALL-UNNAMED --add-opens java.base/java.lang.reflect=ALL-UNNAMED --add-opens java.base/java.io=ALL-UNNAMED --add-opens java.base/java.util=ALL-UNNAMED -DFMA_SUPPORTED=true -Xmx12419m -classpath /opt/aerospike-vector-search/lib/aerospike-vector-search-1.1.0.jar:/opt/aerospike-vector-search/lib/aerospike-vector-search-transact-1.1.0.jar:/opt/aerospike-vector-search/lib/aerospike-vector-search-clustering-1.1.0.jar:/opt/aerospike-vector-search/lib/aerospike-vector-search-index-1.1.0.jar:/opt/aerospike-vector-search/lib/aerospike-vector-search-security-1.1.0.jar:/opt/aerospike-vector-search/lib/aerospike-vector-search-cluster-common-1.1.0.jar:/opt/aerospike-vector-search/lib/aerospike-vector-search-storage-aerospike-1.1.0.jar:/opt/aerospike-vector-search/lib/aerospike-vector-search-embedded-client-1.1.0.jar:/opt/aerospike-vector-search/lib/aerospike-vector-search-common-1.1.0.jar:/opt/aerospike-vector-search/lib/aerospike-manage-1.0.15.jar:/opt/aerospike-vector-search/lib/aerospike-aerospike-2.2.11.jar:/opt/aerospike-vector-search/lib/aerospike-tls-1.2.12.jar:/opt/aerospike-vector-search/lib/aerospike-vector-search-licensing-1.1.0.jar:/opt/aerospike-vector-search/lib/aerospike-vector-search-server-stub-1.1.0.jar:/opt/aerospike-vector-search/lib/aerospike-metrics-1.0.9.jar:/opt/aerospike-vector-search/lib/aerospike-serde-1.1.12.jar:/opt/aerospike-vector-search/lib/aerospike-io-1.0.12.jar:/opt/aerospike-vector-search/lib/aerospike-logging-1.2.6.jar:/opt/aerospike-vector-search/lib/aerospike-undertow-patch-2.3.18.jar:/opt/aerospike-vector-search/lib/guice-assistedinject-6.0.0.jar:/opt/aerospike-vector-search/lib/guice-bridge-3.0.4.jar:/opt/aerospike-vector-search/lib/guice-servlet-6.0.0.jar:/opt/aerospike-vector-search/lib/guice-6.0.0.jar:/opt/aerospike-vector-search/lib/validation-api-2.0.1.Final.jar:/opt/aerospike-vector-search/lib/grpc-netty-1.71.0.jar:/opt/aerospike-vector-search/lib/netty-handler-proxy-4.1.119.Final.jar:/opt/aerospike-vector-search/lib/netty-codec-http2-4.1.119.Final.jar:/opt/aerospike-vector-search/lib/netty-transport-native-epoll-4.1.119.Final-linux-x86_64.jar:/opt/aerospike-vector-search/lib/netty-transport-native-kqueue-4.1.119.Final-osx-x86_64.jar:/opt/aerospike-vector-search/lib/netty-codec-socks-4.1.119.Final.jar:/opt/aerospike-vector-search/lib/netty-codec-http-4.1.119.Final.jar:/opt/aerospike-vector-search/lib/netty-handler-4.1.119.Final.jar:/opt/aerospike-vector-search/lib/netty-codec-4.1.119.Final.jar:/opt/aerospike-vector-search/lib/netty-transport-classes-epoll-4.1.119.Final.jar:/opt/aerospike-vector-search/lib/netty-transport-classes-kqueue-4.1.119.Final.jar:/opt/aerospike-vector-search/lib/netty-transport-native-unix-common-4.1.119.Final.jar:/opt/aerospike-vector-search/lib/netty-transport-4.1.119.Final.jar:/opt/aerospike-vector-search/lib/grpc-kotlin-stub-1.4.1.jar:/opt/aerospike-vector-search/lib/kotlinx-coroutines-core-jvm-1.10.1.jar:/opt/aerospike-vector-search/lib/java-jwt-4.5.0.jar:/opt/aerospike-vector-search/lib/jackson-dataformat-yaml-2.17.2.jar:/opt/aerospike-vector-search/lib/jackson-dataformat-msgpack-0.9.8.jar:/opt/aerospike-vector-search/lib/jersey-media-json-jackson-3.1.5.jar:/opt/aerospike-vector-search/lib/metrics-json-4.2.25.jar:/opt/aerospike-vector-search/lib/jackson-module-jakarta-xmlbind-annotations-2.17.2.jar:/opt/aerospike-vector-search/lib/jackson-databind-2.17.2.jar:/opt/aerospike-vector-search/lib/jackson-annotations-2.17.2.jar:/opt/aerospike-vector-search/lib/jackson-core-2.17.2.jar:/opt/aerospike-vector-search/lib/jackson-module-kotlin-2.17.2.jar:/opt/aerospike-vector-search/lib/kotlin-reflect-2.1.10.jar:/opt/aerospike-vector-search/lib/kotlin-stdlib-jdk7-2.1.10.jar:/opt/aerospike-vector-search/lib/protobuf-kotlin-3.25.6.jar:/opt/aerospike-vector-search/lib/kotlin-logging-jvm-3.0.5.jar:/opt/aerospike-vector-search/lib/kotlin-stdlib-2.1.10.jar:/opt/aerospike-vector-search/lib/kotlin-stdlib-jdk8-2.1.10.jar:/opt/aerospike-vector-search/lib/grpc-util-1.71.0.jar:/opt/aerospike-vector-search/lib/grpc-core-1.71.0.jar:/opt/aerospike-vector-search/lib/protobuf-java-util-3.25.6.jar:/opt/aerospike-vector-search/lib/dsiutils-2.7.3.jar:/opt/aerospike-vector-search/lib/grpc-context-1.71.0.jar:/opt/aerospike-vector-search/lib/grpc-protobuf-1.71.0.jar:/opt/aerospike-vector-search/lib/grpc-stub-1.71.0.jar:/opt/aerospike-vector-search/lib/grpc-protobuf-lite-1.71.0.jar:/opt/aerospike-vector-search/lib/grpc-api-1.71.0.jar:/opt/aerospike-vector-search/lib/guava-33.4.0-jre.jar:/opt/aerospike-vector-search/lib/perfmark-api-0.27.0.jar:/opt/aerospike-vector-search/lib/picocli-4.7.6.jar:/opt/aerospike-vector-search/lib/caffeine-3.2.0.jar:/opt/aerospike-vector-search/lib/bcpkix-jdk18on-1.80.jar:/opt/aerospike-vector-search/lib/bcutil-jdk18on-1.80.jar:/opt/aerospike-vector-search/lib/bcprov-jdk18on-1.80.jar:/opt/aerospike-vector-search/lib/lombok-1.18.30.jar:/opt/aerospike-vector-search/lib/commons-lang3-3.13.0.jar:/opt/aerospike-vector-search/lib/commons-collections4-4.4.jar:/opt/aerospike-vector-search/lib/jul-to-slf4j-1.7.36.jar:/opt/aerospike-vector-search/lib/logback-json-classic-0.1.5.jar:/opt/aerospike-vector-search/lib/logback-classic-1.5.15.jar:/opt/aerospike-vector-search/lib/cron-utils-9.2.1.jar:/opt/aerospike-vector-search/lib/chronicle-map-3.27ea0.jar:/opt/aerospike-vector-search/lib/reflections-0.10.2.jar:/opt/aerospike-vector-search/lib/metrics-jvm-4.2.25.jar:/opt/aerospike-vector-search/lib/metrics-core-4.2.25.jar:/opt/aerospike-vector-search/lib/chronicle-wire-2.27ea0.jar:/opt/aerospike-vector-search/lib/chronicle-threads-2.27ea0.jar:/opt/aerospike-vector-search/lib/affinity-3.27ea0.jar:/opt/aerospike-vector-search/lib/chronicle-values-2.27ea0.jar:/opt/aerospike-vector-search/lib/chronicle-algorithms-2.27ea0.jar:/opt/aerospike-vector-search/lib/chronicle-bytes-2.27ea0.jar:/opt/aerospike-vector-search/lib/chronicle-core-2.27ea0.jar:/opt/aerospike-vector-search/lib/posix-2.27ea0.jar:/opt/aerospike-vector-search/lib/compiler-2.27ea0.jar:/opt/aerospike-vector-search/lib/slf4j-api-2.0.15.jar:/opt/aerospike-vector-search/lib/logback-jackson-0.1.5.jar:/opt/aerospike-vector-search/lib/logback-json-core-0.1.5.jar:/opt/aerospike-vector-search/lib/logback-core-1.5.15.jar:/opt/aerospike-vector-search/lib/javax.inject-1.jar:/opt/aerospike-vector-search/lib/jersey-container-servlet-core-3.1.5.jar:/opt/aerospike-vector-search/lib/jersey-server-3.1.5.jar:/opt/aerospike-vector-search/lib/jersey-hk2-3.1.5.jar:/opt/aerospike-vector-search/lib/jersey-media-multipart-3.1.5.jar:/opt/aerospike-vector-search/lib/jersey-client-3.1.5.jar:/opt/aerospike-vector-search/lib/jersey-common-3.1.5.jar:/opt/aerospike-vector-search/lib/hk2-locator-3.0.5.jar:/opt/aerospike-vector-search/lib/hk2-api-3.0.5.jar:/opt/aerospike-vector-search/lib/hk2-utils-3.0.5.jar:/opt/aerospike-vector-search/lib/jakarta.inject-api-2.0.1.jar:/opt/aerospike-vector-search/lib/aopalliance-1.0.jar:/opt/aerospike-vector-search/lib/mbassador-1.3.2.jar:/opt/aerospike-vector-search/lib/vault-java-driver-5.1.0.jar:/opt/aerospike-vector-search/lib/aerospike-client-jdk21-9.0.4.jar:/opt/aerospike-vector-search/lib/commons-math3-3.6.1.jar:/opt/aerospike-vector-search/lib/jbcrypt-0.4.jar:/opt/aerospike-vector-search/lib/animal-sniffer-annotations-1.24.jar:/opt/aerospike-vector-search/lib/gson-2.11.0.jar:/opt/aerospike-vector-search/lib/error_prone_annotations-2.36.0.jar:/opt/aerospike-vector-search/lib/netty-buffer-4.1.119.Final.jar:/opt/aerospike-vector-search/lib/netty-resolver-4.1.119.Final.jar:/opt/aerospike-vector-search/lib/netty-common-4.1.119.Final.jar:/opt/aerospike-vector-search/lib/failureaccess-1.0.2.jar:/opt/aerospike-vector-search/lib/listenablefuture-9999.0-empty-to-avoid-conflict-with-guava.jar:/opt/aerospike-vector-search/lib/jsr305-3.0.2.jar:/opt/aerospike-vector-search/lib/checker-qual-3.43.0.jar:/opt/aerospike-vector-search/lib/j2objc-annotations-3.0.0.jar:/opt/aerospike-vector-search/lib/annotations-4.1.1.4.jar:/opt/aerospike-vector-search/lib/jspecify-1.0.0.jar:/opt/aerospike-vector-search/lib/annotations-23.0.0.jar:/opt/aerospike-vector-search/lib/proto-google-common-protos-2.51.0.jar:/opt/aerospike-vector-search/lib/protobuf-java-3.25.6.jar:/opt/aerospike-vector-search/lib/simpleclient_dropwizard-0.16.0.jar:/opt/aerospike-vector-search/lib/simpleclient_servlet-0.16.0.jar:/opt/aerospike-vector-search/lib/undertow-servlet-2.3.18.Final.jar:/opt/aerospike-vector-search/lib/gnu-crypto-2.0.1.jar:/opt/aerospike-vector-search/lib/luaj-jse-3.0.1.jar:/opt/aerospike-vector-search/lib/aerospike-connect-outbound-sdk-2.2.0.jar:/opt/aerospike-vector-search/lib/commons-io-2.15.1.jar:/opt/aerospike-vector-search/lib/fastutil-8.5.12.jar:/opt/aerospike-vector-search/lib/jsap-20210129.jar:/opt/aerospike-vector-search/lib/jna-platform-5.5.0.jar:/opt/aerospike-vector-search/lib/jna-5.5.0.jar:/opt/aerospike-vector-search/lib/snakeyaml-2.2.jar:/opt/aerospike-vector-search/lib/msgpack-core-0.9.8.jar:/opt/aerospike-vector-search/lib/javax.annotation-api-1.3.2.jar:/opt/aerospike-vector-search/lib/simpleclient_servlet_common-0.16.0.jar:/opt/aerospike-vector-search/lib/simpleclient_common-0.16.0.jar:/opt/aerospike-vector-search/lib/simpleclient-0.16.0.jar:/opt/aerospike-vector-search/lib/javassist-3.29.2-GA.jar:/opt/aerospike-vector-search/lib/mimepull-1.9.15.jar:/opt/aerospike-vector-search/lib/jersey-entity-filtering-3.1.5.jar:/opt/aerospike-vector-search/lib/jakarta.xml.bind-api-4.0.0.jar:/opt/aerospike-vector-search/lib/jakarta.servlet-api-6.0.0.jar:/opt/aerospike-vector-search/lib/jakarta.annotation-api-2.1.1.jar:/opt/aerospike-vector-search/lib/jakarta.ws.rs-api-3.1.0.jar:/opt/aerospike-vector-search/lib/jakarta.validation-api-3.0.2.jar:/opt/aerospike-vector-search/lib/xnio-nio-3.8.16.Final.jar:/opt/aerospike-vector-search/lib/xnio-api-3.8.16.Final.jar:/opt/aerospike-vector-search/lib/wildfly-client-config-1.0.1.Final.jar:/opt/aerospike-vector-search/lib/jboss-threads-3.5.0.Final.jar:/opt/aerospike-vector-search/lib/jboss-logging-3.4.3.Final.jar:/opt/aerospike-vector-search/lib/wildfly-common-1.5.4.Final.jar:/opt/aerospike-vector-search/lib/chronicle-analytics-2.27ea0.jar:/opt/aerospike-vector-search/lib/jnr-ffi-2.2.15.jar:/opt/aerospike-vector-search/lib/jnr-constants-0.10.4.jar:/opt/aerospike-vector-search/lib/javapoet-1.13.0.jar:/opt/aerospike-vector-search/lib/simpleclient_tracer_otel-0.16.0.jar:/opt/aerospike-vector-search/lib/simpleclient_tracer_otel_agent-0.16.0.jar:/opt/aerospike-vector-search/lib/osgi-resource-locator-1.0.3.jar:/opt/aerospike-vector-search/lib/aopalliance-repackaged-3.0.5.jar:/opt/aerospike-vector-search/lib/jakarta.activation-api-2.1.0.jar:/opt/aerospike-vector-search/lib/jffi-1.3.12.jar:/opt/aerospike-vector-search/lib/jffi-1.3.12-native.jar:/opt/aerospike-vector-search/lib/asm-9.2.jar:/opt/aerospike-vector-search/lib/jnr-a64asm-1.0.0.jar:/opt/aerospike-vector-search/lib/jnr-x86asm-1.0.2.jar:/opt/aerospike-vector-search/lib/simpleclient_tracer_common-0.16.0.jar com.aerospike.vector.VectorDbMainKt -f /etc/aerospike-vector-search/aerospike-vector-search.yml
 
 
 
@@ -1472,35 +1147,35 @@ Container Status Summary:
 Container: aerospike-vector-search
 Restart Count: 0
 Last State: {}
-Current State: {"running":{"startedAt":"2025-04-22T19:05:25Z"}}
+Current State: {"running":{"startedAt":"2025-04-29T19:17:19Z"}}
 ---
 
 Previous Terminations (including OOMKills):
 
 Pod Events History (last 1 hour):
 LAST SEEN   TYPE      REASON                            OBJECT                                  MESSAGE
-14s         Warning   FailedToRetrieveImagePullSecret   pod/avs-app-aerospike-vector-search-2   Unable to retrieve some image pull secrets (jfrog-secret); attempting to pull the image may not succeed.
+84s         Warning   FailedToRetrieveImagePullSecret   pod/avs-app-aerospike-vector-search-2   Unable to retrieve some image pull secrets (jfrog-secret); attempting to pull the image may not succeed.
 
 Node Conditions at Recent Restarts:
 {
-  "lastHeartbeatTime": "2025-04-28T05:26:52Z",
-  "lastTransitionTime": "2025-04-22T18:38:21Z",
+  "lastHeartbeatTime": "2025-04-29T23:05:29Z",
+  "lastTransitionTime": "2025-04-29T19:10:12Z",
   "message": "kubelet has sufficient memory available",
   "reason": "KubeletHasSufficientMemory",
   "status": "False",
   "type": "MemoryPressure"
 }
 {
-  "lastHeartbeatTime": "2025-04-28T05:26:52Z",
-  "lastTransitionTime": "2025-04-22T18:38:21Z",
+  "lastHeartbeatTime": "2025-04-29T23:05:29Z",
+  "lastTransitionTime": "2025-04-29T19:10:12Z",
   "message": "kubelet has no disk pressure",
   "reason": "KubeletHasNoDiskPressure",
   "status": "False",
   "type": "DiskPressure"
 }
 {
-  "lastHeartbeatTime": "2025-04-28T05:26:52Z",
-  "lastTransitionTime": "2025-04-22T18:38:21Z",
+  "lastHeartbeatTime": "2025-04-29T23:05:29Z",
+  "lastTransitionTime": "2025-04-29T19:10:12Z",
   "message": "kubelet has sufficient PID available",
   "reason": "KubeletHasSufficientPID",
   "status": "False",
@@ -1514,7 +1189,7 @@ Container Memory Limit:
 JVM Memory Settings:
 ➡️ jcmd 9 VM.flags:
 9:
--XX:+AlwaysPreTouch -XX:CICompilerCount=4 -XX:+ExitOnOutOfMemoryError -XX:InitialHeapSize=526385152 -XX:MaxHeapSize=26923237376 -XX:MinHeapDeltaBytes=2097152 -XX:MinHeapSize=8388608 -XX:NonNMethodCodeHeapSize=5839372 -XX:NonProfiledCodeHeapSize=122909434 -XX:ProfiledCodeHeapSize=122909434 -XX:ReservedCodeCacheSize=251658240 -XX:+SegmentedCodeCache -XX:SoftMaxHeapSize=26923237376 -XX:-UseCompressedOops -XX:-UseNUMA -XX:-UseNUMAInterleaving -XX:+UseZGC -XX:+ZGenerational -XX:ZOldGCThreads=2 -XX:ZYoungGCThreads=2 
+-XX:+AlwaysPreTouch -XX:CICompilerCount=3 -XX:+ExitOnOutOfMemoryError -XX:InitialHeapSize=241172480 -XX:MaxHeapSize=13023313920 -XX:MinHeapDeltaBytes=2097152 -XX:MinHeapSize=8388608 -XX:NonNMethodCodeHeapSize=5832780 -XX:NonProfiledCodeHeapSize=122912730 -XX:ProfiledCodeHeapSize=122912730 -XX:ReservedCodeCacheSize=251658240 -XX:+SegmentedCodeCache -XX:SoftMaxHeapSize=13023313920 -XX:-THPStackMitigation -XX:-UseCompressedOops -XX:+UseFastUnorderedTimeStamps -XX:-UseNUMA -XX:-UseNUMAInterleaving -XX:+UseZGC -XX:+ZGenerational -XX:ZOldGCThreads=1 -XX:ZYoungGCThreads=1 
 
 ➡️ jcmd 9 GC.heap_info:
 9:
@@ -1522,6 +1197,7 @@ JVM Memory Settings:
 Heap Info:
 ➡️ jcmd 9 GC.heap_info:
 9:
- ZHeap           used 794M, capacity 1936M, max capacity 25676M
- Metaspace       used 82132K, committed 82816K, reserved 1179648K
-  class space    used 8698K, committed 9152K, reserved 1048576K
+ ZHeap           used 720M, capacity 976M, max capacity 12420M
+ Metaspace       used 77573K, committed 78592K, reserved 1179648K
+  class space    used 8414K, committed 8832K, reserved 1048576K
+

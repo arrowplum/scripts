@@ -1,0 +1,96 @@
+2025/04/29 19:17:13 Init container started
+2025/04/29 19:17:13 Initial configuration:
+{
+  "cluster": {
+    "cluster-name": "avs-db-1"
+  },
+  "feature-key-file": "/etc/aerospike-vector-search/secrets/features.conf",
+  "heartbeat": {
+    "seeds": [
+      {
+        "address": "avs-app-aerospike-vector-search-0.avs-app-aerospike-vector-search-internal.avs.svc.cluster.local",
+        "port": 5001
+      }
+    ]
+  },
+  "interconnect": {
+    "ports": {
+      "5001": {
+        "addresses": "0.0.0.0"
+      }
+    }
+  },
+  "logging": {
+    "enable-console-logging": false,
+    "format": "simple",
+    "levels": {
+      "metrics-ticker": "debug",
+      "root": "info"
+    },
+    "max-history": 30,
+    "ticker-interval": 10
+  },
+  "manage": {
+    "ports": {
+      "5040": {}
+    }
+  },
+  "service": {
+    "metadata-namespace": "avs-meta",
+    "ports": {
+      "5000": {}
+    }
+  },
+  "storage": {
+    "client-policy": {},
+    "seeds": [
+      {
+        "aerocluster-0-0.aerocluster.aerospike.svc.cluster.local": {
+          "port": 3000
+        }
+      }
+    ]
+  }
+}
+2025/04/29 19:17:13 Starting setRoles()
+2025/04/29 19:17:13 Starting getAerospikeVectorSearchRoles()
+2025/04/29 19:17:13 Starting getNodeLabels()
+2025/04/29 19:17:13 Starting GetNodeInstance()
+2025/04/29 19:17:13 NODE_NAME: ip-192-168-28-89.ec2.internal
+2025/04/29 19:17:13 SERVICE_NAME: avs-app-aerospike-vector-search
+2025/04/29 19:17:13 POD_NAMESPACE: avs
+2025/04/29 19:17:13 In-cluster config obtained successfully
+2025/04/29 19:17:13 Fetched node: ip-192-168-28-89.ec2.internal
+2025/04/29 19:17:13 Service avs-app-aerospike-vector-search not found in namespace avs; proceeding with node only
+2025/04/29 19:17:13 Found node label: aerospike.io/role-label=indexer-nodes
+2025/04/29 19:17:13 Available roles: map[default-nodes:[query index-update] indexer-nodes:[index-update] query-nodes:[query] standalone-indexer-nodes:[standalone-indexer] standalone-nodes:[standalone-indexer]]
+2025/04/29 19:17:13 Found role for label indexer-nodes: [index-update]
+2025/04/29 19:17:13 Successfully set roles in cluster configuration
+2025/04/29 19:17:13 Starting setAdvertisedListeners()
+2025/04/29 19:17:13 Operating in NETWORK_MODE: hostnetwork
+2025/04/29 19:17:13 CONTAINER_PORT: 5000 for hostnetwork mode
+2025/04/29 19:17:13 Setting advertised listeners to IP: 54.226.248.213, Port: 5000
+2025/04/29 19:17:13 Setting advertised-listeners for port 5000
+2025/04/29 19:17:13 Updated ports configuration: {
+  "5000": {
+    "advertised-listeners": {
+      "default": [
+        {
+          "address": "54.226.248.213",
+          "port": 5000
+        }
+      ]
+    }
+  }
+}
+2025/04/29 19:17:13 Setting up heartbeat seeds...
+2025/04/29 19:17:13 Generating heartbeat seed DNS names...
+2025/04/29 19:17:13 Checking for heartbeat configuration...
+2025/04/29 19:17:13 Found heartbeat seed configuration: address=avs-app-aerospike-vector-search-0.avs-app-aerospike-vector-search-internal.avs.svc.cluster.local, port=5001
+2025/04/29 19:17:13 Successfully configured heartbeat with 2 seed(s)
+Pod ID: 1
+2025/04/29 19:17:13 No real memory limit set, using system total memory: 16454676480 bytes
+2025/04/29 19:17:13 Calculated JVM options: -Xmx12553m
+2025/04/29 19:17:13 Set JAVA_OPTS to: -Xmx12553m
+2025/04/29 19:17:13 Wrote JVM options to file: /etc/aerospike-vector-search/jvm.opts
+2025/04/29 19:17:13 Init container completed successfully
