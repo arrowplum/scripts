@@ -1,103 +1,90 @@
-### 🖥️ Node Analysis: ip-192-168-28-89.ec2.internal
+### 🖥️ Node-Level Analysis: ip-192-168-28-89.ec2.internal
 
-#### Node Capacity and Conditions
-- **CPU**: 4 cores
-- **Memory**: 15.3 GiB allocatable
-- **Disk**: 76.2 GiB allocatable
-- **Pods**: 58 max
-- **Conditions**: 
-  - MemoryPressure: False
-  - DiskPressure: False
-  - PIDPressure: False
-  - Ready: True
-
-#### Cloud Provider and Instance Type
-- **Provider**: AWS
+#### Node Information
 - **Instance Type**: m5.xlarge
-- **Region**: us-east-1
-- **Zone**: us-east-1b
+- **Region/Zone**: us-east-1/us-east-1b
+- **Capacity**: 
+  - CPU: 4 cores
+  - Memory: 16069 MiB
+  - Pods: 58
 
-#### Resource Allocation and Utilization
-- **CPU Requests**: 190m (4%)
-- **CPU Limits**: 400m (10%)
-- **Memory Requests**: 184Mi (1%)
-- **Memory Limits**: 1280Mi (8%)
-- **No OOM events detected**
+#### Allocatable Resources
+- **CPU**: 3920m
+- **Memory**: 15052 MiB
 
-#### Node-Level Recommendations
-1. **Resource Requests**: Increase CPU and memory requests for critical pods to ensure they have enough resources during peak loads.
-2. **Monitoring**: Set up alerts for memory and CPU usage to prevent potential resource saturation.
+#### Node Conditions
+- **MemoryPressure**: False
+- **DiskPressure**: False
+- **PIDPressure**: False
+- **Ready**: True
 
----
+#### Resource Allocation
+- **CPU Requests**: 190m (4% of total)
+- **Memory Requests**: 184Mi (1% of total)
 
-### 🧵 Pod Analysis: avs-app-aerospike-vector-search-1
+#### Observations
+- The node is operating without any memory, disk, or PID pressure.
+- There are no OOM events, indicating stable memory usage.
+- The node is underutilized in terms of CPU and memory requests.
 
-#### Configuration Review
-- **Node Roles**: Correctly set to `index-update`.
-- **Heartbeat Seeds**: Configured with two seeds for redundancy.
-- **Listener Addresses**: Properly set to `0.0.0.0` for interconnect.
-- **Advertised Listeners**: Correctly advertised with external IP and port.
+### 🧵 Pod-Level Analysis: avs-app-aerospike-vector-search-1
 
-#### JVM Configuration
-- **Memory Settings**:
-  - Initial Heap Size: Not explicitly set
-  - Maximum Heap Size: `-Xmx12553m`
-  - Soft Max Heap Size: `-XX:SoftMaxHeapSize=13163823104`
-  - Reserved Code Cache Size: `-XX:ReservedCodeCacheSize=251658240`
-  - Code Heap Sizes:
-    - NonNMethod: `5832780`
-    - NonProfiled: `122912730`
-    - Profiled: `122912730`
+#### Configurations from `aerospike-vector-search.yml`
+- **Cluster Name**: avs-db-1
+- **Node Roles**: index-update
+- **Heartbeat Seeds**: Correctly configured with two seeds.
+- **Listener Addresses**: Set to `0.0.0.0`, allowing connections from any IP.
+- **Advertised Listeners**: Correctly set to the external IP and port.
 
-- **GC Settings**:
-  - GC Type: `-XX:+UseZGC`
-  - GC Thread Counts: `-XX:ZYoungGCThreads=1`, `-XX:ZOldGCThreads=1`
-  - GC-specific Flags: `-XX:+ZGenerational`
+#### JVM Memory Settings from `jvm-info.txt`
+- **Initial Heap Size (-Xms)**: 243 MB
+- **Maximum Heap Size (-Xmx)**: 12553 MB
+- **Soft Max Heap Size**: 12553 MB
+- **Reserved Code Cache Size**: 240 MB
+- **Code Heap Sizes**: NonNMethod (5.8 MB), NonProfiled (122 MB), Profiled (122 MB)
 
-- **Other Important Flags**:
-  - NUMA Settings: `-XX:-UseNUMA`, `-XX:-UseNUMAInterleaving`
-  - Compressed Oops: `-XX:-UseCompressedOops`
-  - Pre-touch Settings: `-XX:+AlwaysPreTouch`
-  - Compiler Settings: `-XX:CICompilerCount=3`
-  - Exit on OOM: `-XX:+ExitOnOutOfMemoryError`
+#### GC Settings
+- **GC Type**: ZGC
+- **GC Threads**: Young (1), Old (1)
+- **GC Flags**: ZGenerational enabled
 
-- **Module and Package Settings**:
-  - Added Modules: `--add-modules jdk.incubator.vector`
-  - Opened Packages: Multiple packages opened for unnamed modules
-  - Exported Packages: Multiple packages exported for unnamed modules
+#### Other JVM Flags
+- **NUMA Settings**: Disabled
+- **Compressed Oops**: Disabled
+- **Pre-touch**: Enabled
+- **Exit on OOM**: Enabled
 
-#### GC.heap_info Analysis
-- **Current Heap Usage**: 1158M
-- **Heap Capacity**: 1570M
-- **Max Capacity**: 12554M
-- **Metaspace Usage**: 82.5M
-- **Class Space Usage**: 8.9M
+#### Module and Package Settings
+- **Added Modules**: jdk.incubator.vector
+- **Opened Packages**: Multiple packages opened for unnamed modules.
 
-#### Pod-Level Recommendations
-1. **JVM Memory**: Consider setting an initial heap size (`-Xms`) to reduce dynamic memory allocation overhead.
-2. **GC Threads**: Evaluate increasing `ZYoungGCThreads` and `ZOldGCThreads` if GC pauses are affecting performance.
-3. **Compressed Oops**: Enable `-XX:+UseCompressedOops` if applicable to save memory.
+#### Heap Information from `GC.heap_info`
+- **Current Heap Usage**: 576 MB
+- **Heap Capacity**: 1618 MB
+- **Max Capacity**: 12554 MB
+- **Metaspace Usage**: 82 MB
+- **Class Space Usage**: 8.8 MB
 
----
+### 🛠️ Recommendations
 
-### 📈 Performance and Resource Recommendations
-1. **Node-Level Optimizations**:
-   - **Resource Requests**: Align requests and limits with actual usage to optimize resource allocation.
-   - **Monitoring**: Implement detailed monitoring for CPU and memory to detect anomalies.
+#### 1. Node-Level Optimizations
+- **Resource Requests**: Increase CPU and memory requests to better reflect actual usage and prevent overcommitment.
+- **Pod Distribution**: Consider distributing pods more evenly across nodes to utilize resources effectively.
 
-2. **Pod-Level Configurations**:
-   - **Heartbeat Configuration**: Ensure all seeds are reachable and properly configured.
-   - **JVM Tuning**: Adjust JVM settings based on application performance metrics.
+#### 2. Pod-Level Configurations
+- **Heartbeat Seeds**: Ensure redundancy by adding more seed nodes if possible.
+- **Listener Security**: Review security implications of using `0.0.0.0` for listener addresses.
 
-3. **Resource Allocation Adjustments**:
-   - **CPU and Memory**: Re-evaluate resource requests and limits for the AVS pod to ensure optimal performance.
+#### 3. Resource Allocation Adjustments
+- **Memory Requests**: Set memory requests closer to actual usage (e.g., 600 MiB) to ensure adequate allocation.
+- **CPU Requests**: Adjust CPU requests based on observed load to prevent resource starvation.
 
-4. **Performance Improvements**:
-   - **GC Tuning**: Monitor GC performance and adjust thread counts and heap sizes as necessary.
-   - **Network Configuration**: Ensure network settings are optimized for low latency and high throughput.
+#### 4. Performance Improvements
+- **GC Threads**: Consider increasing GC threads if CPU utilization allows, to improve garbage collection efficiency.
+- **NUMA Settings**: Enable NUMA settings if running on a NUMA architecture to improve memory access patterns.
 
-5. **JVM Memory Settings**:
-   - **Initial Heap Size**: Set `-Xms` to match `-Xmx` to avoid runtime heap resizing.
-   - **Heap Size**: Regularly review and adjust `-Xmx` based on application needs and node capacity.
+#### 5. JVM Memory Settings
+- **Heap Size**: Ensure `-Xms` is set to a higher value for better memory allocation upfront.
+- **Compressed Oops**: Enable compressed oops if memory savings are needed and the JVM supports it.
 
-By following these recommendations, you can enhance the stability and performance of your Aerospike Vector Search deployment. 🚀
+By implementing these recommendations, you can optimize both node and pod performance, ensuring efficient resource utilization and stable operations. 🌟

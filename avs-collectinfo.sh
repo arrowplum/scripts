@@ -369,7 +369,7 @@ For this node:
 
 For each AVS pod on this node:
 - 🔍 Review 'aerospike-vector-search.yml': validate node roles, heartbeat seeds, listener addresses, and interconnect settings
-- 📦 Analyze JVM configuration from the full command line:
+- 📦 Analyze jvm-info.txt for:
   * Memory Settings:
     - Initial heap size (-Xms)
     - Maximum heap size (-Xmx)
@@ -614,12 +614,14 @@ Generate a comprehensive cluster analysis report with the following sections:
    - Analysis of node distribution vs index mode (DISTRIBUTED/STANDALONE)
 
 3. 📊 AVS Indices Analysis
-   - Detailed breakdown of each index configuration (from avs-indices.yaml which contains a yaml list of index plural indecies):
+   - Detailed breakdown of each index configuration (from avs-indices.yaml which contains a yaml list of indexes):
      * Index name, namespace, and set
      * Vector dimensions and distance metric
      * HNSW parameters (ef, efConstruction, m)
      * Batching and caching configurations
      * Healer and merge parameters
+   - Full details of each index configuration:
+     * All available details for each index configuration and status. 
    - Recommendations for index optimization based on:
      * Vector dimensions vs memory usage
      * Caching parameters vs available memory
