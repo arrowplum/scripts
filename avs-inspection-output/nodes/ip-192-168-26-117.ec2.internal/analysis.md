@@ -1,56 +1,59 @@
 ### 🖥️ Node Analysis: ip-192-168-26-117.ec2.internal
 
-#### Node Capacity & Allocatable Resources:
-- **CPU Capacity:** 4 cores
-- **Memory Capacity:** 15,896,988 Ki
-- **Allocatable CPU:** 3920m
-- **Allocatable Memory:** 14,880,156 Ki
-- **Pods Capacity & Allocatable:** 58
+#### Node Overview
+- **Instance Type**: m5.xlarge
+- **Region/Zone**: us-east-1 / us-east-1b
+- **Capacity**: 
+  - **CPU**: 4 cores
+  - **Memory**: 15896 MiB
+  - **Ephemeral Storage**: 83 GiB
+- **Allocatable Resources**:
+  - **CPU**: 3920m
+  - **Memory**: 14880 MiB
+  - **Pods**: 58
 
-#### Node Conditions:
-- **Memory Pressure:** ❌ False (Sufficient memory available)
-- **Disk Pressure:** ❌ False (No disk pressure)
-- **PID Pressure:** ❌ False (Sufficient PID available)
-- **Ready Status:** ✅ True (Node is ready)
+#### Node Conditions
+- **MemoryPressure**: False (Sufficient memory available)
+- **DiskPressure**: False (No disk pressure)
+- **PIDPressure**: False (Sufficient PID available)
+- **Ready**: True (Node is ready)
 
-#### Cloud Provider & Instance Type:
-- **Provider:** AWS
-- **Instance Type:** m5.xlarge
-- **Region:** us-east-1
-- **Zone:** us-east-1b
+#### Resource Allocation
+- **CPU Requests**: 190m (4%)
+- **Memory Requests**: 170 MiB (1%)
+- **Memory Limits**: 768 MiB (5%)
 
-#### Resource Allocation & Utilization:
-- **CPU Requests:** 190m (4%)
-- **Memory Requests:** 170Mi (1%)
-- **Memory Limits:** 768Mi (5%)
+#### Observations
+- The node is healthy with no memory, disk, or PID pressure.
+- Resource utilization is low, indicating potential for more workload.
 
-#### Node-Level Issues or Warnings:
-- No OOMKill events or system warnings detected.
+### 🏷️ Cloud Provider Details
+- **Provider**: AWS
+- **Instance Type**: m5.xlarge
+- **Capacity Type**: ON_DEMAND
 
-### Recommendations for Node-Level Optimizations:
-1. **Resource Requests & Limits:** Consider setting explicit CPU and memory limits for all pods to prevent over-allocation and ensure fair resource distribution.
-2. **Monitoring:** Implement monitoring for CPU and memory usage to identify potential bottlenecks or underutilization.
-3. **Scaling:** Evaluate the need for horizontal scaling if resource utilization approaches capacity limits.
+### 🔍 Node-Level Recommendations
+1. **Optimize Resource Requests**: Consider increasing resource requests for critical pods to ensure they have enough resources during peak loads.
+2. **Monitor Utilization**: Keep an eye on resource utilization to ensure efficient use of the node's capacity.
 
-### Pod-Level Analysis:
-- **AVS Pods:** ❌ No Aerospike Vector Search pods found on this node.
+### ❌ Pod Analysis
+- No Aerospike Vector Search (AVS) pods are currently running on this node.
 
-### Recommendations for Pod-Level Configurations:
-1. **Pod Distribution:** Ensure AVS pods are evenly distributed across nodes to balance the load and optimize resource usage.
-2. **Node Affinity:** Use node affinity or anti-affinity rules to control pod placement based on node labels or resources.
+### 📈 General Recommendations
+1. **Node-Level Optimizations**:
+   - **Resource Allocation**: Adjust resource requests and limits based on actual usage patterns.
+   - **Scaling**: Consider scaling down if the node is consistently underutilized to save costs.
+   
+2. **Pod-Level Configurations**:
+   - **Node Affinity**: Ensure AVS pods are scheduled on nodes with sufficient resources and appropriate labels.
+   
+3. **Performance Improvements**:
+   - **Monitoring**: Implement monitoring tools to track node and pod performance metrics.
+   - **Alerts**: Set up alerts for resource thresholds to preemptively address potential issues.
 
-### Resource Allocation Adjustments:
-- **CPU & Memory Requests:** Review and adjust requests and limits for existing pods to align with actual usage patterns and prevent resource starvation.
+4. **JVM Memory Settings**:
+   - **Heap Size**: Ensure JVM settings for AVS pods are optimized for the workload, adjusting heap sizes as necessary.
+   - **Garbage Collection**: Use appropriate GC settings to minimize pause times and optimize throughput.
 
-### Performance Improvements:
-1. **Node Utilization:** Regularly review node utilization metrics to identify opportunities for optimizing resource allocation.
-2. **Instance Type:** Consider upgrading to a larger instance type if consistent resource constraints are observed.
-
-### JVM Memory Settings (Hypothetical for AVS Pods):
-- **Initial Heap Size (-Xms):** Ensure it's set to a reasonable value based on pod memory requests.
-- **Maximum Heap Size (-Xmx):** Should not exceed the pod's memory limit to avoid OOM kills.
-- **GC Settings:** Use a suitable garbage collector like ZGC for low-latency applications.
-- **NUMA Settings:** If applicable, configure NUMA settings to optimize memory access patterns.
-
-### Conclusion:
-While the node is currently healthy and underutilized, it's essential to continuously monitor resource usage and adjust configurations to maintain optimal performance. Implementing the above recommendations will help in achieving efficient resource utilization and improved application performance. 🚀
+### 🚀 Conclusion
+The node is well-configured and healthy, but there is room for optimization in terms of resource allocation and monitoring. Since no AVS pods are present, ensure that when they are deployed, they are configured with optimal JVM settings and resource requests to maximize performance.

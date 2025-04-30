@@ -152,13 +152,13 @@ collect_pod_info() {
     if [ -z "$pid" ]; then
       echo "❌ No Java process found via jcmd" | tee "$POD_DIR/jvm-info.txt"
     else
-      echo "➡️ jcmd $pid VM.flags:"
+      echo " jcmd $pid VM.flags:"
       jcmd "$pid" VM.flags
       echo ""
-      echo "➡️ jcmd $pid GC.heap_info:"
+      echo "jcmd $pid GC.heap_info:"
       jcmd "$pid" GC.heap_info
       echo ""
-      echo "➡️ getting full java command line for pid $pid:"
+      echo " getting full java command line for pid $pid:"
       ps $pid 
       
     fi
@@ -598,7 +598,6 @@ CLUSTER_RESPONSE_FILE="$OUTPUT_DIR/cluster-response.json"
 # Cluster analysis prompt
 CLUSTER_PROMPT=$(cat <<EOF
 You are analyzing an Aerospike Vector Search cluster deployment.
-
 Generate a comprehensive cluster analysis report with the following sections:
 1. Create a table showing each node's:
      * Total Memory (from node-aggregates.json)
@@ -770,11 +769,11 @@ EOF
             "messages": [
                 {
                     "role": "system",
-                    "content": "'"$CLUSTER_PROMPT"'"
+                    "content": '"$(echo "$CLUSTER_PROMPT" | jq -Rs .)"'
                 },
                 {
                     "role": "user",
-                    "content": "'"$(cat "$CLUSTER_TMP_FILE" | sed 's/"/\\"/g')"'\n\nNode-Specific Analysis:\n'"$(echo -e "$NODE_ANALYSIS_CONTENT" | sed 's/"/\\"/g')"'"
+                    "content": '"$(cat "$CLUSTER_TMP_FILE" | jq -Rs .)"'
                 }
             ]
         }'

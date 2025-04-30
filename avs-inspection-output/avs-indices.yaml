@@ -22,8 +22,8 @@ indices:
         m: 16
         maxMemQueueSize: 1e+06
         mergeParams:
-            indexParallelism: 80
-            reIndexParallelism: 26
+            indexParallelism: 40
+            reIndexParallelism: 13
         recordCachingParams:
             expiry: "3600000"
             maxEntries: "2000000"
@@ -61,8 +61,8 @@ indices:
         m: 16
         maxMemQueueSize: 1e+06
         mergeParams:
-            indexParallelism: 80
-            reIndexParallelism: 26
+            indexParallelism: 40
+            reIndexParallelism: 13
         recordCachingParams:
             expiry: "3600000"
             maxEntries: "2000000"
