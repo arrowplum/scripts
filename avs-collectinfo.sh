@@ -544,71 +544,78 @@ CLUSTER_RESPONSE_FILE="$OUTPUT_DIR/cluster-response.json"
             echo "    No AVS pods"
         fi
     done
-    echo -e "\n=== Cluster-wide avs information ==="
-    {
-        echo "Running asvec to get cluster-wide avs information"
-        echo "cluster info:"
-        kubectl run asvec \
-            --restart=Never \
-            --rm -i \
-            --tty \
-            --image artifact.aerospike.io/docker/asvec:3.3.0 \
-            -n "$NAMESPACE" \
-            -- --host avs-app-aerospike-vector-search-internal \
-                nodes ls | tee "$OUTPUT_DIR/avs-cluster-info.txt"
-        echo "indecies:"
-        kubectl run asvec -q -o yaml\
-            --restart=Never \
-            --rm -i \
-            --tty \
-            --image artifact.aerospike.io/docker/asvec:3.3.0 \
-            -n "$NAMESPACE" \
-            --  --host avs-app-aerospike-vector-search-internal \
-                index ls --verbose --yaml | tee "$OUTPUT_DIR/avs-indices.yaml"
-    }
+
+    echo -e "\n=== Cluster-wide AVS Information ==="
+    echo "Running asvec to get cluster-wide avs information"
+    echo "cluster info:"
+    kubectl run asvec \
+        --restart=Never \
+        --rm -i \
+        --tty \
+        --image artifact.aerospike.io/docker/asvec:3.3.0 \
+        -n "$NAMESPACE" \
+        -- --host avs-app-aerospike-vector-search-internal \
+            nodes ls | tee "$OUTPUT_DIR/avs-cluster-info.txt"
+    
+    echo "indices:"
+    kubectl run asvec -q -o yaml \
+        --restart=Never \
+        --rm -i \
+        --tty \
+        --image artifact.aerospike.io/docker/asvec:3.3.0 \
+        -n "$NAMESPACE" \
+        -- --host avs-app-aerospike-vector-search-internal \
+            index ls --verbose --yaml | tee "$OUTPUT_DIR/avs-indices.yaml"
+
     echo -e "\n=== AVS Indices Configuration ==="
     cat "$OUTPUT_DIR/avs-indices.yaml"
+
     echo -e "\n=== Cluster-wide OOMKill Analysis ==="
-    {
-        echo "Summary of Pod Restarts and OOMKills across cluster:"
-        
-        # Get all pods with their restart counts
-        kubectl get pods -n "$NAMESPACE" -o json | \
-            jq -r '.items[] | "Pod: \(.metadata.name)\nNode: \(.spec.nodeName)\nRestarts: \(.status.containerStatuses[0].restartCount)\nAge: \(.metadata.creationTimestamp)"'
-        
-        echo -e "\nDetailed Restart Analysis:"
-        kubectl get pods -n "$NAMESPACE" -o json | \
-            jq -r '.items[] | select(.status.containerStatuses[0].restartCount > 0) | 
-                "Pod: \(.metadata.name)\nNode: \(.spec.nodeName)\n" +
-                (.status.containerStatuses[] | 
-                "Container: \(.name)\nRestart Count: \(.restartCount)\n" +
-                if .lastState.terminated != null then
-                    "Last Termination:\n  Reason: \(.lastState.terminated.reason)\n  Exit Code: \(.lastState.terminated.exitCode)\n  Finished At: \(.lastState.terminated.finishedAt)\n  Message: \(.lastState.terminated.message)"
-                else "No termination information" end + "\n---")'
-        
-        echo -e "\nNode Memory Pressure Events:"
-        for node in $(kubectl get nodes -o jsonpath='{.items[*].metadata.name}'); do
-            echo -e "\nNode: $node"
-            kubectl get events --field-selector involvedObject.name="$node",type=Warning | \
-                grep -i -E "memory|pressure|oom" || echo "No memory pressure events found"
-        done
-    } >> "$CLUSTER_TMP_FILE"
-}
+    echo "Summary of Pod Restarts and OOMKills across cluster:"
+    
+    # Get all pods with their restart counts
+    kubectl get pods -n "$NAMESPACE" -o json | \
+        jq -r '.items[] | "Pod: \(.metadata.name)\nNode: \(.spec.nodeName)\nRestarts: \(.status.containerStatuses[0].restartCount)\nAge: \(.metadata.creationTimestamp)"'
+    
+    echo -e "\nDetailed Restart Analysis:"
+    kubectl get pods -n "$NAMESPACE" -o json | \
+        jq -r '.items[] | select(.status.containerStatuses[0].restartCount > 0) | 
+            "Pod: \(.metadata.name)\nNode: \(.spec.nodeName)\n" +
+            (.status.containerStatuses[] | 
+            "Container: \(.name)\nRestart Count: \(.restartCount)\n" +
+            if .lastState.terminated != null then
+                "Last Termination:\n  Reason: \(.lastState.terminated.reason)\n  Exit Code: \(.lastState.terminated.exitCode)\n  Finished At: \(.lastState.terminated.finishedAt)\n  Message: \(.lastState.terminated.message)"
+            else "No termination information" end + "\n---")'
+    
+    echo -e "\nNode Memory Pressure Events:"
+    for node in $(kubectl get nodes -o jsonpath='{.items[*].metadata.name}'); do
+        echo -e "\nNode: $node"
+        kubectl get events --field-selector involvedObject.name="$node",type=Warning | \
+            grep -i -E "memory|pressure|oom" || echo "No memory pressure events found"
+    done
+} > "$CLUSTER_TMP_FILE"
 
 # Cluster analysis prompt
 CLUSTER_PROMPT=$(cat <<EOF
 You are analyzing an Aerospike Vector Search cluster deployment.
 
 Generate a comprehensive cluster analysis report with the following sections:
-1. 🌐 Cluster Configuration
+1. Create a table showing each node's:
+     * Total Memory (from node-aggregates.json)
+     * Allocatable Memory (from node-aggregates.json)
+     * AVS pods on node (with name and role from node-aggregates.json) and JVM Configuration:
+     * Instance Type (from node-aggregates.json)
+     * Status/Health (from node-aggregates.json)
+
+2. 🌐 Cluster Configuration
    - Node distribution and roles
    - Endpoint configuration and visibility
    - Version information
    - Cluster ID and networking setup
    - Analysis of node distribution vs index mode (DISTRIBUTED/STANDALONE)
 
-2. 📊 AVS Index Analysis
-   - Detailed breakdown of each index configuration:
+3. 📊 AVS Indices Analysis
+   - Detailed breakdown of each index configuration (from avs-indices.yaml which contains a yaml list of index plural indecies):
      * Index name, namespace, and set
      * Vector dimensions and distance metric
      * HNSW parameters (ef, efConstruction, m)
@@ -620,7 +627,7 @@ Generate a comprehensive cluster analysis report with the following sections:
      * Batching parameters vs cluster size
 
 
-3. ⚙️ JVM Configuration Analysis
+4. ⚙️ JVM Configuration Analysis
    Create a detailed table for each node showing:
    - Node name/ID
    - Memory Configuration:
@@ -649,7 +656,7 @@ Generate a comprehensive cluster analysis report with the following sections:
      * Metaspace usage
      * Class space usage
 
-4. 💾 Memory Analysis
+5. 💾 Memory Analysis
    For each node:
    - Heap size vs container limits
    - Memory distribution across different regions
@@ -657,26 +664,26 @@ Generate a comprehensive cluster analysis report with the following sections:
    - Memory efficiency recommendations
    - Correlation between index parameters and memory usage
 
-5. 🔍 Performance Configuration Analysis
+6. 🔍 Performance Configuration Analysis
    - Index caching vs JVM heap size
    - Batching parameters vs available memory
    - Thread settings vs available CPU
    - Network configuration impact
 
-6. ⚠️ Potential Issues and Recommendations
+7. ⚠️ Potential Issues and Recommendations
    - Memory configuration improvements
    - Index parameter optimizations
    - JVM flag adjustments
    - Cluster balance suggestions
    - Caching strategy improvements
 
-7. 📈 Scaling Considerations
+8. 📈 Scaling Considerations
    - Current resource utilization
    - Headroom for growth
    - Bottleneck identification
    - Scaling recommendations
 
-8. 🔄 Resource Overview
+9. 🔄 Resource Overview
    - Create a table showing each node's:
      * Total Memory (from node-aggregates.json)
      * Allocatable Memory (from node-aggregates.json)
@@ -684,7 +691,7 @@ Generate a comprehensive cluster analysis report with the following sections:
      * Instance Type (from node-aggregates.json)
      * Status/Health (from node-aggregates.json)
 
-9. 📊 Node Overview
+10.📊 Node Overview
    - Create a table showing details of each pod on each node:
      * Name
      * Roles
@@ -693,7 +700,7 @@ Generate a comprehensive cluster analysis report with the following sections:
      * Memory Limit
      * Memory Used
 
-10. ⚠️ OOMKill Analysis
+11.⚠️ OOMKill Analysis
     - Detailed timeline of all OOMKill events found:
       * Container restart history
       * Previous termination states

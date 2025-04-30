@@ -7,15 +7,22 @@
                     "content": "You are analyzing an Aerospike Vector Search cluster deployment.
 
 Generate a comprehensive cluster analysis report with the following sections:
-1. 🌐 Cluster Configuration
+1. Create a table showing each node's:
+     * Total Memory (from node-aggregates.json)
+     * Allocatable Memory (from node-aggregates.json)
+     * AVS pods on node (with name and role from node-aggregates.json) and JVM Configuration:
+     * Instance Type (from node-aggregates.json)
+     * Status/Health (from node-aggregates.json)
+
+2. 🌐 Cluster Configuration
    - Node distribution and roles
    - Endpoint configuration and visibility
    - Version information
    - Cluster ID and networking setup
    - Analysis of node distribution vs index mode (DISTRIBUTED/STANDALONE)
 
-2. 📊 AVS Index Analysis
-   - Detailed breakdown of each index configuration:
+3. 📊 AVS Indices Analysis
+   - Detailed breakdown of each index configuration (from avs-indices.yaml which contains a yaml list of index plural indecies):
      * Index name, namespace, and set
      * Vector dimensions and distance metric
      * HNSW parameters (ef, efConstruction, m)
@@ -27,7 +34,7 @@ Generate a comprehensive cluster analysis report with the following sections:
      * Batching parameters vs cluster size
 
 
-3. ⚙️ JVM Configuration Analysis
+4. ⚙️ JVM Configuration Analysis
    Create a detailed table for each node showing:
    - Node name/ID
    - Memory Configuration:
@@ -56,7 +63,7 @@ Generate a comprehensive cluster analysis report with the following sections:
      * Metaspace usage
      * Class space usage
 
-4. 💾 Memory Analysis
+5. 💾 Memory Analysis
    For each node:
    - Heap size vs container limits
    - Memory distribution across different regions
@@ -64,26 +71,26 @@ Generate a comprehensive cluster analysis report with the following sections:
    - Memory efficiency recommendations
    - Correlation between index parameters and memory usage
 
-5. 🔍 Performance Configuration Analysis
+6. 🔍 Performance Configuration Analysis
    - Index caching vs JVM heap size
    - Batching parameters vs available memory
    - Thread settings vs available CPU
    - Network configuration impact
 
-6. ⚠️ Potential Issues and Recommendations
+7. ⚠️ Potential Issues and Recommendations
    - Memory configuration improvements
    - Index parameter optimizations
    - JVM flag adjustments
    - Cluster balance suggestions
    - Caching strategy improvements
 
-7. 📈 Scaling Considerations
+8. 📈 Scaling Considerations
    - Current resource utilization
    - Headroom for growth
    - Bottleneck identification
    - Scaling recommendations
 
-8. 🔄 Resource Overview
+9. 🔄 Resource Overview
    - Create a table showing each node's:
      * Total Memory (from node-aggregates.json)
      * Allocatable Memory (from node-aggregates.json)
@@ -91,7 +98,7 @@ Generate a comprehensive cluster analysis report with the following sections:
      * Instance Type (from node-aggregates.json)
      * Status/Health (from node-aggregates.json)
 
-9. 📊 Node Overview
+10.📊 Node Overview
    - Create a table showing details of each pod on each node:
      * Name
      * Roles
@@ -100,7 +107,7 @@ Generate a comprehensive cluster analysis report with the following sections:
      * Memory Limit
      * Memory Used
 
-10. ⚠️ OOMKill Analysis
+11.⚠️ OOMKill Analysis
     - Detailed timeline of all OOMKill events found:
       * Container restart history
       * Previous termination states
@@ -150,7 +157,1141 @@ Use the aggregated node information from node-aggregates.json to ensure accurate
                 },
                 {
                     "role": "user",
-                    "content": "Summary of Pod Restarts and OOMKills across cluster:
+                    "content": "==============================
+🌐 CLUSTER OVERVIEW
+==============================
+
+=== Node Summary Table ===
+| Node Name | Total Memory | Allocatable Memory | AVS Pod Memory (Requested vs Used) | Instance Type | Status/Health | Cloud Provider | Region |
+|----------|--------------|-------------------|-----------------------------------|---------------|--------------|----------------|--------|
+| ip-192-168-26-117.ec2.internal | 15896988Ki | 14880156Ki | N/A vs N/A | m5.xlarge | Healthy | On-premises | us-east-1 |
+| ip-192-168-27-123.ec2.internal | 15896988Ki | 14880156Ki |  vs 636M | m5.xlarge | Healthy | On-premises | us-east-1 |
+| ip-192-168-28-89.ec2.internal | 16069020Ki | 15052188Ki |  vs 1120M | m5.xlarge | Healthy | On-premises | us-east-1 |
+| ip-192-168-52-147.ec2.internal | 65023384Ki | 64006552Ki |  vs 1038M | r5.2xlarge | Healthy | On-premises | us-east-1 |
+| ip-192-168-53-124.ec2.internal | 15896988Ki | 14880156Ki | N/A vs N/A | m5.xlarge | Healthy | On-premises | us-east-1 |
+
+=== Cluster Resources ===
+Allocated resources:
+  (Total limits may be over 100 percent, i.e., overcommitted.)
+  Resource           Requests    Limits
+  --------           --------    ------
+  cpu                190m (4%)   0 (0%)
+--
+Allocated resources:
+  (Total limits may be over 100 percent, i.e., overcommitted.)
+  Resource           Requests    Limits
+  --------           --------    ------
+  cpu                180m (4%)   0 (0%)
+--
+Allocated resources:
+  (Total limits may be over 100 percent, i.e., overcommitted.)
+  Resource           Requests    Limits
+  --------           --------    ------
+  cpu                190m (4%)   400m (10%)
+--
+Allocated resources:
+  (Total limits may be over 100 percent, i.e., overcommitted.)
+  Resource           Requests    Limits
+  --------           --------    ------
+  cpu                230m (2%)   400m (5%)
+--
+Allocated resources:
+  (Total limits may be over 100 percent, i.e., overcommitted.)
+  Resource           Requests    Limits
+  --------           --------    ------
+  cpu                500m (12%)  0 (0%)
+
+=== Node Details ===
+
+--- Node: ip-192-168-26-117.ec2.internal ---
+=== Node Description ===
+Name:               ip-192-168-26-117.ec2.internal
+Roles:              <none>
+Labels:             aerospike.io/group=aerospike-pool
+                    aerospike.io/node-pool=default-rack
+                    aerospike.io/role-label=default-rack
+                    alpha.eksctl.io/cluster-name=letsrememberopen2
+                    alpha.eksctl.io/nodegroup-name=aerospike-pool
+                    beta.kubernetes.io/arch=amd64
+                    beta.kubernetes.io/instance-type=m5.xlarge
+                    beta.kubernetes.io/os=linux
+                    eks.amazonaws.com/capacityType=ON_DEMAND
+                    eks.amazonaws.com/nodegroup=aerospike-pool
+                    eks.amazonaws.com/nodegroup-image=ami-01fc98868662094f9
+                    eks.amazonaws.com/sourceLaunchTemplateId=lt-001ef0e6c21956cd0
+                    eks.amazonaws.com/sourceLaunchTemplateVersion=1
+                    failure-domain.beta.kubernetes.io/region=us-east-1
+                    failure-domain.beta.kubernetes.io/zone=us-east-1b
+                    k8s.io/cloud-provider-aws=7b106a2a28f90fcf8e2b12bdb82ef1dc
+                    kubernetes.io/arch=amd64
+                    kubernetes.io/hostname=ip-192-168-26-117.ec2.internal
+                    kubernetes.io/os=linux
+                    node.kubernetes.io/instance-type=m5.xlarge
+                    topology.ebs.csi.aws.com/zone=us-east-1b
+                    topology.k8s.aws/zone-id=use1-az4
+                    topology.kubernetes.io/region=us-east-1
+                    topology.kubernetes.io/zone=us-east-1b
+Annotations:        alpha.kubernetes.io/provided-node-ip: 192.168.26.117
+                    csi.volume.kubernetes.io/nodeid: {\"ebs.csi.aws.com\":\"i-05ce4cec70b161c88\"}
+                    node.alpha.kubernetes.io/ttl: 0
+                    volumes.kubernetes.io/controller-managed-attach-detach: true
+CreationTimestamp:  Tue, 29 Apr 2025 12:03:47 -0700
+Taints:             <none>
+Unschedulable:      false
+Lease:
+  HolderIdentity:  ip-192-168-26-117.ec2.internal
+  AcquireTime:     <unset>
+  RenewTime:       Tue, 29 Apr 2025 16:56:44 -0700
+Conditions:
+  Type             Status  LastHeartbeatTime                 LastTransitionTime                Reason                       Message
+  ----             ------  -----------------                 ------------------                ------                       -------
+  MemoryPressure   False   Tue, 29 Apr 2025 16:54:00 -0700   Tue, 29 Apr 2025 12:03:47 -0700   KubeletHasSufficientMemory   kubelet has sufficient memory available
+  DiskPressure     False   Tue, 29 Apr 2025 16:54:00 -0700   Tue, 29 Apr 2025 12:03:47 -0700   KubeletHasNoDiskPressure     kubelet has no disk pressure
+  PIDPressure      False   Tue, 29 Apr 2025 16:54:00 -0700   Tue, 29 Apr 2025 12:03:47 -0700   KubeletHasSufficientPID      kubelet has sufficient PID available
+  Ready            True    Tue, 29 Apr 2025 16:54:00 -0700   Tue, 29 Apr 2025 12:04:00 -0700   KubeletReady                 kubelet is posting ready status
+Addresses:
+  InternalIP:   192.168.26.117
+  ExternalIP:   52.90.154.47
+  InternalDNS:  ip-192-168-26-117.ec2.internal
+  Hostname:     ip-192-168-26-117.ec2.internal
+  ExternalDNS:  ec2-52-90-154-47.compute-1.amazonaws.com
+Capacity:
+  cpu:                4
+  ephemeral-storage:  83873772Ki
+  hugepages-1Gi:      0
+  hugepages-2Mi:      0
+  memory:             15896988Ki
+  pods:               58
+Allocatable:
+  cpu:                3920m
+  ephemeral-storage:  76224326324
+  hugepages-1Gi:      0
+  hugepages-2Mi:      0
+  memory:             14880156Ki
+  pods:               58
+System Info:
+  Machine ID:                 ec297ff95b71c67905fd1e25e3f578e1
+  System UUID:                ec297ff9-5b71-c679-05fd-1e25e3f578e1
+  Boot ID:                    c59c91f5-7b43-4d2d-bda0-386d1e13e6be
+  Kernel Version:             5.10.235-227.919.amzn2.x86_64
+  OS Image:                   Amazon Linux 2
+  Operating System:           linux
+  Architecture:               amd64
+  Container Runtime Version:  containerd://1.7.27
+  Kubelet Version:            v1.30.9-eks-5d632ec
+  Kube-Proxy Version:         v1.30.9-eks-5d632ec
+ProviderID:                   aws:///us-east-1b/i-05ce4cec70b161c88
+Non-terminated Pods:          (6 in total)
+  Namespace                   Name                                               CPU Requests  CPU Limits  Memory Requests  Memory Limits  Age
+  ---------                   ----                                               ------------  ----------  ---------------  -------------  ---
+  aerospike                   aerocluster-0-0                                    0 (0%)        0 (0%)      0 (0%)           0 (0%)         4h40m
+  kube-system                 aws-node-xhc8h                                     50m (1%)      0 (0%)      0 (0%)           0 (0%)         4h53m
+  kube-system                 ebs-csi-node-rn9gl                                 30m (0%)      0 (0%)      120Mi (0%)       768Mi (5%)     4h53m
+  kube-system                 kube-proxy-j7zp7                                   100m (2%)     0 (0%)      0 (0%)           0 (0%)         4h53m
+  monitoring                  monitoring-stack-prometheus-node-exporter-fm2q9    0 (0%)        0 (0%)      0 (0%)           0 (0%)         4h38m
+  olm                         packageserver-7f68ff99c8-ww9n5                     10m (0%)      0 (0%)      50Mi (0%)        0 (0%)         4h41m
+Allocated resources:
+  (Total limits may be over 100 percent, i.e., overcommitted.)
+  Resource           Requests    Limits
+  --------           --------    ------
+  cpu                190m (4%)   0 (0%)
+  memory             170Mi (1%)  768Mi (5%)
+  ephemeral-storage  0 (0%)      0 (0%)
+  hugepages-1Gi      0 (0%)      0 (0%)
+  hugepages-2Mi      0 (0%)      0 (0%)
+Events:              <none>
+
+=== Node Resources ===
+{
+  \"cpu\": \"4\",
+  \"ephemeral-storage\": \"83873772Ki\",
+  \"hugepages-1Gi\": \"0\",
+  \"hugepages-2Mi\": \"0\",
+  \"memory\": \"15896988Ki\",
+  \"pods\": \"58\"
+}
+
+=== Node Allocatable Resources ===
+{
+  \"cpu\": \"3920m\",
+  \"ephemeral-storage\": \"76224326324\",
+  \"hugepages-1Gi\": \"0\",
+  \"hugepages-2Mi\": \"0\",
+  \"memory\": \"14880156Ki\",
+  \"pods\": \"58\"
+}
+
+=== Node Conditions ===
+[
+  {
+    \"lastHeartbeatTime\": \"2025-04-29T23:54:00Z\",
+    \"lastTransitionTime\": \"2025-04-29T19:03:47Z\",
+    \"message\": \"kubelet has sufficient memory available\",
+    \"reason\": \"KubeletHasSufficientMemory\",
+    \"status\": \"False\",
+    \"type\": \"MemoryPressure\"
+  },
+  {
+    \"lastHeartbeatTime\": \"2025-04-29T23:54:00Z\",
+    \"lastTransitionTime\": \"2025-04-29T19:03:47Z\",
+    \"message\": \"kubelet has no disk pressure\",
+    \"reason\": \"KubeletHasNoDiskPressure\",
+    \"status\": \"False\",
+    \"type\": \"DiskPressure\"
+  },
+  {
+    \"lastHeartbeatTime\": \"2025-04-29T23:54:00Z\",
+    \"lastTransitionTime\": \"2025-04-29T19:03:47Z\",
+    \"message\": \"kubelet has sufficient PID available\",
+    \"reason\": \"KubeletHasSufficientPID\",
+    \"status\": \"False\",
+    \"type\": \"PIDPressure\"
+  },
+  {
+    \"lastHeartbeatTime\": \"2025-04-29T23:54:00Z\",
+    \"lastTransitionTime\": \"2025-04-29T19:04:00Z\",
+    \"message\": \"kubelet is posting ready status\",
+    \"reason\": \"KubeletReady\",
+    \"status\": \"True\",
+    \"type\": \"Ready\"
+  }
+]
+
+=== Cloud Instance Information ===
+Cloud Provider: On-premises
+Instance Type: m5.xlarge
+Region: us-east-1
+Zone: us-east-1b
+
+=== OOMKill Events ===
+System OOM Events:
+No system OOM events found
+
+Kubernetes OOMKill Events:
+No Kubernetes OOM events found
+
+=== Node OOMKill Events ===
+System OOM Events (last 24h):
+No system OOM events found
+
+Pod OOMKills on this node:
+
+  AVS Pods on node:
+    No AVS pods
+
+--- Node: ip-192-168-27-123.ec2.internal ---
+=== Node Description ===
+Name:               ip-192-168-27-123.ec2.internal
+Roles:              <none>
+Labels:             aerospike.io/group=avs-query-pool
+                    aerospike.io/node-pool=avs
+                    aerospike.io/role-label=query-nodes
+                    alpha.eksctl.io/cluster-name=letsrememberopen2
+                    alpha.eksctl.io/nodegroup-name=avs-query-pool
+                    beta.kubernetes.io/arch=amd64
+                    beta.kubernetes.io/instance-type=m5.xlarge
+                    beta.kubernetes.io/os=linux
+                    eks.amazonaws.com/capacityType=ON_DEMAND
+                    eks.amazonaws.com/nodegroup=avs-query-pool
+                    eks.amazonaws.com/nodegroup-image=ami-01fc98868662094f9
+                    eks.amazonaws.com/sourceLaunchTemplateId=lt-0ded039a0982bbba3
+                    eks.amazonaws.com/sourceLaunchTemplateVersion=1
+                    failure-domain.beta.kubernetes.io/region=us-east-1
+                    failure-domain.beta.kubernetes.io/zone=us-east-1b
+                    k8s.io/cloud-provider-aws=7b106a2a28f90fcf8e2b12bdb82ef1dc
+                    kubernetes.io/arch=amd64
+                    kubernetes.io/hostname=ip-192-168-27-123.ec2.internal
+                    kubernetes.io/os=linux
+                    node.kubernetes.io/instance-type=m5.xlarge
+                    topology.ebs.csi.aws.com/zone=us-east-1b
+                    topology.k8s.aws/zone-id=use1-az4
+                    topology.kubernetes.io/region=us-east-1
+                    topology.kubernetes.io/zone=us-east-1b
+Annotations:        alpha.kubernetes.io/provided-node-ip: 192.168.27.123
+                    csi.volume.kubernetes.io/nodeid: {\"ebs.csi.aws.com\":\"i-061fa95344eaa63d0\"}
+                    node.alpha.kubernetes.io/ttl: 0
+                    volumes.kubernetes.io/controller-managed-attach-detach: true
+CreationTimestamp:  Tue, 29 Apr 2025 12:10:12 -0700
+Taints:             <none>
+Unschedulable:      false
+Lease:
+  HolderIdentity:  ip-192-168-27-123.ec2.internal
+  AcquireTime:     <unset>
+  RenewTime:       Tue, 29 Apr 2025 16:56:56 -0700
+Conditions:
+  Type             Status  LastHeartbeatTime                 LastTransitionTime                Reason                       Message
+  ----             ------  -----------------                 ------------------                ------                       -------
+  MemoryPressure   False   Tue, 29 Apr 2025 16:56:31 -0700   Tue, 29 Apr 2025 12:10:12 -0700   KubeletHasSufficientMemory   kubelet has sufficient memory available
+  DiskPressure     False   Tue, 29 Apr 2025 16:56:31 -0700   Tue, 29 Apr 2025 12:10:12 -0700   KubeletHasNoDiskPressure     kubelet has no disk pressure
+  PIDPressure      False   Tue, 29 Apr 2025 16:56:31 -0700   Tue, 29 Apr 2025 12:10:12 -0700   KubeletHasSufficientPID      kubelet has sufficient PID available
+  Ready            True    Tue, 29 Apr 2025 16:56:31 -0700   Tue, 29 Apr 2025 12:10:24 -0700   KubeletReady                 kubelet is posting ready status
+Addresses:
+  InternalIP:   192.168.27.123
+  ExternalIP:   3.90.200.129
+  InternalDNS:  ip-192-168-27-123.ec2.internal
+  Hostname:     ip-192-168-27-123.ec2.internal
+  ExternalDNS:  ec2-3-90-200-129.compute-1.amazonaws.com
+Capacity:
+  cpu:                4
+  ephemeral-storage:  83873772Ki
+  hugepages-1Gi:      0
+  hugepages-2Mi:      0
+  memory:             15896988Ki
+  pods:               58
+Allocatable:
+  cpu:                3920m
+  ephemeral-storage:  76224326324
+  hugepages-1Gi:      0
+  hugepages-2Mi:      0
+  memory:             14880156Ki
+  pods:               58
+System Info:
+  Machine ID:                 ec2af54649071adbcd4a4f8cd8a8f83d
+  System UUID:                ec2af546-4907-1adb-cd4a-4f8cd8a8f83d
+  Boot ID:                    809185be-2de5-43de-a0be-84c43edde0bc
+  Kernel Version:             5.10.235-227.919.amzn2.x86_64
+  OS Image:                   Amazon Linux 2
+  Operating System:           linux
+  Architecture:               amd64
+  Container Runtime Version:  containerd://1.7.27
+  Kubelet Version:            v1.30.9-eks-5d632ec
+  Kube-Proxy Version:         v1.30.9-eks-5d632ec
+ProviderID:                   aws:///us-east-1b/i-061fa95344eaa63d0
+Non-terminated Pods:          (5 in total)
+  Namespace                   Name                                               CPU Requests  CPU Limits  Memory Requests  Memory Limits  Age
+  ---------                   ----                                               ------------  ----------  ---------------  -------------  ---
+  avs                         avs-app-aerospike-vector-search-2                  0 (0%)        0 (0%)      0 (0%)           0 (0%)         4h40m
+  kube-system                 aws-node-q6fz6                                     50m (1%)      0 (0%)      0 (0%)           0 (0%)         4h47m
+  kube-system                 ebs-csi-node-dhpkb                                 30m (0%)      0 (0%)      120Mi (0%)       768Mi (5%)     4h47m
+  kube-system                 kube-proxy-pg2m7                                   100m (2%)     0 (0%)      0 (0%)           0 (0%)         4h47m
+  monitoring                  monitoring-stack-prometheus-node-exporter-7lmgf    0 (0%)        0 (0%)      0 (0%)           0 (0%)         4h39m
+Allocated resources:
+  (Total limits may be over 100 percent, i.e., overcommitted.)
+  Resource           Requests    Limits
+  --------           --------    ------
+  cpu                180m (4%)   0 (0%)
+  memory             120Mi (0%)  768Mi (5%)
+  ephemeral-storage  0 (0%)      0 (0%)
+  hugepages-1Gi      0 (0%)      0 (0%)
+  hugepages-2Mi      0 (0%)      0 (0%)
+Events:              <none>
+
+=== Node Resources ===
+{
+  \"cpu\": \"4\",
+  \"ephemeral-storage\": \"83873772Ki\",
+  \"hugepages-1Gi\": \"0\",
+  \"hugepages-2Mi\": \"0\",
+  \"memory\": \"15896988Ki\",
+  \"pods\": \"58\"
+}
+
+=== Node Allocatable Resources ===
+{
+  \"cpu\": \"3920m\",
+  \"ephemeral-storage\": \"76224326324\",
+  \"hugepages-1Gi\": \"0\",
+  \"hugepages-2Mi\": \"0\",
+  \"memory\": \"14880156Ki\",
+  \"pods\": \"58\"
+}
+
+=== Node Conditions ===
+[
+  {
+    \"lastHeartbeatTime\": \"2025-04-29T23:56:31Z\",
+    \"lastTransitionTime\": \"2025-04-29T19:10:12Z\",
+    \"message\": \"kubelet has sufficient memory available\",
+    \"reason\": \"KubeletHasSufficientMemory\",
+    \"status\": \"False\",
+    \"type\": \"MemoryPressure\"
+  },
+  {
+    \"lastHeartbeatTime\": \"2025-04-29T23:56:31Z\",
+    \"lastTransitionTime\": \"2025-04-29T19:10:12Z\",
+    \"message\": \"kubelet has no disk pressure\",
+    \"reason\": \"KubeletHasNoDiskPressure\",
+    \"status\": \"False\",
+    \"type\": \"DiskPressure\"
+  },
+  {
+    \"lastHeartbeatTime\": \"2025-04-29T23:56:31Z\",
+    \"lastTransitionTime\": \"2025-04-29T19:10:12Z\",
+    \"message\": \"kubelet has sufficient PID available\",
+    \"reason\": \"KubeletHasSufficientPID\",
+    \"status\": \"False\",
+    \"type\": \"PIDPressure\"
+  },
+  {
+    \"lastHeartbeatTime\": \"2025-04-29T23:56:31Z\",
+    \"lastTransitionTime\": \"2025-04-29T19:10:24Z\",
+    \"message\": \"kubelet is posting ready status\",
+    \"reason\": \"KubeletReady\",
+    \"status\": \"True\",
+    \"type\": \"Ready\"
+  }
+]
+
+=== Cloud Instance Information ===
+Cloud Provider: On-premises
+Instance Type: m5.xlarge
+Region: us-east-1
+Zone: us-east-1b
+
+=== OOMKill Events ===
+System OOM Events:
+No system OOM events found
+
+Kubernetes OOMKill Events:
+No Kubernetes OOM events found
+
+=== Node OOMKill Events ===
+System OOM Events (last 24h):
+No system OOM events found
+
+Pod OOMKills on this node:
+
+  AVS Pods on node:
+
+    Pod: avs-app-aerospike-vector-search-2
+    Memory Request: 
+    Memory Limit: 
+    JVM Memory Info:
+➡️ jcmd 9 GC.heap_info:
+9:
+ ZHeap           used 636M, capacity 1344M, max capacity 12420M
+
+--- Node: ip-192-168-28-89.ec2.internal ---
+=== Node Description ===
+Name:               ip-192-168-28-89.ec2.internal
+Roles:              <none>
+Labels:             aerospike.io/group=avs-index-pool
+                    aerospike.io/node-pool=avs
+                    aerospike.io/role-label=indexer-nodes
+                    alpha.eksctl.io/cluster-name=letsrememberopen2
+                    alpha.eksctl.io/nodegroup-name=avs-index-pool
+                    beta.kubernetes.io/arch=amd64
+                    beta.kubernetes.io/instance-type=m5.xlarge
+                    beta.kubernetes.io/os=linux
+                    eks.amazonaws.com/capacityType=ON_DEMAND
+                    eks.amazonaws.com/nodegroup=avs-index-pool
+                    eks.amazonaws.com/nodegroup-image=ami-01fc98868662094f9
+                    eks.amazonaws.com/sourceLaunchTemplateId=lt-041601238a74d6e2e
+                    eks.amazonaws.com/sourceLaunchTemplateVersion=1
+                    failure-domain.beta.kubernetes.io/region=us-east-1
+                    failure-domain.beta.kubernetes.io/zone=us-east-1b
+                    k8s.io/cloud-provider-aws=7b106a2a28f90fcf8e2b12bdb82ef1dc
+                    kubernetes.io/arch=amd64
+                    kubernetes.io/hostname=ip-192-168-28-89.ec2.internal
+                    kubernetes.io/os=linux
+                    node.kubernetes.io/instance-type=m5.xlarge
+                    topology.ebs.csi.aws.com/zone=us-east-1b
+                    topology.k8s.aws/zone-id=use1-az4
+                    topology.kubernetes.io/region=us-east-1
+                    topology.kubernetes.io/zone=us-east-1b
+Annotations:        alpha.kubernetes.io/provided-node-ip: 192.168.28.89
+                    csi.volume.kubernetes.io/nodeid: {\"ebs.csi.aws.com\":\"i-0ac1607ea6f0a2edc\"}
+                    node.alpha.kubernetes.io/ttl: 0
+                    volumes.kubernetes.io/controller-managed-attach-detach: true
+CreationTimestamp:  Tue, 29 Apr 2025 12:13:42 -0700
+Taints:             <none>
+Unschedulable:      false
+Lease:
+  HolderIdentity:  ip-192-168-28-89.ec2.internal
+  AcquireTime:     <unset>
+  RenewTime:       Tue, 29 Apr 2025 16:57:14 -0700
+Conditions:
+  Type             Status  LastHeartbeatTime                 LastTransitionTime                Reason                       Message
+  ----             ------  -----------------                 ------------------                ------                       -------
+  MemoryPressure   False   Tue, 29 Apr 2025 16:56:33 -0700   Tue, 29 Apr 2025 12:13:40 -0700   KubeletHasSufficientMemory   kubelet has sufficient memory available
+  DiskPressure     False   Tue, 29 Apr 2025 16:56:33 -0700   Tue, 29 Apr 2025 12:13:40 -0700   KubeletHasNoDiskPressure     kubelet has no disk pressure
+  PIDPressure      False   Tue, 29 Apr 2025 16:56:33 -0700   Tue, 29 Apr 2025 12:13:40 -0700   KubeletHasSufficientPID      kubelet has sufficient PID available
+  Ready            True    Tue, 29 Apr 2025 16:56:33 -0700   Tue, 29 Apr 2025 12:13:55 -0700   KubeletReady                 kubelet is posting ready status
+Addresses:
+  InternalIP:   192.168.28.89
+  ExternalIP:   54.226.248.213
+  InternalDNS:  ip-192-168-28-89.ec2.internal
+  Hostname:     ip-192-168-28-89.ec2.internal
+  ExternalDNS:  ec2-54-226-248-213.compute-1.amazonaws.com
+Capacity:
+  cpu:                4
+  ephemeral-storage:  83873772Ki
+  hugepages-1Gi:      0
+  hugepages-2Mi:      0
+  memory:             16069020Ki
+  pods:               58
+Allocatable:
+  cpu:                3920m
+  ephemeral-storage:  76224326324
+  hugepages-1Gi:      0
+  hugepages-2Mi:      0
+  memory:             15052188Ki
+  pods:               58
+System Info:
+  Machine ID:                 ec2acfb13eb90f016a432869284336b9
+  System UUID:                ec2acfb1-3eb9-0f01-6a43-2869284336b9
+  Boot ID:                    b662caac-c865-4777-bde1-1fbafd9d4e53
+  Kernel Version:             5.10.235-227.919.amzn2.x86_64
+  OS Image:                   Amazon Linux 2
+  Operating System:           linux
+  Architecture:               amd64
+  Container Runtime Version:  containerd://1.7.27
+  Kubelet Version:            v1.30.9-eks-5d632ec
+  Kube-Proxy Version:         v1.30.9-eks-5d632ec
+ProviderID:                   aws:///us-east-1b/i-0ac1607ea6f0a2edc
+Non-terminated Pods:          (6 in total)
+  Namespace                   Name                                                      CPU Requests  CPU Limits  Memory Requests  Memory Limits  Age
+  ---------                   ----                                                      ------------  ----------  ---------------  -------------  ---
+  avs                         avs-app-aerospike-vector-search-1                         0 (0%)        0 (0%)      0 (0%)           0 (0%)         4h40m
+  kube-system                 aws-node-929zg                                            50m (1%)      0 (0%)      0 (0%)           0 (0%)         4h43m
+  kube-system                 ebs-csi-node-7c5xp                                        30m (0%)      0 (0%)      120Mi (0%)       768Mi (5%)     4h43m
+  kube-system                 kube-proxy-qsxzq                                          100m (2%)     0 (0%)      0 (0%)           0 (0%)         4h43m
+  monitoring                  monitoring-stack-prometheus-node-exporter-nflrl           0 (0%)        0 (0%)      0 (0%)           0 (0%)         4h39m
+  operators                   aerospike-operator-controller-manager-67f5b6bfd4-9gg6d    10m (0%)      400m (10%)  64Mi (0%)        512Mi (3%)     4h41m
+Allocated resources:
+  (Total limits may be over 100 percent, i.e., overcommitted.)
+  Resource           Requests    Limits
+  --------           --------    ------
+  cpu                190m (4%)   400m (10%)
+  memory             184Mi (1%)  1280Mi (8%)
+  ephemeral-storage  0 (0%)      0 (0%)
+  hugepages-1Gi      0 (0%)      0 (0%)
+  hugepages-2Mi      0 (0%)      0 (0%)
+Events:              <none>
+
+=== Node Resources ===
+{
+  \"cpu\": \"4\",
+  \"ephemeral-storage\": \"83873772Ki\",
+  \"hugepages-1Gi\": \"0\",
+  \"hugepages-2Mi\": \"0\",
+  \"memory\": \"16069020Ki\",
+  \"pods\": \"58\"
+}
+
+=== Node Allocatable Resources ===
+{
+  \"cpu\": \"3920m\",
+  \"ephemeral-storage\": \"76224326324\",
+  \"hugepages-1Gi\": \"0\",
+  \"hugepages-2Mi\": \"0\",
+  \"memory\": \"15052188Ki\",
+  \"pods\": \"58\"
+}
+
+=== Node Conditions ===
+[
+  {
+    \"lastHeartbeatTime\": \"2025-04-29T23:56:33Z\",
+    \"lastTransitionTime\": \"2025-04-29T19:13:40Z\",
+    \"message\": \"kubelet has sufficient memory available\",
+    \"reason\": \"KubeletHasSufficientMemory\",
+    \"status\": \"False\",
+    \"type\": \"MemoryPressure\"
+  },
+  {
+    \"lastHeartbeatTime\": \"2025-04-29T23:56:33Z\",
+    \"lastTransitionTime\": \"2025-04-29T19:13:40Z\",
+    \"message\": \"kubelet has no disk pressure\",
+    \"reason\": \"KubeletHasNoDiskPressure\",
+    \"status\": \"False\",
+    \"type\": \"DiskPressure\"
+  },
+  {
+    \"lastHeartbeatTime\": \"2025-04-29T23:56:33Z\",
+    \"lastTransitionTime\": \"2025-04-29T19:13:40Z\",
+    \"message\": \"kubelet has sufficient PID available\",
+    \"reason\": \"KubeletHasSufficientPID\",
+    \"status\": \"False\",
+    \"type\": \"PIDPressure\"
+  },
+  {
+    \"lastHeartbeatTime\": \"2025-04-29T23:56:33Z\",
+    \"lastTransitionTime\": \"2025-04-29T19:13:55Z\",
+    \"message\": \"kubelet is posting ready status\",
+    \"reason\": \"KubeletReady\",
+    \"status\": \"True\",
+    \"type\": \"Ready\"
+  }
+]
+
+=== Cloud Instance Information ===
+Cloud Provider: On-premises
+Instance Type: m5.xlarge
+Region: us-east-1
+Zone: us-east-1b
+
+=== OOMKill Events ===
+System OOM Events:
+No system OOM events found
+
+Kubernetes OOMKill Events:
+No Kubernetes OOM events found
+
+=== Node OOMKill Events ===
+System OOM Events (last 24h):
+No system OOM events found
+
+Pod OOMKills on this node:
+
+  AVS Pods on node:
+
+    Pod: avs-app-aerospike-vector-search-1
+    Memory Request: 
+    Memory Limit: 
+    JVM Memory Info:
+➡️ jcmd 10 GC.heap_info:
+10:
+ ZHeap           used 1120M, capacity 1666M, max capacity 12554M
+
+--- Node: ip-192-168-52-147.ec2.internal ---
+=== Node Description ===
+Name:               ip-192-168-52-147.ec2.internal
+Roles:              <none>
+Labels:             aerospike.io/group=avs-standalone-pool
+                    aerospike.io/node-pool=avs
+                    aerospike.io/role-label=standalone-indexer-nodes
+                    alpha.eksctl.io/cluster-name=letsrememberopen2
+                    alpha.eksctl.io/nodegroup-name=avs-standalone-pool
+                    beta.kubernetes.io/arch=amd64
+                    beta.kubernetes.io/instance-type=r5.2xlarge
+                    beta.kubernetes.io/os=linux
+                    eks.amazonaws.com/capacityType=ON_DEMAND
+                    eks.amazonaws.com/nodegroup=avs-standalone-pool
+                    eks.amazonaws.com/nodegroup-image=ami-01fc98868662094f9
+                    eks.amazonaws.com/sourceLaunchTemplateId=lt-040807b7dc4058323
+                    eks.amazonaws.com/sourceLaunchTemplateVersion=1
+                    failure-domain.beta.kubernetes.io/region=us-east-1
+                    failure-domain.beta.kubernetes.io/zone=us-east-1d
+                    k8s.io/cloud-provider-aws=7b106a2a28f90fcf8e2b12bdb82ef1dc
+                    kubernetes.io/arch=amd64
+                    kubernetes.io/hostname=ip-192-168-52-147.ec2.internal
+                    kubernetes.io/os=linux
+                    node.kubernetes.io/instance-type=r5.2xlarge
+                    topology.ebs.csi.aws.com/zone=us-east-1d
+                    topology.k8s.aws/zone-id=use1-az1
+                    topology.kubernetes.io/region=us-east-1
+                    topology.kubernetes.io/zone=us-east-1d
+Annotations:        alpha.kubernetes.io/provided-node-ip: 192.168.52.147
+                    csi.volume.kubernetes.io/nodeid: {\"ebs.csi.aws.com\":\"i-00c6a97714db38acc\"}
+                    node.alpha.kubernetes.io/ttl: 0
+                    volumes.kubernetes.io/controller-managed-attach-detach: true
+CreationTimestamp:  Tue, 29 Apr 2025 12:06:42 -0700
+Taints:             <none>
+Unschedulable:      false
+Lease:
+  HolderIdentity:  ip-192-168-52-147.ec2.internal
+  AcquireTime:     <unset>
+  RenewTime:       Tue, 29 Apr 2025 16:57:27 -0700
+Conditions:
+  Type             Status  LastHeartbeatTime                 LastTransitionTime                Reason                       Message
+  ----             ------  -----------------                 ------------------                ------                       -------
+  MemoryPressure   False   Tue, 29 Apr 2025 16:56:25 -0700   Tue, 29 Apr 2025 12:06:40 -0700   KubeletHasSufficientMemory   kubelet has sufficient memory available
+  DiskPressure     False   Tue, 29 Apr 2025 16:56:25 -0700   Tue, 29 Apr 2025 12:06:40 -0700   KubeletHasNoDiskPressure     kubelet has no disk pressure
+  PIDPressure      False   Tue, 29 Apr 2025 16:56:25 -0700   Tue, 29 Apr 2025 12:06:40 -0700   KubeletHasSufficientPID      kubelet has sufficient PID available
+  Ready            True    Tue, 29 Apr 2025 16:56:25 -0700   Tue, 29 Apr 2025 12:06:55 -0700   KubeletReady                 kubelet is posting ready status
+Addresses:
+  InternalIP:   192.168.52.147
+  ExternalIP:   3.238.188.22
+  InternalDNS:  ip-192-168-52-147.ec2.internal
+  Hostname:     ip-192-168-52-147.ec2.internal
+  ExternalDNS:  ec2-3-238-188-22.compute-1.amazonaws.com
+Capacity:
+  cpu:                8
+  ephemeral-storage:  83873772Ki
+  hugepages-1Gi:      0
+  hugepages-2Mi:      0
+  memory:             65023384Ki
+  pods:               58
+Allocatable:
+  cpu:                7910m
+  ephemeral-storage:  76224326324
+  hugepages-1Gi:      0
+  hugepages-2Mi:      0
+  memory:             64006552Ki
+  pods:               58
+System Info:
+  Machine ID:                 ec28cbcdf2703d164770f6f713c32a76
+  System UUID:                ec28cbcd-f270-3d16-4770-f6f713c32a76
+  Boot ID:                    991d9291-b2bd-46ca-b4c8-74020c72b999
+  Kernel Version:             5.10.235-227.919.amzn2.x86_64
+  OS Image:                   Amazon Linux 2
+  Operating System:           linux
+  Architecture:               amd64
+  Container Runtime Version:  containerd://1.7.27
+  Kubelet Version:            v1.30.9-eks-5d632ec
+  Kube-Proxy Version:         v1.30.9-eks-5d632ec
+ProviderID:                   aws:///us-east-1d/i-00c6a97714db38acc
+Non-terminated Pods:          (15 in total)
+  Namespace                   Name                                                      CPU Requests  CPU Limits  Memory Requests  Memory Limits  Age
+  ---------                   ----                                                      ------------  ----------  ---------------  -------------  ---
+  avs                         avs-app-aerospike-vector-search-0                         0 (0%)        0 (0%)      0 (0%)           0 (0%)         4h40m
+  kube-system                 aws-node-qsfx9                                            50m (0%)      0 (0%)      0 (0%)           0 (0%)         4h51m
+  kube-system                 ebs-csi-node-x9s4v                                        30m (0%)      0 (0%)      120Mi (0%)       768Mi (1%)     4h51m
+  kube-system                 kube-proxy-528ls                                          100m (1%)     0 (0%)      0 (0%)           0 (0%)         4h51m
+  monitoring                  alertmanager-monitoring-stack-kube-prom-alertmanager-0    0 (0%)        0 (0%)      200Mi (0%)       0 (0%)         4h39m
+  monitoring                  monitoring-stack-grafana-86dbbf556b-sft9w                 0 (0%)        0 (0%)      0 (0%)           0 (0%)         4h39m
+  monitoring                  monitoring-stack-kube-prom-operator-78588cb66f-xmq6g      0 (0%)        0 (0%)      0 (0%)           0 (0%)         4h39m
+  monitoring                  monitoring-stack-kube-state-metrics-5f78d49cb9-7z65l      0 (0%)        0 (0%)      0 (0%)           0 (0%)         4h39m
+  monitoring                  monitoring-stack-prometheus-node-exporter-cwpkp           0 (0%)        0 (0%)      0 (0%)           0 (0%)         4h39m
+  monitoring                  prometheus-monitoring-stack-kube-prom-prometheus-0        0 (0%)        0 (0%)      0 (0%)           0 (0%)         4h39m
+  olm                         catalog-operator-86f5bc67bb-7k545                         10m (0%)      0 (0%)      80Mi (0%)        0 (0%)         4h42m
+  olm                         olm-operator-69cdd96c89-dhhzh                             10m (0%)      0 (0%)      160Mi (0%)       0 (0%)         4h42m
+  olm                         operatorhubio-catalog-kcvj4                               10m (0%)      0 (0%)      50Mi (0%)        0 (0%)         4h42m
+  olm                         packageserver-7f68ff99c8-dq99m                            10m (0%)      0 (0%)      50Mi (0%)        0 (0%)         4h42m
+  operators                   aerospike-operator-controller-manager-67f5b6bfd4-7h2l9    10m (0%)      400m (5%)   64Mi (0%)        512Mi (0%)     4h41m
+Allocated resources:
+  (Total limits may be over 100 percent, i.e., overcommitted.)
+  Resource           Requests    Limits
+  --------           --------    ------
+  cpu                230m (2%)   400m (5%)
+  memory             724Mi (1%)  1280Mi (2%)
+  ephemeral-storage  0 (0%)      0 (0%)
+  hugepages-1Gi      0 (0%)      0 (0%)
+  hugepages-2Mi      0 (0%)      0 (0%)
+Events:              <none>
+
+=== Node Resources ===
+{
+  \"cpu\": \"8\",
+  \"ephemeral-storage\": \"83873772Ki\",
+  \"hugepages-1Gi\": \"0\",
+  \"hugepages-2Mi\": \"0\",
+  \"memory\": \"65023384Ki\",
+  \"pods\": \"58\"
+}
+
+=== Node Allocatable Resources ===
+{
+  \"cpu\": \"7910m\",
+  \"ephemeral-storage\": \"76224326324\",
+  \"hugepages-1Gi\": \"0\",
+  \"hugepages-2Mi\": \"0\",
+  \"memory\": \"64006552Ki\",
+  \"pods\": \"58\"
+}
+
+=== Node Conditions ===
+[
+  {
+    \"lastHeartbeatTime\": \"2025-04-29T23:56:25Z\",
+    \"lastTransitionTime\": \"2025-04-29T19:06:40Z\",
+    \"message\": \"kubelet has sufficient memory available\",
+    \"reason\": \"KubeletHasSufficientMemory\",
+    \"status\": \"False\",
+    \"type\": \"MemoryPressure\"
+  },
+  {
+    \"lastHeartbeatTime\": \"2025-04-29T23:56:25Z\",
+    \"lastTransitionTime\": \"2025-04-29T19:06:40Z\",
+    \"message\": \"kubelet has no disk pressure\",
+    \"reason\": \"KubeletHasNoDiskPressure\",
+    \"status\": \"False\",
+    \"type\": \"DiskPressure\"
+  },
+  {
+    \"lastHeartbeatTime\": \"2025-04-29T23:56:25Z\",
+    \"lastTransitionTime\": \"2025-04-29T19:06:40Z\",
+    \"message\": \"kubelet has sufficient PID available\",
+    \"reason\": \"KubeletHasSufficientPID\",
+    \"status\": \"False\",
+    \"type\": \"PIDPressure\"
+  },
+  {
+    \"lastHeartbeatTime\": \"2025-04-29T23:56:25Z\",
+    \"lastTransitionTime\": \"2025-04-29T19:06:55Z\",
+    \"message\": \"kubelet is posting ready status\",
+    \"reason\": \"KubeletReady\",
+    \"status\": \"True\",
+    \"type\": \"Ready\"
+  }
+]
+
+=== Cloud Instance Information ===
+Cloud Provider: On-premises
+Instance Type: r5.2xlarge
+Region: us-east-1
+Zone: us-east-1d
+
+=== OOMKill Events ===
+System OOM Events:
+No system OOM events found
+
+Kubernetes OOMKill Events:
+No Kubernetes OOM events found
+
+=== Node OOMKill Events ===
+System OOM Events (last 24h):
+No system OOM events found
+
+Pod OOMKills on this node:
+
+  AVS Pods on node:
+
+    Pod: avs-app-aerospike-vector-search-0
+    Memory Request: 
+    Memory Limit: 
+    JVM Memory Info:
+➡️ jcmd 9 GC.heap_info:
+9:
+ ZHeap           used 1038M, capacity 4762M, max capacity 50800M
+
+--- Node: ip-192-168-53-124.ec2.internal ---
+=== Node Description ===
+Name:               ip-192-168-53-124.ec2.internal
+Roles:              <none>
+Labels:             alpha.eksctl.io/cluster-name=letsrememberopen2
+                    alpha.eksctl.io/nodegroup-name=ng-f2f41c39
+                    beta.kubernetes.io/arch=amd64
+                    beta.kubernetes.io/instance-type=m5.xlarge
+                    beta.kubernetes.io/os=linux
+                    eks.amazonaws.com/capacityType=ON_DEMAND
+                    eks.amazonaws.com/nodegroup=ng-f2f41c39
+                    eks.amazonaws.com/nodegroup-image=ami-01fc98868662094f9
+                    eks.amazonaws.com/sourceLaunchTemplateId=lt-0c2aded4b853bf66d
+                    eks.amazonaws.com/sourceLaunchTemplateVersion=1
+                    failure-domain.beta.kubernetes.io/region=us-east-1
+                    failure-domain.beta.kubernetes.io/zone=us-east-1d
+                    k8s.io/cloud-provider-aws=7b106a2a28f90fcf8e2b12bdb82ef1dc
+                    kubernetes.io/arch=amd64
+                    kubernetes.io/hostname=ip-192-168-53-124.ec2.internal
+                    kubernetes.io/os=linux
+                    node.kubernetes.io/instance-type=m5.xlarge
+                    topology.ebs.csi.aws.com/zone=us-east-1d
+                    topology.k8s.aws/zone-id=use1-az1
+                    topology.kubernetes.io/region=us-east-1
+                    topology.kubernetes.io/zone=us-east-1d
+Annotations:        alpha.kubernetes.io/provided-node-ip: 192.168.53.124
+                    csi.volume.kubernetes.io/nodeid: {\"ebs.csi.aws.com\":\"i-06a1a8c247b423e45\"}
+                    node.alpha.kubernetes.io/ttl: 0
+                    volumes.kubernetes.io/controller-managed-attach-detach: true
+CreationTimestamp:  Tue, 29 Apr 2025 11:58:50 -0700
+Taints:             <none>
+Unschedulable:      false
+Lease:
+  HolderIdentity:  ip-192-168-53-124.ec2.internal
+  AcquireTime:     <unset>
+  RenewTime:       Tue, 29 Apr 2025 16:57:36 -0700
+Conditions:
+  Type             Status  LastHeartbeatTime                 LastTransitionTime                Reason                       Message
+  ----             ------  -----------------                 ------------------                ------                       -------
+  MemoryPressure   False   Tue, 29 Apr 2025 16:55:11 -0700   Tue, 29 Apr 2025 11:58:49 -0700   KubeletHasSufficientMemory   kubelet has sufficient memory available
+  DiskPressure     False   Tue, 29 Apr 2025 16:55:11 -0700   Tue, 29 Apr 2025 11:58:49 -0700   KubeletHasNoDiskPressure     kubelet has no disk pressure
+  PIDPressure      False   Tue, 29 Apr 2025 16:55:11 -0700   Tue, 29 Apr 2025 11:58:49 -0700   KubeletHasSufficientPID      kubelet has sufficient PID available
+  Ready            True    Tue, 29 Apr 2025 16:55:11 -0700   Tue, 29 Apr 2025 11:59:03 -0700   KubeletReady                 kubelet is posting ready status
+Addresses:
+  InternalIP:   192.168.53.124
+  ExternalIP:   44.213.250.59
+  InternalDNS:  ip-192-168-53-124.ec2.internal
+  Hostname:     ip-192-168-53-124.ec2.internal
+  ExternalDNS:  ec2-44-213-250-59.compute-1.amazonaws.com
+Capacity:
+  cpu:                4
+  ephemeral-storage:  83873772Ki
+  hugepages-1Gi:      0
+  hugepages-2Mi:      0
+  memory:             15896988Ki
+  pods:               58
+Allocatable:
+  cpu:                3920m
+  ephemeral-storage:  76224326324
+  hugepages-1Gi:      0
+  hugepages-2Mi:      0
+  memory:             14880156Ki
+  pods:               58
+System Info:
+  Machine ID:                 ec200f1e0b9aff3d694d4e266833da07
+  System UUID:                ec200f1e-0b9a-ff3d-694d-4e266833da07
+  Boot ID:                    ebf5b6d7-bd28-4f01-8b4d-5fd131c3c27d
+  Kernel Version:             5.10.235-227.919.amzn2.x86_64
+  OS Image:                   Amazon Linux 2
+  Operating System:           linux
+  Architecture:               amd64
+  Container Runtime Version:  containerd://1.7.27
+  Kubelet Version:            v1.30.9-eks-5d632ec
+  Kube-Proxy Version:         v1.30.9-eks-5d632ec
+ProviderID:                   aws:///us-east-1d/i-06a1a8c247b423e45
+Non-terminated Pods:          (8 in total)
+  Namespace                   Name                                               CPU Requests  CPU Limits  Memory Requests  Memory Limits  Age
+  ---------                   ----                                               ------------  ----------  ---------------  -------------  ---
+  kube-system                 aws-node-m2dn4                                     50m (1%)      0 (0%)      0 (0%)           0 (0%)         4h59m
+  kube-system                 coredns-586b798467-9n7fr                           100m (2%)     0 (0%)      70Mi (0%)        170Mi (1%)     5h3m
+  kube-system                 coredns-586b798467-nmhdq                           100m (2%)     0 (0%)      70Mi (0%)        170Mi (1%)     5h3m
+  kube-system                 ebs-csi-controller-645d8c6c95-qwxt7                60m (1%)      0 (0%)      240Mi (1%)       1536Mi (10%)   4h55m
+  kube-system                 ebs-csi-controller-645d8c6c95-zpfjv                60m (1%)      0 (0%)      240Mi (1%)       1536Mi (10%)   4h55m
+  kube-system                 ebs-csi-node-fs4xm                                 30m (0%)      0 (0%)      120Mi (0%)       768Mi (5%)     4h55m
+  kube-system                 kube-proxy-mq2k2                                   100m (2%)     0 (0%)      0 (0%)           0 (0%)         4h59m
+  monitoring                  monitoring-stack-prometheus-node-exporter-cb9wg    0 (0%)        0 (0%)      0 (0%)           0 (0%)         4h39m
+Allocated resources:
+  (Total limits may be over 100 percent, i.e., overcommitted.)
+  Resource           Requests    Limits
+  --------           --------    ------
+  cpu                500m (12%)  0 (0%)
+  memory             740Mi (5%)  4180Mi (28%)
+  ephemeral-storage  0 (0%)      0 (0%)
+  hugepages-1Gi      0 (0%)      0 (0%)
+  hugepages-2Mi      0 (0%)      0 (0%)
+Events:              <none>
+
+=== Node Resources ===
+{
+  \"cpu\": \"4\",
+  \"ephemeral-storage\": \"83873772Ki\",
+  \"hugepages-1Gi\": \"0\",
+  \"hugepages-2Mi\": \"0\",
+  \"memory\": \"15896988Ki\",
+  \"pods\": \"58\"
+}
+
+=== Node Allocatable Resources ===
+{
+  \"cpu\": \"3920m\",
+  \"ephemeral-storage\": \"76224326324\",
+  \"hugepages-1Gi\": \"0\",
+  \"hugepages-2Mi\": \"0\",
+  \"memory\": \"14880156Ki\",
+  \"pods\": \"58\"
+}
+
+=== Node Conditions ===
+[
+  {
+    \"lastHeartbeatTime\": \"2025-04-29T23:55:11Z\",
+    \"lastTransitionTime\": \"2025-04-29T18:58:49Z\",
+    \"message\": \"kubelet has sufficient memory available\",
+    \"reason\": \"KubeletHasSufficientMemory\",
+    \"status\": \"False\",
+    \"type\": \"MemoryPressure\"
+  },
+  {
+    \"lastHeartbeatTime\": \"2025-04-29T23:55:11Z\",
+    \"lastTransitionTime\": \"2025-04-29T18:58:49Z\",
+    \"message\": \"kubelet has no disk pressure\",
+    \"reason\": \"KubeletHasNoDiskPressure\",
+    \"status\": \"False\",
+    \"type\": \"DiskPressure\"
+  },
+  {
+    \"lastHeartbeatTime\": \"2025-04-29T23:55:11Z\",
+    \"lastTransitionTime\": \"2025-04-29T18:58:49Z\",
+    \"message\": \"kubelet has sufficient PID available\",
+    \"reason\": \"KubeletHasSufficientPID\",
+    \"status\": \"False\",
+    \"type\": \"PIDPressure\"
+  },
+  {
+    \"lastHeartbeatTime\": \"2025-04-29T23:55:11Z\",
+    \"lastTransitionTime\": \"2025-04-29T18:59:03Z\",
+    \"message\": \"kubelet is posting ready status\",
+    \"reason\": \"KubeletReady\",
+    \"status\": \"True\",
+    \"type\": \"Ready\"
+  }
+]
+
+=== Cloud Instance Information ===
+Cloud Provider: On-premises
+Instance Type: m5.xlarge
+Region: us-east-1
+Zone: us-east-1d
+
+=== OOMKill Events ===
+System OOM Events:
+No system OOM events found
+
+Kubernetes OOMKill Events:
+No Kubernetes OOM events found
+
+=== Node OOMKill Events ===
+System OOM Events (last 24h):
+No system OOM events found
+
+Pod OOMKills on this node:
+
+  AVS Pods on node:
+    No AVS pods
+
+=== Cluster-wide AVS Information ===
+Running asvec to get cluster-wide avs information
+cluster info:
+[1m╭[0m[1m──────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────[0m[1m╮[0m
+[1m│[0m[1m                                                                     Nodes                                                                    [0m[1m│[0m
+├───┬──────┬───────┬───────────────────────────────────────────────┬─────────────────────┬─────────┬───────────────────────────────────────────┤
+│   │ NODE │ ROLES │ ENDPOINT                                      │          CLUSTER ID │ VERSION │ VISIBLE NODES                             │
+├───┼──────┼───────┼───────────────────────────────────────────────┼─────────────────────┼─────────┼───────────────────────────────────────────┤
+│ 1 │ LB   │ N/A   │ avs-app-aerospike-vector-search-internal:5000 │ 9289716086519169264 │ 1.1.0   │ {                                         │
+│   │      │       │                                               │                     │         │     3688445842312: [3.90.200.129:5000]    │
+│   │      │       │                                               │                     │         │     4323892663176: [3.238.188.22:5000]    │
+│   │      │       │                                               │                     │         │     60348465222536: [54.226.248.213:5000] │
+│   │      │       │                                               │                     │         │ }                                         │
+╰───┴──────┴───────┴───────────────────────────────────────────────┴─────────────────────┴─────────┴───────────────────────────────────────────╯
+pod \"asvec\" deleted
+indices:
+indices:
+    - dimensions: 128
+      field: HDF_embedding
+      hnswParams:
+        batchingParams:
+            indexInterval: 30000
+            maxIndexRecords: 100000
+            maxReindexRecords: 10000
+            reindexInterval: 30000
+        ef: 100
+        efConstruction: 100
+        enableVectorIntegrityCheck: true
+        healerParams:
+            maxScanPageSize: 40000
+            maxScanRatePerNode: 20000
+            parallelism: 32
+            reindexPercent: 100
+            schedule: 0 0/15 * ? * * *
+        indexCachingParams:
+            expiry: \"3600000\"
+            maxEntries: \"2000000\"
+        m: 16
+        maxMemQueueSize: 1e+06
+        mergeParams:
+            indexParallelism: 80
+            reIndexParallelism: 26
+        recordCachingParams:
+            expiry: \"3600000\"
+            maxEntries: \"2000000\"
+      id:
+        name: swiftyfan
+        namespace: avs-data
+      mode: DISTRIBUTED
+      setFilter: sift-128-euclidean
+      standaloneIndexParams: {}
+      storage:
+        namespace: avs-index
+        set: swiftyfan
+      type: HNSW
+      vectorDistanceMetric: SQUARED_EUCLIDEAN
+    - dimensions: 128
+      field: HDF_embedding
+      hnswParams:
+        batchingParams:
+            indexInterval: 30000
+            maxIndexRecords: 100000
+            maxReindexRecords: 10000
+            reindexInterval: 30000
+        ef: 100
+        efConstruction: 100
+        enableVectorIntegrityCheck: true
+        healerParams:
+            maxScanPageSize: 40000
+            maxScanRatePerNode: 20000
+            parallelism: 32
+            reindexPercent: 100
+            schedule: 0 0/15 * ? * * *
+        indexCachingParams:
+            expiry: \"3600000\"
+            maxEntries: \"2000000\"
+        m: 16
+        maxMemQueueSize: 1e+06
+        mergeParams:
+            indexParallelism: 80
+            reIndexParallelism: 26
+        recordCachingParams:
+            expiry: \"3600000\"
+            maxEntries: \"2000000\"
+      id:
+        name: adama
+        namespace: avs-data
+      mode: DISTRIBUTED
+      setFilter: sift-128-euclidean
+      standaloneIndexParams: {}
+      storage:
+        namespace: avs-index
+        set: adama
+      type: HNSW
+      vectorDistanceMetric: SQUARED_EUCLIDEAN
+
+
+=== AVS Indices Configuration ===
+indices:
+    - dimensions: 128
+      field: HDF_embedding
+      hnswParams:
+        batchingParams:
+            indexInterval: 30000
+            maxIndexRecords: 100000
+            maxReindexRecords: 10000
+            reindexInterval: 30000
+        ef: 100
+        efConstruction: 100
+        enableVectorIntegrityCheck: true
+        healerParams:
+            maxScanPageSize: 40000
+            maxScanRatePerNode: 20000
+            parallelism: 32
+            reindexPercent: 100
+            schedule: 0 0/15 * ? * * *
+        indexCachingParams:
+            expiry: \"3600000\"
+            maxEntries: \"2000000\"
+        m: 16
+        maxMemQueueSize: 1e+06
+        mergeParams:
+            indexParallelism: 80
+            reIndexParallelism: 26
+        recordCachingParams:
+            expiry: \"3600000\"
+            maxEntries: \"2000000\"
+      id:
+        name: swiftyfan
+        namespace: avs-data
+      mode: DISTRIBUTED
+      setFilter: sift-128-euclidean
+      standaloneIndexParams: {}
+      storage:
+        namespace: avs-index
+        set: swiftyfan
+      type: HNSW
+      vectorDistanceMetric: SQUARED_EUCLIDEAN
+    - dimensions: 128
+      field: HDF_embedding
+      hnswParams:
+        batchingParams:
+            indexInterval: 30000
+            maxIndexRecords: 100000
+            maxReindexRecords: 10000
+            reindexInterval: 30000
+        ef: 100
+        efConstruction: 100
+        enableVectorIntegrityCheck: true
+        healerParams:
+            maxScanPageSize: 40000
+            maxScanRatePerNode: 20000
+            parallelism: 32
+            reindexPercent: 100
+            schedule: 0 0/15 * ? * * *
+        indexCachingParams:
+            expiry: \"3600000\"
+            maxEntries: \"2000000\"
+        m: 16
+        maxMemQueueSize: 1e+06
+        mergeParams:
+            indexParallelism: 80
+            reIndexParallelism: 26
+        recordCachingParams:
+            expiry: \"3600000\"
+            maxEntries: \"2000000\"
+      id:
+        name: adama
+        namespace: avs-data
+      mode: DISTRIBUTED
+      setFilter: sift-128-euclidean
+      standaloneIndexParams: {}
+      storage:
+        namespace: avs-index
+        set: adama
+      type: HNSW
+      vectorDistanceMetric: SQUARED_EUCLIDEAN
+
+
+=== Cluster-wide OOMKill Analysis ===
+Summary of Pod Restarts and OOMKills across cluster:
 Pod: avs-app-aerospike-vector-search-0
 Node: ip-192-168-52-147.ec2.internal
 Restarts: 0
@@ -185,99 +1326,102 @@ No memory pressure events found\n\nNode-Specific Analysis:\n
 ### Node: ip-192-168-26-117.ec2.internal
 ### 🖥️ Node Analysis: ip-192-168-26-117.ec2.internal
 
-#### Node Capacity & Allocatable Resources
-- **CPU Capacity**: 4 cores
-- **Memory Capacity**: 15,896,988 Ki (~15.16 GiB)
-- **Allocatable CPU**: 3920m (~3.92 cores)
-- **Allocatable Memory**: 14,880,156 Ki (~14.18 GiB)
-- **Ephemeral Storage**: 83,873,772 Ki (~80 GiB)
-- **Pods Capacity**: 58
+#### Node Capacity & Allocatable Resources:
+- **CPU Capacity:** 4 cores
+- **Memory Capacity:** 15,896,988 Ki
+- **Allocatable CPU:** 3920m
+- **Allocatable Memory:** 14,880,156 Ki
+- **Pods Capacity & Allocatable:** 58
 
-#### Node Conditions
-- **Memory Pressure**: ❌ False (No memory pressure)
-- **Disk Pressure**: ❌ False (No disk pressure)
-- **PID Pressure**: ❌ False (No PID pressure)
-- **Node Ready**: ✅ True (Node is ready)
+#### Node Conditions:
+- **Memory Pressure:** ❌ False (Sufficient memory available)
+- **Disk Pressure:** ❌ False (No disk pressure)
+- **PID Pressure:** ❌ False (Sufficient PID available)
+- **Ready Status:** ✅ True (Node is ready)
 
-#### Cloud Provider Details
-- **Provider**: AWS
-- **Instance Type**: m5.xlarge
-- **Region**: us-east-1
-- **Zone**: us-east-1b
+#### Cloud Provider & Instance Type:
+- **Provider:** AWS
+- **Instance Type:** m5.xlarge
+- **Region:** us-east-1
+- **Zone:** us-east-1b
 
-#### Resource Allocation & Utilization
-- **CPU Requests**: 190m (4% of allocatable)
-- **Memory Requests**: 170Mi (1% of allocatable)
-- **Memory Limits**: 768Mi (5% of allocatable)
-- **Ephemeral Storage Requests**: 0
+#### Resource Allocation & Utilization:
+- **CPU Requests:** 190m (4%)
+- **Memory Requests:** 170Mi (1%)
+- **Memory Limits:** 768Mi (5%)
 
-#### Node-Level Issues
-- **OOM Events**: No OOM events detected.
+#### Node-Level Issues or Warnings:
+- No OOMKill events or system warnings detected.
 
-### 🏷️ Recommendations for Node-Level Optimizations
-1. **Resource Requests & Limits**: Consider setting resource requests and limits for all pods to ensure fair scheduling and prevent resource starvation.
-2. **Monitoring**: Implement monitoring for CPU and memory usage to better understand resource utilization trends.
-3. **Scaling**: Evaluate if the node's capacity aligns with current and future workload demands. Consider scaling up or down based on utilization.
+### Recommendations for Node-Level Optimizations:
+1. **Resource Requests & Limits:** Consider setting explicit CPU and memory limits for all pods to prevent over-allocation and ensure fair resource distribution.
+2. **Monitoring:** Implement monitoring for CPU and memory usage to identify potential bottlenecks or underutilization.
+3. **Scaling:** Evaluate the need for horizontal scaling if resource utilization approaches capacity limits.
 
-### 🚀 Pod-Level Analysis
-Unfortunately, no Aerospike Vector Search (AVS) pods were found on this node. Therefore, specific pod-level configurations and JVM settings cannot be analyzed.
+### Pod-Level Analysis:
+- **AVS Pods:** ❌ No Aerospike Vector Search pods found on this node.
 
-### 📈 Recommendations for Pod-Level Configurations
-1. **Ensure AVS Deployment**: Verify that AVS pods are correctly scheduled on nodes with appropriate resources.
-2. **JVM Configuration**: For AVS pods, ensure that JVM settings are optimized for your workload, focusing on heap size, garbage collection, and performance flags.
-3. **Node Affinity**: Use node affinity rules to ensure AVS pods are scheduled on nodes with sufficient resources and appropriate configurations.
+### Recommendations for Pod-Level Configurations:
+1. **Pod Distribution:** Ensure AVS pods are evenly distributed across nodes to balance the load and optimize resource usage.
+2. **Node Affinity:** Use node affinity or anti-affinity rules to control pod placement based on node labels or resources.
 
-### 🔍 General Recommendations
-1. **JVM Memory Settings**: If AVS pods are deployed, ensure JVM settings are configured for optimal performance:
-   - **Heap Size**: Set `-Xms` and `-Xmx` appropriately based on available memory.
-   - **GC Settings**: Use `-XX:+UseZGC` for low-latency garbage collection if applicable.
-   - **NUMA Settings**: Consider enabling `-XX:+UseNUMA` for better memory locality on NUMA systems.
+### Resource Allocation Adjustments:
+- **CPU & Memory Requests:** Review and adjust requests and limits for existing pods to align with actual usage patterns and prevent resource starvation.
 
-2. **Performance Improvements**: Regularly review and adjust JVM and Kubernetes configurations based on performance monitoring data.
+### Performance Improvements:
+1. **Node Utilization:** Regularly review node utilization metrics to identify opportunities for optimizing resource allocation.
+2. **Instance Type:** Consider upgrading to a larger instance type if consistent resource constraints are observed.
 
-### 📦 Conclusion
-The node is healthy and underutilized, providing a good opportunity to optimize resource allocation and scheduling. Ensure AVS pods are correctly deployed and configured to maximize performance and resource efficiency.
+### JVM Memory Settings (Hypothetical for AVS Pods):
+- **Initial Heap Size (-Xms):** Ensure it's set to a reasonable value based on pod memory requests.
+- **Maximum Heap Size (-Xmx):** Should not exceed the pod's memory limit to avoid OOM kills.
+- **GC Settings:** Use a suitable garbage collector like ZGC for low-latency applications.
+- **NUMA Settings:** If applicable, configure NUMA settings to optimize memory access patterns.
+
+### Conclusion:
+While the node is currently healthy and underutilized, it's essential to continuously monitor resource usage and adjust configurations to maintain optimal performance. Implementing the above recommendations will help in achieving efficient resource utilization and improved application performance. 🚀
 
 ### Node: ip-192-168-27-123.ec2.internal
-## 🖥️ Node Analysis: ip-192-168-27-123.ec2.internal
+### 🖥️ Node Analysis: ip-192-168-27-123.ec2.internal
 
-### Node Capacity & Conditions
+#### Node Information
+- **Instance Type**: m5.xlarge
+- **Region/Zone**: us-east-1/us-east-1b
 - **Capacity**: 
   - CPU: 4 cores
   - Memory: 15.2 GiB
   - Pods: 58
-- **Allocatable**:
+- **Allocatable**: 
   - CPU: 3920m
   - Memory: 14.2 GiB
-- **Conditions**:
+- **Conditions**: 
   - MemoryPressure: False
   - DiskPressure: False
   - PIDPressure: False
   - Ready: True
 
-### Cloud Provider & Instance Type
-- **Provider**: AWS
-- **Instance Type**: m5.xlarge
-- **Region**: us-east-1
-- **Zone**: us-east-1b
+#### Node Observations
+- **Resource Utilization**: 
+  - CPU Requests: 180m (4%)
+  - Memory Requests: 120Mi (0%)
+  - Memory Limits: 768Mi (5%)
+- **No OOM Events**: No system or Kubernetes OOM events found.
 
-### Resource Allocation & Utilization
-- **CPU Requests**: 180m (4%)
-- **Memory Requests**: 120Mi (0%)
-- **Memory Limits**: 768Mi (5%)
+### Recommendations for Node-Level Optimizations
+1. **Resource Requests and Limits**: Ensure that all critical pods have appropriate CPU and memory requests and limits set to avoid overcommitting resources.
+2. **Monitoring**: Implement monitoring for CPU and memory usage to ensure efficient utilization and identify potential bottlenecks.
+3. **Scaling**: Consider scaling the node group if resource utilization consistently approaches capacity.
 
-### Node-Level Issues
-- No OOMKill events or warnings detected.
+### 🧵 Pod Analysis: avs-app-aerospike-vector-search-2
 
-## 🧵 Pod Analysis: avs-app-aerospike-vector-search-2
+#### Configuration Review
+- **Cluster Name**: avs-db-1
+- **Node Roles**: query
+- **Heartbeat Seeds**: Correctly configured with two seeds.
+- **Interconnect Settings**: Listening on all interfaces (0.0.0.0) on port 5001.
+- **Advertised Listeners**: Correctly set to external IP 3.90.200.129 on port 5000.
 
-### Configuration Review
-- **Node Roles**: Correctly set to `query`.
-- **Heartbeat Seeds**: Properly configured with multiple seeds.
-- **Listener Addresses**: Set to 0.0.0.0, which is acceptable for internal communication.
-- **Interconnect Settings**: Ports configured correctly.
-
-### JVM Configuration
+#### JVM Configuration
 - **Memory Settings**:
   - Initial Heap Size: 241MB
   - Maximum Heap Size: 12.4GB
@@ -285,234 +1429,138 @@ The node is healthy and underutilized, providing a good opportunity to optimize 
   - Reserved Code Cache Size: 240MB
 - **GC Settings**:
   - GC Type: ZGC
-  - GC Thread Counts: 1 for both young and old
-  - GC-Specific Flags: ZGenerational enabled
-- **Other Important Flags**:
-  - NUMA settings: Disabled
-  - Compressed oops: Disabled
-  - Pre-touch settings: Enabled
-  - Compiler settings: CICompilerCount=3
+  - GC Threads: Young (1), Old (1)
+  - GC Flags: ZGenerational enabled
+- **Other Flags**:
+  - NUMA: Disabled
+  - Compressed Oops: Disabled
+  - Pre-touch: Enabled
+  - Compiler Threads: 3
   - Exit on OOM: Enabled
-- **Module and Package Settings**:
-  - Added Modules: jdk.incubator.vector
-  - Opened Packages: Multiple packages opened for ALL-UNNAMED
+- **Module and Package Settings**: Various modules and packages are opened and exported for compatibility.
 
-### GC.heap_info Analysis
-- **Current Heap Usage**: 720MB
-- **Heap Capacity**: 976MB
+#### Heap Info
+- **Current Heap Usage**: 636MB
+- **Heap Capacity**: 1344MB
 - **Max Capacity**: 12.4GB
 - **Metaspace Usage**: 77MB
-- **Class Space Usage**: 8MB
+- **Class Space Usage**: 8.4MB
 
-### Config-Injection Logs
-- No failed config-injection logs detected.
+### Recommendations for Pod-Level Configurations
+1. **JVM Memory Settings**: Consider adjusting the initial heap size (-Xms) to be closer to the maximum heap size (-Xmx) for better performance and to reduce GC overhead.
+2. **GC Configuration**: Evaluate the need for more GC threads if the application experiences latency due to garbage collection.
+3. **NUMA Settings**: If running on a NUMA architecture, consider enabling NUMA settings for potential performance improvements.
 
-## Recommendations
+### Resource Allocation Adjustments
+- **CPU and Memory Requests**: Set explicit CPU and memory requests and limits for the AVS pod to ensure resource availability and prevent resource contention.
 
-### 1. Node-Level Optimizations
-- **CPU Utilization**: Consider increasing CPU requests to better reflect actual usage and prevent potential throttling.
-- **Memory Utilization**: Monitor memory usage closely; current requests are minimal.
+### Performance Improvements
+1. **Heap Tuning**: Monitor heap usage and adjust the heap size as needed to ensure efficient memory utilization.
+2. **GC Monitoring**: Continuously monitor GC performance and adjust settings to optimize for latency and throughput.
 
-### 2. Pod-Level Configurations
-- **Heartbeat Configuration**: Ensure all seed nodes are consistently reachable to avoid split-brain scenarios.
-- **Listener Configuration**: Ensure security measures are in place if using 0.0.0.0 for listener addresses.
+### JVM Memory Settings
+- **Initial and Max Heap Size**: Align -Xms with -Xmx for stable memory usage.
+- **Code Cache**: Ensure the reserved code cache size is sufficient for the application’s needs.
 
-### 3. Resource Allocation Adjustments
-- **Memory Requests**: Increase memory requests to reflect JVM's max heap size to prevent potential OOM issues.
-- **CPU Requests**: Align CPU requests with JVM's thread usage to optimize performance.
-
-### 4. Performance Improvements
-- **GC Tuning**: Evaluate the need for more GC threads if experiencing latency during garbage collection.
-- **NUMA Settings**: Consider enabling NUMA settings if running on a NUMA architecture for potential performance gains.
-
-### 5. JVM Memory Settings
-- **Heap Size**: Ensure the JVM's max heap size does not exceed the node's allocatable memory.
-- **Code Cache**: Monitor code cache usage to ensure it's sufficient for the application's needs.
-
-By implementing these recommendations, you can enhance the performance and reliability of your Aerospike Vector Search deployment on this Kubernetes node. 🚀
+By implementing these recommendations, you can optimize the performance and reliability of the Aerospike Vector Search pods on this node. 🌟
 
 ### Node: ip-192-168-28-89.ec2.internal
-## 🖥️ Node Analysis: ip-192-168-28-89.ec2.internal
+### 🚀 Kubernetes Node Analysis: ip-192-168-28-89.ec2.internal
 
-### Node Overview
-- **Instance Type**: `m5.xlarge`
-- **Region/Zone**: `us-east-1/us-east-1b`
-- **Capacity**: 
-  - CPU: 4 cores
-  - Memory: 16 GB
-  - Pods: 58
-- **Allocatable Resources**:
-  - CPU: 3920m
-  - Memory: 14.35 GB
-  - Pods: 58
-- **Node Conditions**: 
-  - No memory, disk, or PID pressure.
-  - Node is ready.
+#### 🖥️ Node Overview
+- **Instance Type**: m5.xlarge
+- **Region/Zone**: us-east-1/us-east-1b
+- **Capacity**: 4 CPUs, 16GB Memory
+- **Allocatable**: 3920m CPUs, ~15GB Memory
+- **Node Conditions**: All conditions are healthy (MemoryPressure, DiskPressure, PIDPressure are False; Ready is True).
 
-### 🏷️ Cloud Provider Details
+#### 🏷️ Cloud Provider Details
 - **Provider**: AWS
-- **Instance Type**: `m5.xlarge`
-- **Capacity Type**: On-Demand
+- **Instance Type**: m5.xlarge
+- **Capacity Type**: ON_DEMAND
 
-### 📊 Resource Allocation and Utilization
+#### 📊 Resource Allocation and Utilization
 - **CPU Requests**: 190m (4%)
 - **CPU Limits**: 400m (10%)
 - **Memory Requests**: 184Mi (1%)
 - **Memory Limits**: 1280Mi (8%)
 
-### 🔍 Node-Level Issues or Warnings
-- No OOM events or warnings detected.
-- Node is operating within normal parameters.
+#### 🔍 Node-Level Issues or Warnings
+- **No OOMKill Events**: Both system and Kubernetes OOM events are absent.
+- **No Node-Level Warnings**: Node is operating without issues.
 
-## 🧵 AVS Pod Analysis: avs-app-aerospike-vector-search-1
+### 🧵 AVS Pod Analysis: avs-app-aerospike-vector-search-1
 
-### 📄 Configuration Review: aerospike-vector-search.yml
-- **Node Roles**: `index-update`
-- **Heartbeat Seeds**: 
-  - `avs-app-aerospike-vector-search-0` and `avs-app-aerospike-vector-search-2` on port `5001`
-- **Listener Addresses**: 
-  - Advertised on `54.226.248.213` port `5000`
-- **Interconnect Settings**: 
-  - Port `5001` open on `0.0.0.0`
+#### 📄 Configuration Review: aerospike-vector-search.yml
+- **Node Roles**: index-update
+- **Heartbeat Seeds**: Correctly configured with two seeds.
+- **Listener Addresses**: Configured to listen on 0.0.0.0, which is appropriate for internal communication.
+- **Interconnect Settings**: Port 5001 is open for interconnect.
 
-### 📦 JVM Configuration
+#### 📦 JVM Configuration Analysis
 - **Memory Settings**:
-  - Initial Heap Size: `243M`
-  - Maximum Heap Size: `12.5G`
-  - Soft Max Heap Size: `12.5G`
-  - Reserved Code Cache Size: `240M`
-  - Code Heap Sizes: NonNMethod: `5.8M`, NonProfiled: `122M`, Profiled: `122M`
-- **GC Settings**:
-  - GC Type: `ZGC`
-  - GC Thread Counts: Young: `1`, Old: `1`
-  - GC-specific Flags: `ZGenerational`
-- **Other Important Flags**:
-  - NUMA settings: `-XX:-UseNUMA`, `-XX:-UseNUMAInterleaving`
-  - Compressed oops: `-XX:-UseCompressedOops`
-  - Pre-touch settings: `-XX:+AlwaysPreTouch`
-  - Compiler settings: `-XX:CICompilerCount=3`
-  - Exit on OOM: `-XX:+ExitOnOutOfMemoryError`
-- **Module and Package Settings**:
-  - Added modules: `jdk.incubator.vector`
-  - Opened packages: Multiple packages opened for unnamed modules.
+  - **Initial Heap Size**: Not explicitly set, defaults to 243MB.
+  - **Maximum Heap Size (-Xmx)**: 12.5GB
+  - **Soft Max Heap Size**: 12.5GB
+  - **Reserved Code Cache Size**: 240MB
+  - **Code Heap Sizes**: NonNMethod: 5.6MB, NonProfiled: 122MB, Profiled: 122MB
 
-### 📈 GC.heap_info Analysis
-- **Current Heap Usage**: 1254M
-- **Heap Capacity**: 1514M
-- **Max Capacity**: 12554M
-- **Metaspace Usage**: 82M
-- **Class Space Usage**: 8.9M
-
-### 🛠️ Config-Injection Logs
-- No failed config-injection logs detected.
-
-## Recommendations
-
-### 1. Node-Level Optimizations
-- **CPU and Memory**: Current utilization is low. Consider scaling down instance type if consistent underutilization is observed.
-- **Pod Density**: With available resources, consider increasing pod density for better resource utilization.
-
-### 2. Pod-Level Configurations
-- **Heartbeat Seeds**: Ensure redundancy and availability by verifying seed nodes are consistently reachable.
-- **Listener Configuration**: Validate that the advertised IP and ports are correctly configured for external communication.
-
-### 3. Resource Allocation Adjustments
-- **CPU and Memory Requests**: Increase requests to better reflect actual usage, ensuring pods have guaranteed resources.
-- **Memory Limits**: Review and adjust memory limits to prevent potential OOM issues.
-
-### 4. Performance Improvements
-- **JVM GC Tuning**: ZGC is suitable for low-latency applications. Ensure GC threads are optimized for workload.
-- **NUMA Settings**: Consider enabling NUMA settings if running on a multi-socket system for potential performance gains.
-
-### 5. JVM Memory Settings
-- **Heap Size**: Current settings are appropriate. Monitor and adjust based on application load.
-- **Metaspace and Class Space**: Ensure these are monitored to prevent potential memory issues.
-
-By implementing these recommendations, you can enhance the performance and efficiency of your Aerospike Vector Search deployment. 🚀
-
-### Node: ip-192-168-52-147.ec2.internal
-### 🚀 Aerospike Vector Search Node and Pod Analysis Report
-
-#### 🖥️ Node Analysis: `ip-192-168-52-147.ec2.internal`
-- **Instance Type**: `r5.2xlarge` (AWS)
-- **Region/Zone**: `us-east-1/us-east-1d`
-- **Node Capacity**:
-  - **CPU**: 8 cores
-  - **Memory**: 62 GB
-  - **Pods**: 58
-- **Allocatable Resources**:
-  - **CPU**: 7910m
-  - **Memory**: 61 GB
-- **Node Conditions**: All conditions are healthy (No memory, disk, or PID pressure)
-- **Resource Usage**:
-  - **CPU Requests**: 230m (2%)
-  - **Memory Requests**: 724Mi (1%)
-  - **CPU Limits**: 400m (5%)
-  - **Memory Limits**: 1280Mi (2%)
-
-#### 🛠️ Node-Level Recommendations
-1. **Resource Allocation**: Consider setting specific resource requests and limits for the AVS pod to ensure resource predictability and avoid overcommitment.
-2. **Node Utilization**: The node is underutilized in terms of CPU and memory. Optimize pod placement or consider consolidating workloads to reduce costs.
-
-#### 🧵 Pod Analysis: `avs-app-aerospike-vector-search-0`
-- **Node Roles**: Correctly set to `standalone-indexer`.
-- **Heartbeat Seeds**: Properly configured with two seeds.
-- **Listener Addresses**: Configured to listen on `0.0.0.0` for interconnect.
-- **Advertised Listeners**: Correctly set to external IP `3.238.188.22`.
-
-##### 📦 JVM Configuration
-- **Memory Settings**:
-  - **Initial Heap Size (-Xms)**: 1027 MB
-  - **Maximum Heap Size (-Xmx)**: 50799 MB
-  - **Soft Max Heap Size (-XX:SoftMaxHeapSize)**: 50799 MB
-  - **Reserved Code Cache Size (-XX:ReservedCodeCacheSize)**: 240 MB
-  - **Code Heap Sizes**:
-    - **NonNMethod**: 5.8 MB
-    - **NonProfiled**: 117 MB
-    - **Profiled**: 117 MB
 - **GC Settings**:
   - **GC Type**: ZGC with generational support
-  - **GC Threads**: 2 old, 2 young
-- **Other Flags**:
+  - **GC Threads**: 1 thread each for young and old generation collections
+  - **GC Flags**: ZGenerational enabled
+
+- **Other Important Flags**:
   - **NUMA Settings**: Disabled
-  - **Compressed Oops**: Not used
-  - **Pre-touch**: Enabled
-  - **Compiler Threads**: 4
+  - **Compressed Oops**: Disabled
+  - **Pre-touch Settings**: Enabled
+  - **Compiler Settings**: CICompilerCount set to 3
   - **Exit on OOM**: Enabled
+
 - **Module and Package Settings**:
-  - **Added Modules**: `jdk.incubator.vector`
-  - **Opened Packages**: Multiple packages opened for internal access
+  - **Added Modules**: jdk.incubator.vector
+  - **Opened Packages**: Various internal Java packages for enhanced access
+  - **Exported Packages**: Several packages for internal use
 
-##### 📈 GC Heap Info
-- **Current Heap Usage**: 3500 MB
-- **Heap Capacity**: 23728 MB
-- **Max Capacity**: 50800 MB
-- **Metaspace Usage**: 80 MB
-- **Class Space Usage**: 8.8 MB
+#### 📈 GC.heap_info Analysis
+- **Current Heap Usage**: 1120MB
+- **Heap Capacity**: 1666MB
+- **Max Capacity**: 12.5GB
+- **Metaspace Usage**: 82MB
+- **Class Space Usage**: 8.9MB
 
-#### 🛠️ Pod-Level Recommendations
-1. **JVM Memory Settings**: The maximum heap size is set high. Monitor heap usage to ensure it aligns with actual needs and adjust `-Xmx` accordingly.
-2. **GC Configuration**: ZGC is suitable for low-latency applications. Ensure it meets your performance requirements.
-3. **NUMA Settings**: Consider enabling NUMA if the node's architecture supports it for potential performance gains.
+#### 🛠️ Config-Injection Logs
+- **No Failed Config-Injection Logs**: Configuration injection completed successfully.
 
-#### 🔍 Additional Observations
-- **Config-Injection Logs**: No failed config-injection logs were found, indicating successful configuration setup.
+### 📌 Recommendations
 
-### 📈 Performance Improvements
-1. **Resource Requests**: Define specific CPU and memory requests/limits for AVS pods to improve resource allocation efficiency.
-2. **Heap Management**: Regularly review heap usage and adjust JVM settings to prevent over-allocation and improve performance.
-3. **Monitoring**: Implement detailed monitoring to track JVM and application performance metrics for proactive management.
+#### 1. Node-Level Optimizations
+- **CPU and Memory Utilization**: Consider increasing resource requests to better reflect actual usage and prevent potential throttling.
 
-By implementing these recommendations, you can enhance the performance and efficiency of your Aerospike Vector Search deployment on Kubernetes. 🚀
+#### 2. Pod-Level Configurations
+- **Heartbeat Configuration**: Ensure all seeds are reachable and correctly configured to prevent split-brain scenarios.
 
-### Node: ip-192-168-53-124.ec2.internal
-### 🖥️ Node Analysis: ip-192-168-53-124.ec2.internal
+#### 3. Resource Allocation Adjustments
+- **CPU and Memory Requests**: Adjust requests to match usage patterns, ensuring pods have sufficient resources without overcommitting.
+
+#### 4. Performance Improvements
+- **GC Optimization**: Monitor ZGC performance; consider adjusting thread counts based on workload characteristics.
+
+#### 5. JVM Memory Settings
+- **Heap Size**: Ensure -Xmx is set appropriately based on node capacity and application needs.
+- **Compressed Oops**: Consider enabling if memory savings are needed and performance impact is acceptable.
+
+By addressing these recommendations, you can enhance the performance and reliability of your Aerospike Vector Search deployment on this Kubernetes node.
+
+### Node: ip-192-168-52-147.ec2.internal
+### 🖥️ Node Analysis: ip-192-168-52-147.ec2.internal
 
 #### Node Capacity and Allocatable Resources
-- **CPU**: 4 cores
-- **Memory**: 15.8 GiB total, 14.8 GiB allocatable
-- **Ephemeral Storage**: ~80 GiB total, ~76 GiB allocatable
-- **Pods**: 58 max
+- **CPU Capacity**: 8 cores
+- **Memory Capacity**: 62GB
+- **Allocatable CPU**: 7910m (7.91 cores)
+- **Allocatable Memory**: 61GB
+- **Pods Capacity**: 58
 
 #### Node Conditions
 - **MemoryPressure**: False (Sufficient memory available)
@@ -522,43 +1570,140 @@ By implementing these recommendations, you can enhance the performance and effic
 
 #### Cloud Provider Details
 - **Provider**: AWS
-- **Instance Type**: m5.xlarge
+- **Instance Type**: r5.2xlarge
 - **Region**: us-east-1
 - **Zone**: us-east-1d
 
 #### Resource Allocation and Utilization
-- **CPU Requests**: 500m (12% of allocatable)
-- **Memory Requests**: 740Mi (5% of allocatable)
-- **Memory Limits**: 4180Mi (28% of allocatable)
-- **No overcommitment**: Total limits are within allocatable resources
+- **CPU Requests**: 230m (2% of allocatable)
+- **CPU Limits**: 400m (5% of allocatable)
+- **Memory Requests**: 724Mi (1% of allocatable)
+- **Memory Limits**: 1280Mi (2% of allocatable)
 
 #### Node-Level Issues or Warnings
-- **No OOM events**: Both system and Kubernetes OOM events are absent.
-- **No AVS pods found**: This node does not currently host any Aerospike Vector Search (AVS) pods.
+- No OOMKill events or system-level warnings detected.
+
+### 🧵 Pod Analysis: avs-app-aerospike-vector-search-0
+
+#### Configuration Validation
+- **Node Roles**: Correctly set as `standalone-indexer`.
+- **Heartbeat Seeds**: Configured with two seeds, ensuring redundancy.
+- **Listener Addresses**: Advertised listener correctly set to the external IP.
+- **Interconnect Settings**: Ports configured to listen on all interfaces.
+
+#### JVM Configuration
+- **Memory Settings**:
+  - **Initial Heap Size (-Xms)**: 1GB
+  - **Maximum Heap Size (-Xmx)**: ~51GB
+  - **Soft Max Heap Size (-XX:SoftMaxHeapSize)**: ~51GB
+  - **Reserved Code Cache Size (-XX:ReservedCodeCacheSize)**: 240MB
+  - **Code Heap Sizes**: NonNMethod: ~5.6MB, NonProfiled: ~117MB, Profiled: ~117MB
+
+- **GC Settings**:
+  - **GC Type**: ZGC
+  - **GC Thread Counts**: ZYoungGCThreads: 2, ZOldGCThreads: 2
+  - **GC-Specific Flags**: ZGenerational enabled
+
+- **Other Important Flags**:
+  - **NUMA Settings**: NUMA and NUMAInterleaving not used
+  - **Compressed Oops**: Not explicitly disabled
+  - **Pre-touch Settings**: AlwaysPreTouch enabled
+  - **Compiler Settings**: CICompilerCount set to 4
+  - **Exit on OOM**: Enabled
+
+- **Module and Package Settings**:
+  - **Added Modules**: jdk.incubator.vector
+  - **Opened Packages**: Multiple packages opened for internal access
+  - **Exported Packages**: Several packages exported for internal use
+
+#### GC.heap_info Analysis
+- **Current Heap Usage**: ~1GB
+- **Heap Capacity**: ~4.6GB
+- **Max Capacity**: ~51GB
+- **Metaspace Usage**: ~79MB
+- **Class Space Usage**: ~8.6MB
+
+#### Config-Injection Logs
+- No failed config-injection logs detected.
 
 ### Recommendations
 
-#### 1. Node-Level Optimizations
-- **Resource Monitoring**: Continue monitoring CPU and memory usage to ensure they remain within optimal levels.
-- **Instance Type**: Consider upgrading to a larger instance type if you plan to deploy AVS pods, which may require more resources.
+1. **Node-Level Optimizations**:
+   - Consider setting explicit CPU and memory requests/limits for all pods to better manage resource allocation and avoid overcommitment.
 
-#### 2. Pod-Level Configurations
-- **AVS Pod Deployment**: Ensure AVS pods are scheduled on nodes with sufficient resources. Currently, no AVS pods are running on this node.
+2. **Pod-Level Configurations**:
+   - Ensure all pods have defined resource requests and limits to prevent resource starvation.
 
-#### 3. Resource Allocation Adjustments
-- **CPU and Memory Requests**: Adjust requests and limits for existing pods to optimize resource utilization and prevent resource starvation.
+3. **Resource Allocation Adjustments**:
+   - Review and adjust the resource allocation for non-critical pods to free up resources for AVS.
 
-#### 4. Performance Improvements
-- **Node Balancing**: Distribute pods evenly across nodes to avoid overloading a single node.
+4. **Performance Improvements**:
+   - Monitor heap usage and adjust JVM settings if memory usage approaches limits.
+   - Consider enabling NUMA settings if the workload benefits from it.
 
-#### 5. JVM Memory Settings
-- **AVS Pods**: When deploying AVS pods, ensure JVM settings are optimized for performance:
-  - **Heap Size**: Set initial and maximum heap sizes based on available memory.
-  - **GC Settings**: Use appropriate garbage collection settings to minimize latency.
-  - **NUMA and Compressed Oops**: Configure based on node architecture for performance gains.
+5. **JVM Memory Settings**:
+   - The current JVM settings are well-optimized for the node's memory capacity. Regularly monitor and adjust as needed based on application performance and load.
 
-### 📊 Summary
-The node `ip-192-168-53-124.ec2.internal` is in good health with no current resource pressures or OOM events. However, it does not host any AVS pods. For future deployments, ensure the node has adequate resources and is configured to handle the specific requirements of AVS workloads."
+By addressing these recommendations, you can ensure optimal performance and resource utilization for your Aerospike Vector Search deployment. 🚀
+
+### Node: ip-192-168-53-124.ec2.internal
+### 🖥️ Node Analysis: ip-192-168-53-124.ec2.internal
+
+#### Node Capacity & Conditions
+- **CPU Capacity**: 4 cores
+- **Memory Capacity**: 15,896,988 Ki (~15.16 Gi)
+- **Allocatable CPU**: 3920m
+- **Allocatable Memory**: 14,880,156 Ki (~14.18 Gi)
+- **Pod Capacity**: 58
+- **Conditions**: 
+  - **MemoryPressure**: False (Sufficient memory)
+  - **DiskPressure**: False (No disk pressure)
+  - **PIDPressure**: False (Sufficient PID)
+  - **Ready**: True (Node is ready)
+
+#### Cloud Provider & Instance Type
+- **Provider**: AWS
+- **Instance Type**: m5.xlarge
+- **Region**: us-east-1
+- **Zone**: us-east-1d
+
+#### Resource Allocation & Utilization
+- **CPU Requests**: 12% of total capacity
+- **Memory Requests**: 5% of total capacity
+- **Memory Limits**: 28% of total capacity
+- **Ephemeral Storage**: Not utilized
+
+#### Node-Level Issues or Warnings
+- **OOM Events**: None
+- **Node Events**: None
+
+### Recommendations for Node-Level Optimizations
+1. **Resource Utilization**: Consider increasing resource requests for critical pods to ensure they have sufficient resources during peak loads.
+2. **Ephemeral Storage**: Monitor storage usage and set limits if necessary to prevent potential issues.
+3. **Node Monitoring**: Implement a monitoring solution to keep track of node health and performance metrics.
+
+### 🚀 Pod-Level Configurations
+- **No AVS Pods Found**: There are no Aerospike Vector Search pods running on this node.
+
+### 🛠️ Recommendations for Pod-Level Configurations
+1. **Pod Scheduling**: Ensure AVS pods are scheduled on nodes with sufficient resources by using node selectors or affinity rules.
+2. **Resource Requests**: Define appropriate CPU and memory requests/limits for AVS pods to prevent resource contention.
+
+### 📈 Resource Allocation Adjustments
+1. **CPU and Memory**: Adjust resource requests and limits based on the actual usage patterns observed in the monitoring data.
+2. **Pod Distribution**: Balance the pod distribution across nodes to optimize resource utilization.
+
+### 🔧 Performance Improvements
+1. **Node Autoscaling**: Consider enabling cluster autoscaling to dynamically adjust the number of nodes based on workload demands.
+2. **Instance Type**: Evaluate if the current instance type (m5.xlarge) meets the performance requirements or if an upgrade is necessary.
+
+### 🧠 JVM Memory Settings (Hypothetical for AVS Pods)
+- **Initial Heap Size (-Xms)**: Ensure it is set to a reasonable value based on pod memory requests.
+- **Maximum Heap Size (-Xmx)**: Align with the memory limits to prevent OOM errors.
+- **GC Settings**: Use appropriate garbage collection settings for optimal performance.
+
+### Conclusion
+The node is in good health with no immediate issues. However, there are no AVS pods currently running on this node. Ensure that when AVS pods are deployed, they are configured with appropriate resource requests and limits to maintain optimal performance."
                 }
             ]
         }
